@@ -119,18 +119,6 @@
   number  = {4},
   pages   = {501--518}}
 
-  @inproceedings {203628,
-author = {Manos Antonakakis and Tim April and Michael Bailey and Matt Bernhard and Elie Bursztein and Jaime Cochran and Zakir Durumeric and J. Alex Halderman and Luca Invernizzi and Michalis Kallitsis and Deepak Kumar and Chaz Lever and Zane Ma and Joshua Mason and Damian Menscher and Chad Seaman and Nick Sullivan and Kurt Thomas and Yi Zhou},
-title = {Understanding the Mirai Botnet},
-booktitle = {26th USENIX Security Symposium (USENIX Security 17)},
-year = {2017},
-isbn = {978-1-931971-40-9},
-address = {Vancouver, BC},
-pages = {1093--1110},
-url = {https://www.usenix.org/conference/usenixsecurity17/technical-sessions/presentation/antonakakis%7D,
-publisher = {USENIX Association},
-month = {aug}}
-
 @INPROCEEDINGS{8685566,
   author={Surnin, Oleg and Hussain, Fatima and Hussain, Rasheed and Ostrovskaya, Svetlana and Polovinkin, Andrey and Lee, JooYoung and Fernando, Xavier},
   booktitle={2019 International Conference on Computing, Networking and Communications (ICNC)}, 
@@ -144,3 +132,96 @@ month = {aug}}
   doi={10.1109/ICCNC.2019.8685566},
   ISSN={2325-2626},
   month={Feb},}
+
+  @INPROCEEDINGS{9037501,
+  author={Vetterl, Alexander and Clayton, Richard},
+  booktitle={2019 APWG Symposium on Electronic Crime Research (eCrime)}, 
+  title={Honware: A Virtual Honeypot Framework for Capturing CPE and IoT Zero Days}, 
+  year={2019},
+  volume={},
+  number={},
+  pages={1-13},
+  abstract={Existing solutions are ineffective in detecting zero day exploits targeting Customer Premise Equipment (CPE) and Internet of Things (IoT) devices. We present honware, a high-interaction honeypot framework which can emulate a wide range of devices without any access to the manufacturers' hardware. Honware automatically processes a standard firmware image (as is commonly provided for updates), customises the filesystem and runs the system with a special pre-built Linux kernel. It then logs attacker traffic and records which of their actions led to a compromise. We provide an extensive evaluation and show that our framework improves upon existing emulation strategies which are limited in their scalability, and that it is significantly better both in providing network functionality and in emulating the devices' firmware applications - a crucial aspect as vulnerabilities are frequently exploited by attackers in ‘front-end’ functionalities such as web interfaces. Honware's design precludes most honeypot fingerprinting attacks, and as its performance is comparable to that of real devices, fingerprinting with timing attacks can be made far from trivial. We provide four case studies in which we demonstrate that honware is capable of rapid deployment to capture the exact details of attacks along with malware samples. In particular we identified a previously unknown attack in which the default DNS for an ipTIME N604R wireless router was changed. We believe that honware is a major contribution towards re-balancing the economics of attackers and defenders by reducing the period in which attackers can exploit zero days at Internet scale.},
+  keywords={Performance evaluation;Protocols;Scalability;Emulation;Fingerprint recognition;Hardware;Timing;Internet of Things;Standards;Microprogramming},
+  doi={10.1109/eCrime47957.2019.9037501},
+  ISSN={2159-1245},
+  month={Nov},}
+
+@INPROCEEDINGS{9359711,
+  author={Saputro, Elang Dwi and Purwanto, Yudha and Ruriawan, Muhammad Faris},
+  booktitle={2020 IEEE International Conference on Internet of Things and Intelligence System (IoTaIS)}, 
+  title={Medium Interaction Honeypot Infrastructure on The Internet of Things}, 
+  year={2021},
+  volume={},
+  number={},
+  pages={98-102},
+  abstract={New technologies from day to day are submitted with many vulnerabilities that can make data exploitation. Nowadays, IoT is a target for Cybercrime attacks as it is one of the popular platforms in the century. This research address the IoT security problem by carried a medium-interaction honeypot. Honeypot is one of the solutions that can be done because it is a system feed for the introduction of attacks and fraudulent devices. This research has created a medium interaction honeypot using Cowrie, which is used to maintain the Internet of Things device from malware attacks or even attack patterns and collect information about the attacker's machine. From the result analysis, the honeypot can record all trials and attack activities, with CPU loads averagely below 6,3%.},
+  keywords={Performance evaluation;Dictionaries;Malware;Hardware;Internet of Things;Security;Feeds;Honeypot;security;Internet of Things;Medium interaction;Cowrie},
+  doi={10.1109/IoTaIS50849.2021.9359711},
+  ISSN={},
+  month={Jan},}
+
+  @INPROCEEDINGS{10543511,
+  author={Dara, Nandika and Shankar, Pranav and Arvind, P Venkat and Singh, Vaibhav},
+  booktitle={2024 IEEE 9th International Conference for Convergence in Technology (I2CT)}, 
+  title={Intelligent Insight into IoT Threats: Leveraging Advanced Analytics with Honeypots for Anomaly Detection}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-6},
+  abstract={In the modern era, the rise of the Internet of Things has sparked apprehensions regarding the security of interconnected embedded devices. This has underscored the urgency of devising effective and efficient approaches to identify vulnerabilities within IoT devices, aiming to rectify them proactively before potential exploitation by malicious actors. Within conventional IT security practices, honeypots serve as a prevalent method for comprehending the evolving threat landscape while safeguarding vital assets from exposure. We have devised an inventive method for constructing a honeypot tailored specifically for IoT devices. We are employing a rogue access point to establish a connection, allowing us to SSH into our router, which serves as an IoT honeypot. Within this honeypot environment, we aim to capture logs, specifically focusing on password-guessing attacks. Subsequently, we analyze HTTP logs generated by the router to gain insights into the attacker's activities and behavior. Furthermore, with the attacker HTTP logs, we have performed anomaly detection and analysis where inferences on attacker behavior, and common IoT cyber-attacks can be concluded. We have obtained an accuracy of 87% using the Isolation Forest algorithm.},
+  keywords={Forestry;HTTP;Real-time systems;Software;Inference algorithms;Internet of Things;Security;Honeypot;Internet of Things;Unsupervised Learning;SSH;HTTP;Isolation Forest},
+  doi={10.1109/I2CT61223.2024.10543511},
+  ISSN={},
+  month={April},}
+
+  @ARTICLE{9431233,
+  author={Tian, Wen and Du, Miao and Ji, Xiaopeng and Liu, Guangjie and Dai, Yuewei and Han, Zhu},
+  journal={IEEE Internet of Things Journal}, 
+  title={Honeypot Detection Strategy Against Advanced Persistent Threats in Industrial Internet of Things: A Prospect Theoretic Game}, 
+  year={2021},
+  volume={8},
+  number={24},
+  pages={17372-17381},
+  abstract={Software-defined networking (SDN) has become a promising trend for managing the Industrial Internet of Things (IIoT) devices. As the core of sensitive data storage and business interaction, the SDN is vulnerable to advanced persistent threats (APTs) attacks, while honeypots have shown great promise against APT attacks. In this article, we propose a new SDN-based dynamic bounded rational honeypot-APT game model in IIoT. Specifically, the defender maximizes the utility by chossing the period strategy of honeypot collecting and analyzing the data, while the attacker maximizes utility by choosing the period strategy of its latency and attack. To describe the bounded rationality, we model the simultaneous dynamic attack and defense process through the prospect theory, in which the Prelec function and the value function are both introduced. Experiment results show that bounded rationality affects strategy selection and reduces defender and attacker’s utilities. Furthermore, our strategy outperforms the existing work in defensive performance.},
+  keywords={Industrial Internet of Things;Servers;Software defined networking;Security;IP networks;Game theory;Smart meters;Advanced persistent threats (APTs);game theory;Industrial Internet of Things (IIoT);prospect theory (PT);software-defined networks (SDNs)},
+  doi={10.1109/JIOT.2021.3080527},
+  ISSN={2327-4662},
+  month={Dec},}
+
+  
+@Article{electronics9030415,
+AUTHOR = {Khan, Zeeshan Ali and Abbasi, Ubaid},
+TITLE = {Reputation Management Using Honeypots for Intrusion Detection in the Internet of Things},
+JOURNAL = {Electronics},
+VOLUME = {9},
+YEAR = {2020},
+NUMBER = {3},
+ARTICLE-NUMBER = {415},
+URL = {https://www.mdpi.com/2079-9292/9/3/415},
+ISSN = {2079-9292},
+ABSTRACT = {Internet of Things (IoT) networks consist of tiny devices with limited processing resources and restricted energy budget. These devices are connected to the world-wide web (www) using networking protocols. Considering their resource limitations, they are vulnerable to security attacks by numerous entities on the Internet. The classical security solutions cannot be directly implemented on top of these devices for this reason. However, an Intrusion Detection System (IDS) is a classical way to protect these devices by using low-cost solutions. IDS monitors the network by introducing various metrics, and potential intruders are identified, which are quarantined by the firewall. One such metric is reputation management, which monitors the behavior of the IoT networks. However, this technique may still result in detection error that can be optimized by combining this solution with honeypots. Therefore, our aim is to add some honeypots in the network by distributing them homogeneously as well as randomly. These honeypots will team up with possible maliciously behaving nodes and will monitor their behavior. As per the simulation results, this technique reduces the error rate within the existing IDS for the IoT; however, it costs some extra energy. This trade-off between energy consumption and detection accuracy is studied by considering standard routing and MAC protocol for the IoT network.},
+DOI = {10.3390/electronics9030415}
+}
+
+
+
+
+
+
+
+
+
+  @inproceedings {203628,
+author = {Manos Antonakakis and Tim April and Michael Bailey and Matt Bernhard and Elie Bursztein and Jaime Cochran and Zakir Durumeric and J. Alex Halderman and Luca Invernizzi and Michalis Kallitsis and Deepak Kumar and Chaz Lever and Zane Ma and Joshua Mason and Damian Menscher and Chad Seaman and Nick Sullivan and Kurt Thomas and Yi Zhou},
+title = {Understanding the Mirai Botnet},
+booktitle = {26th USENIX Security Symposium (USENIX Security 17)},
+year = {2017},
+isbn = {978-1-931971-40-9},
+address = {Vancouver, BC},
+pages = {1093--1110},
+url = {https://www.usenix.org/conference/usenixsecurity17/technical-sessions/presentation/antonakakis%7D,
+publisher = {USENIX Association},
+month = {aug}}
+
+
