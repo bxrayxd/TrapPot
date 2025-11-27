@@ -17,11 +17,37 @@ The rest of the chapter can be organized on many different ways depending on the
 % ============================================================
 
 % ------------------------------------------------------------
-\subsection{Challenges in Project Domain} % (fold)
+\subsection{Challenges in Project Domain}
 \label{sub:challenges_in_project_domain}
 % ------------------------------------------------------------
 
-Here you provide a lengthy and deep view of what are the problems defined in the past and how people before you (usually scientist) approached them whether that is using technological solution or any other type of solution. Also, you could have many references on studies and/or statistics about the issue. This section by itself can have many subsections.
+% ------------------------------------------------------------
+\subsubsection{IoT Security Vulnerabilities and Threat Landscape}
+\label{subsub:iot_vulnerabilities}
+% ------------------------------------------------------------
+
+Internet of Things devices face critical security challenges due to resource constraints, weak authentication mechanisms, and infrequent security updates. A 2024 comprehensive survey by Mahmood and colleagues identified that 55 percent of IoT devices lack encryption measures, with authentication weaknesses remaining the most prevalent vulnerability across device, network, and application layers \cite{mahmood2024exploring}. The proliferation of IoT botnets continues to demonstrate the severity of these vulnerabilities, with malware variants such as Mirai, Gafgyt, and Mozi exploiting default credentials to compromise millions of devices globally \cite{suareztangil2023stories}. Recent large scale empirical studies analyzing over 11,000 IoT code examples from developer communities found that 39.58 percent contain vulnerabilities mapped to real world Common Vulnerabilities and Exposures instances, with 28.99 percent resulting in Denial of Service errors that are particularly harmful for network reliant IoT devices \cite{islam2023large}. In resource constrained IoT environments, limited processing power reduces the scope of security measures that can be enforced, leaving devices vulnerable to automated scanning campaigns that systematically probe for weak points across vast IP ranges.
+
+% ------------------------------------------------------------
+\subsubsection{Honeypot Deployment and Isolation Challenges}
+\label{subsub:honeypot_challenges}
+% ------------------------------------------------------------
+
+Deploying honeypots for IoT security research introduces significant technical and operational challenges. A 2024 study on adaptive honeypot frameworks identified that traditional static honeypot deployments face difficulties in IoT environments due to device heterogeneity and resource constraints, requiring dynamic adaptation strategies to maintain realism while avoiding attacker fingerprinting \cite{morozov2024sweet}. Network isolation remains paramount, as compromised honeypots can serve as entry points into production networks if proper segmentation and containment mechanisms are not enforced \cite{commey2025blockchain}. The challenge of maintaining honeypot stealth has intensified, with sophisticated attackers employing behavioral analysis and timing fingerprinting techniques to detect decoy systems, necessitating intelligent response generation and randomized interaction patterns \cite{franco2021survey}. Resource limitations in educational and research environments constrain the ability to deploy multi protocol, distributed honeypot infrastructures, requiring focused approaches that target high value attack vectors such as Telnet and SSH while balancing security effectiveness with operational feasibility.
+
+% ------------------------------------------------------------
+\subsubsection{Machine Learning Classification Challenges}
+\label{subsub:ml_challenges}
+% ------------------------------------------------------------
+
+Applying machine learning to honeypot captured attack data presents several persistent challenges. A 2023 comprehensive survey on machine learning based intrusion detection systems for IoT identified dataset imbalance as a critical issue, where benign traffic vastly outnumbers attack samples, leading to biased models with poor detection rates for minority attack classes \cite{hindy2023comprehensive}. Recent evaluations using diverse IoT datasets demonstrate that while Random Forest classifiers achieve accuracy rates exceeding 98 percent for multi class attack classification, challenges remain in handling high dimensional feature spaces and ensuring real time inference performance suitable for resource constrained IoT deployments \cite{alzahrani2025lightweight}. Feature engineering requires domain expertise to extract meaningful characteristics from raw network logs, with studies showing that irrelevant or redundant features significantly degrade classification accuracy and increase computational overhead \cite{dekeersmaeker2023survey}. The quality and diversity of training datasets heavily influence intrusion detection system effectiveness, with models struggling to generalize to attack scenarios not represented in training data, particularly zero day exploits and novel botnet variants that employ evasion techniques.
+
+% ------------------------------------------------------------
+\subsubsection{Data Collection and Preprocessing Challenges}
+\label{subsub:data_challenges}
+% ------------------------------------------------------------
+
+Honeypots generate high volumes of interaction logs that require efficient storage, processing, and labeling pipelines. A 2025 systematic review of honeypot data collection and threat intelligence platforms identified significant challenges in manual labeling of attack data, including time consumption, inter annotator disagreement, and ambiguous attack signatures that complicate supervised learning approaches \cite{rodriguezgomez2025systematic}. The lack of standardized, publicly available IoT honeypot datasets complicates model training and validation, as most existing datasets focus on traditional network attacks rather than IoT specific threat patterns captured by medium interaction honeypots \cite{alex2023comprehensive}. A comprehensive survey of public IoT datasets for network security research found substantial variability in data collection methodologies, feature representations, and attack taxonomies, making cross dataset evaluation and model comparison difficult \cite{dekeersmaeker2023survey}. Preprocessing raw logs into structured feature vectors suitable for machine learning requires careful handling of missing values, categorical encodings, and temporal dependencies, with studies demonstrating that poor preprocessing choices can reduce classification accuracy by over 15 percent even when using state of the art algorithms.
 
 % ------------------------------------------------------------
 \subsection{Related Work}
