@@ -34,23 +34,28 @@ Random Forest has already shown high accuracy and low latency for classifying ho
 \label{sec:goals_and_objectives}
 % ============================================================
 
-The project's main goals are to deploy an isolated IoT honeypot emulating Telnet and SSH services, automatically classify captured attacks using machine learning, achieve classification accuracy exceeding 85% , generate real-time threat intelligence reports, and ensure complete network isolation to prevent compromise of production systems.
+This project aims to strengthen the protection of Internet of Things (IoT) devices by developing a system capable of observing, analyzing, and classifying real cyberattacks that frequently target IoT-enabled infrastructure networks. understanding how these devices are attacked, improve their security readiness. The following objectives will state the key outcomes this project seeks to achieve:
 
+    • Understanding IoT Attack Behavior: Investigate real attacker interactions to gain a clear picture of how IoT devices are discovered, probed, and exploited. This includes analyzing the sequence of actions taken by attackers, the types of weaknesses they target, and learn the patterns produced across different attack attempts. By developing a deeper understanding of attacker behavior, we can highlight the most vulnerable points within IoT ecosystems.
+
+    • Improving IoT Attack Classification: Develop an AI-based classification capable of categorizing the malicious activity, such as Brute force attempts, scanning behaviors, malware related actions, and command execution. A core objective is to achieve 96 percent classification accuracy, ensuring that the system consistently identifies harmful activity with a high level of confidence. This contributes to clearer detection, faster analysis, and better understanding of threats.
+
+    • Supporting Proactive Security Measures: Enable earlier detection and understanding of malicious behavior, allowing defenses to be applied proactively rather than after damage has occurred. Proactive security measures encourages preventive strategies, and helps organizations stay ahead of attackers. This proactive approach contributes directly to creating safer and more stable IoT environments.
+
+    • Enhancing IoT Threat Awareness: Highlight how often attacks occur, which techniques are most commonly used, and how attackers adapt their methods over time. By presenting these patterns in a structured and meaningful way, the project aims to support better situational awareness for researchers, system administrators, and organizations. Increased awareness helps stakeholders anticipate threats rather than reacting only after incidents occur.
+
+    • Reducing the Attack Surface of IoT Environments: Using the findings gathered from real world attack interactions for practical security recommendations. These findings can help identify common weaknesses, strengthen access controls, and guide decisions that reduce unnecessary exposure of IoT devices.
+
+These objectives aim to improve the understanding of IoT-related threats, supports better decision-making, and encourages stronger security practices results in  helping to protect IoT devices from Cyberattacks that continue to change over time, and contributes to creating safer and more dependable IoT environments for future use. 
 % ============================================================
 \section{Report Arrangement}
 \label{sec:report_arrangement}
 % ============================================================
 
-This report is structured to guide the reader through the conception, design, and proposed implementation of the TrapPot system, as outlined below:
+The rest of this report is organized into six main chapters:
 
-Chapter 1: Introduction - Establishes the core problem of IoT security, the project's motivation, and its primary objectives. It defines the project's boundaries and presents this overall report structure.
+Chapter 1: Introduction – Presents the IoT security problem, the project's motivation, objectives, and scope.
 
-Chapter 2: Literature Review - Surveys the existing academic and technical landscape, covering foundational work on IoT honeypots, machine learning for attack classification, and related systems to position TrapPot within the field.
+Chapter 2: Literature Review – Reviews established work on IoT honeypots and machine learning for attack classification, and provides the technical background for key technologies used in our solution, such as the Cowrie honeypot, Random Forest algorithm, and the ELK Stack.
 
-Chapter 3: Methodology - Details the architectural design and operational plan for TrapPot. It explains the system components, the data processing pipeline from detection to classification, and the proposed evaluation metrics.
-
-Chapter 4: Implementation and Testing - (For Future Work) This chapter will document the practical development, specific tools, coding frameworks, and the comprehensive testing strategy used to validate the system.
-
-Chapter 5: Results and Discussion - (For Future Work) This chapter will present and analyze the outcomes of the testing phase, interpreting the system's performance and effectiveness.
-
-Chapter 6: Conclusion and Future Work - (For Future Work) This chapter will summarize the project's contributions, draw final conclusions, and propose directions for further development and research.
+Chapter 3: Methodology – Details the proposed system architecture and design, explaining how the honeypot simulation will be integrated with the AI classification module.
