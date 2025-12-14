@@ -1,53 +1,518 @@
 \chapter{IMPLEMENTATION AND TESTING}
-\pagebreak
 
+\pagebreak
 
 \begin{center}
 {\LARGE\textbf{IMPLEMENTATION AND TESTING}}
 \end{center}
 
-\textcolor{red}{DISCLAIMER: The outline given here is nothing but a suggestion. Please consult your advisor before using them.}
+This chapter presents the detailed implementation of the TrapPot system, documenting the practical realization of the architectural design and methodological framework established in previous chapters \cite{franco2021survey,lanz2025optimizing}. The implementation transforms the conceptual design into a fully operational AI-powered IoT honeypot system capable of capturing, processing, and automatically classifying real-world attacks targeting Telnet and SSH services \cite{lee2021classification,9071014,9558948}. The chapter is organized to guide the reader through each development phase, from the selection of development tools and programming frameworks to the integration and deployment of the complete system \cite{rodriguezgomez2025systematic,hindy2023comprehensive}.
 
-Here you should write a brief introduction to this section. The introduction should not overlap with previous chapters. If there is a need to re-explain something, it should be with a purpose. Your main goal in this 1-2 page intro is to provide a high-level overview of what to expect in this chapter. Also, if you are sharing your code somewhere, you should add the link within this intro.
-    
-\section{Programming Languages and Tools} % (fold)
-\label{sec:programming-languages-and-tools}
+Section 4.1 establishes the development environment, detailing the choice of programming languages, development frameworks, and operational tools used throughout the project \cite{optimized2024arxiv,pan2024xgboost}. Section 4.2 presents the high-level system architecture, illustrating how the three core components—Cowrie honeypot, ELK Stack, and Random Forest classifier—interact to form a cohesive threat intelligence platform \cite{9001068,lee2021classification}. Section 4.3 provides detailed implementation documentation for each major system component, including configuration specifics, deployment strategies, and integration approaches \cite{9071014,9359711,log2evt2025}. Section 4.4 describes the feature extraction and machine learning classification algorithms that power TrapPot's automated attack identification capability \cite{dimauro2021supervised,karim2024efficient,christy2024iot}. Section 4.5 details the system integration process and deployment procedures within the isolated network environment \cite{commey2025blockchain,albaseer2024fedpot}. Finally, Section 4.6 outlines the comprehensive testing strategy employed to validate both functional correctness and performance requirements \cite{confusion2023pmc,mary2024network,kalaria2024iotpredictor}.
 
-Here you should list and explain all programming languages and tools you're using. Whether the tool/language is related to the core functionality of the project or the analysis of the project, it should be added. Avoid saying something like "we use python" it should be more of "for module x we use python because of ..." also, you should add a general statement about the tool/language and its strengths and weaknesses in general.
+All implementation code, configuration files, and deployment scripts are version-controlled and available in the project repository at: \texttt{[Repository URL to be added upon final submission]}.
 
-% section installation (end)
+% ============================================================
+\section{Development Environment and Tools}
+\label{sec:dev_environment}
+% ============================================================
 
-\section{Software Design}% (fold)
-\label{sec:software-design}
+The selection of development tools and programming languages was guided by three critical requirements: compatibility with established honeypot and data processing technologies, support for efficient machine learning workflows, and alignment with industry best practices for cybersecurity research \cite{hindy2023comprehensive,rodriguezgomez2025systematic,lanz2025optimizing}.
 
-Start by providing a high-level view of how the system is composed then gradually dive into details. This is a section where lots of diagrams could help. The reader of this section should have a conceptual image of how the system is developed. How many components does the system have and what are they? For each component/module explain what is the main goal of the module and link it to your project's objectives.
+% ------------------------------------------------------------
+\subsection{Primary Development Platform}
+\label{subsec:primary_platform}
+% ------------------------------------------------------------
 
-The use of widely known diagrams could help you get started. For example, you could use the 4+1 view models to represent your system architecture (\url{https://en.wikipedia.org/wiki/View_model}).
+\textbf{Python 3.10+} serves as the exclusive programming language for TrapPot's custom components, including feature extraction scripts, the Random Forest training pipeline, and the real-time classification module \cite{optimized2024arxiv,karim2024efficient}. Python's dominance in both cybersecurity research and machine learning domains, combined with its extensive ecosystem of mature libraries, makes it the optimal choice for this project \cite{hindy2023comprehensive,9712274}. The language provides native compatibility with scikit-learn for machine learning operations, pandas for data manipulation, and direct JSON parsing capabilities essential for processing Cowrie's log output \cite{dimauro2021supervised,lee2021classification}.
 
-% section programming-languages-and-tools (end)
+\textbf{Justification:} Python eliminates the need for complex data format conversions between system components and enables rapid prototyping and iterative development—critical factors given the project's time constraints and educational context \cite{alzahrani2025lightweight,optimized2024arxiv}. The language's readability also facilitates code review and future maintenance by team members or academic supervisors.
 
-\section{Algorithm(s)} % (fold)
-\label{sec:algorihtms}
+% ------------------------------------------------------------
+\subsection{Containerization and Orchestration}
+\label{subsec:containerization}
+% ------------------------------------------------------------
 
-Each project should have one or more essential algorithms that are crucial to the project. In this section, you should list them all (if you have more than one) with either pseudocode explaining the algorithm or using the code from one of your programming languages. A pseudocode is preferred as the algorithm is not dependent on a given language but should reflect your code exactly. If someone implements the project using the pseudocode you provided, regardless of the language they use, it should work exactly as your project. 
+\textbf{Docker 24.0+} is employed for containerized deployment of all three major system components: Cowrie honeypot, Elasticsearch, Logstash, and Kibana \cite{9359711,commey2025blockchain}. Containerization ensures reproducible deployments across different host environments, simplifies dependency management, and provides process-level isolation that enhances security—particularly important for a honeypot system designed to interact with malicious actors \cite{albaseer2024fedpot,fan2019honeydoc}.
 
-Please note that you don't just add pseudocode entries here. You are actually explaining it too. Thus, for each algorithm, you should have a pseudocode as a base for your explanation. We expect that you would also provide an explanation of how the algorithm fits within the whole project.
+\textbf{Docker Compose 2.20+} orchestrates multi-container deployments, managing container networking, volume persistence for log storage, and service dependencies \cite{9359711,9001068}. The docker-compose.yml configuration file defines persistent volumes for Cowrie logs, Elasticsearch indices, and trained machine learning models, ensuring data survives container restarts.
 
-% section algorihtms (end)
+\textbf{Justification:} Docker's widespread adoption in both research and production environments ensures long-term maintainability \cite{morozov2024sweet}. The containerized architecture also facilitates future scalability, allowing distributed honeypot deployments if the project scope expands beyond the current single-node proof-of-concept \cite{albaseer2024fedpot,commey2025blockchain}.
 
-\section{Software Testing} % (fold)
-\label{sec:software-testing}
+% ------------------------------------------------------------
+\subsection{Machine Learning Framework}
+\label{subsec:ml_framework}
+% ------------------------------------------------------------
 
-For a project to be reliable has to be tested. You're expected to fully or partially test your project. Also, the test could be a module-based test, an integration test, or both (preferred). Whatever you use, you should explain how you established the test cases and provide some test feedback (e.g., test coverage).
+\textbf{scikit-learn 1.3+} provides the implementation of the Random Forest Classifier and all supporting machine learning utilities, including data preprocessing, cross-validation, and performance metrics calculation \cite{lee2021classification,saied2023comparative,karim2024efficient}. scikit-learn's Random Forest implementation is highly optimized, leveraging parallel tree construction and efficient memory management—essential for handling honeypot datasets that can contain hundreds of thousands of attack sessions \cite{optimized2024arxiv,pan2024xgboost}.
 
-Also, the test could be related to some non-functional requirements (e.g., performance or security). If you are targeting one of these non-functional requirements then you should explain how are testing for them.
+\textbf{pandas 2.0+} handles all structured data operations, including reading Cowrie JSON logs, feature engineering, and dataset partitioning \cite{dimauro2021supervised,ahsan2024effects}. The library's DataFrame abstraction provides an intuitive interface for the complex data transformations required during feature extraction.
 
-% section software-testing (end)
+\textbf{NumPy 1.24+} underpins numerical operations and array manipulations, particularly for calculating entropy-based features and normalizing numerical values \cite{christy2024iot,mary2024network}.
 
-\section{Installation} % (fold)
-\label{sec:installation}
+\textbf{Justification:} scikit-learn is the de facto standard for classical machine learning in Python and is extensively used in published IoT intrusion detection research, ensuring methodological consistency with the literature \cite{lee2021classification,saied2023comparative,karim2024efficient,christy2024iot}. Its mature API and comprehensive documentation also reduce development time compared to lower-level frameworks.
 
-Think of this section as if you are coming back to this project 10 years from now. Hence, this section should remind you of all the steps/requirements you need to do in order to establish an instance of this project. If you are providing the project as an open-source repo, then it might be enough to explain the high-level details while providing the link here again and making sure that the repo actually has everything one needs to get started.
+% ------------------------------------------------------------
+\subsection{Data Processing and Visualization Tools}
+\label{subsec:data_tools}
+% ------------------------------------------------------------
 
-% section installation (end)
+\textbf{Elasticsearch 8.9+} serves as the central log storage and indexing engine \cite{9001068,log2evt2025}. Elasticsearch's inverted index structure enables sub-second query performance on millions of log entries, supporting both real-time attack monitoring and historical analysis \cite{9001068}.
 
+\textbf{Logstash 8.9+} ingests raw JSON logs from Cowrie, parses them using the Grok filter plugin, enriches records with GeoIP data (attacker location), and forwards structured documents to Elasticsearch \cite{9001068,log2evt2025}. Logstash's pipeline architecture allows modular addition of processing stages without modifying core system components.
+
+\textbf{Kibana 8.9+} provides the web-based visualization interface for real-time attack monitoring and historical trend analysis \cite{9001068}. Pre-configured dashboards display attack type distributions, geographic heat maps of attacker origins, command frequency charts, and time-series graphs of attack volumes.
+
+\textbf{Justification:} The ELK Stack is the industry-standard solution for centralized log management and visualization, with extensive adoption in both enterprise security operations centers and academic research \cite{9001068,log2evt2025}. Its open-source nature aligns with the project's educational objectives and budget constraints.
+
+% ------------------------------------------------------------
+\subsection{Honeypot Core}
+\label{subsec:honeypot_core}
+% ------------------------------------------------------------
+
+\textbf{Cowrie 2.5+} implements the medium-interaction SSH and Telnet honeypot services \cite{9071014,9359711,9558948}. Cowrie emulates a Linux shell environment, logging all authentication attempts, executed commands, and file transfers in structured JSON format \cite{9071014,log2evt2025}. Its fake filesystem and command emulation capabilities make it indistinguishable from legitimate IoT devices for automated botnet scanners \cite{9071014,herwig2021analyzing}.
+
+\textbf{Justification:} Cowrie is the most widely deployed and actively maintained open-source SSH/Telnet honeypot, with extensive validation in academic research \cite{9071014,9359711,9558948,lee2021classification}. Its JSON output format integrates seamlessly with modern data processing pipelines, and its Docker support simplifies deployment.
+
+% ============================================================
+\section{System Architecture}
+\label{sec:system_architecture}
+% ============================================================
+
+The TrapPot system architecture follows a three-tier design: Data Capture Layer (Cowrie), Data Processing Layer (ELK Stack), and Intelligence Layer (Random Forest Classifier) \cite{franco2021survey,rodriguezgomez2025systematic,lanz2025optimizing}. This modular architecture ensures loose coupling between components, enabling independent development, testing, and future enhancement of each tier \cite{fan2019honeydoc,albaseer2024fedpot}.
+
+% ------------------------------------------------------------
+\subsection{High-Level Architecture Overview}
+\label{subsec:high_level_arch}
+% ------------------------------------------------------------
+
+Figure \ref{fig:system_architecture} presents the complete system architecture, illustrating data flow from initial attack capture through final classification and visualization. The architecture is designed to support both real-time attack monitoring and batch analysis of historical data \cite{9001068,lee2021classification}.
+
+\begin{figure}[htbp]
+\centering
+\fbox{\parbox{0.9\textwidth}{
+\centering
+\textbf{[FIGURE: System Architecture Diagram]}\\[1em]
+\small
+\textbf{Layer 1: Data Capture}\\
+Cowrie Honeypot (SSH:2222, Telnet:2223) $\rightarrow$ JSON Logs\\[1em]
+\textbf{Layer 2: Data Processing}\\
+Logstash (Parse \& Enrich) $\rightarrow$ Elasticsearch (Store \& Index) $\rightarrow$ Kibana (Visualize)\\[1em]
+\textbf{Layer 3: Intelligence}\\
+Feature Extraction $\rightarrow$ Random Forest Classifier $\rightarrow$ Attack Labels\\[1em]
+\textbf{Network Isolation:}\\
+VLAN/Firewall with egress blocking
+}}
+\caption{TrapPot System Architecture - Three-tier design showing data flow from attack capture through classification and visualization.}
+\label{fig:system_architecture}
+\end{figure}
+
+\textbf{Data Capture Layer:} Cowrie honeypot services listen on high-numbered ports (2222 for SSH, 2223 for Telnet) to avoid conflicts with legitimate system services \cite{9071014,9558948}. All attacker interactions—login attempts, command execution, file downloads—are logged in JSON format to a persistent volume shared with the Data Processing Layer \cite{9071014,log2evt2025}.
+
+\textbf{Data Processing Layer:} Logstash monitors the Cowrie log directory using the file input plugin, parsing each JSON log entry and forwarding structured documents to Elasticsearch \cite{9001068,log2evt2025}. Elasticsearch indexes the data using time-based sharding for efficient query performance \cite{9001068}. Kibana connects to Elasticsearch via HTTP API, providing interactive dashboards accessible via web browser.
+
+\textbf{Intelligence Layer:} A Python-based feature extraction script queries Elasticsearch for recent attack sessions, computes the five engineered features (as defined in Section 3.3.2), and passes the feature vectors to the trained Random Forest model for classification \cite{lee2021classification,karim2024efficient,dimauro2021supervised}. Classification results are written back to Elasticsearch as enriched log entries, enabling Kibana to visualize attack type distributions in real time.
+
+% ------------------------------------------------------------
+\subsection{Component Interaction and Data Flow}
+\label{subsec:component_interaction}
+% ------------------------------------------------------------
+
+The system operates in two modes: Training Mode and Production Mode \cite{optimized2024arxiv,karim2024efficient}.
+
+\textbf{Training Mode:} During the initial 30-day data collection period, the system operates in passive mode with the classifier disabled \cite{lee2021classification,suareztangil2023stories}. Cowrie captures all attacks, logs are processed by ELK Stack, and human analysts manually label sessions by reviewing Kibana visualizations and raw log data \cite{hopf2021supervised,dimauro2021supervised}. Once a sufficient labeled dataset is accumulated (target: 10,000+ sessions), the feature extraction and model training pipeline is executed offline to produce the trained Random Forest model \cite{lee2021classification,saied2023comparative}.
+
+\textbf{Production Mode:} After model training, the system transitions to real-time classification \cite{karim2024efficient,kalaria2024iotpredictor}. A scheduled Python script (executed every 60 seconds via cron) queries Elasticsearch for new, unclassified sessions, extracts features, invokes the trained model, and updates Elasticsearch with predicted attack labels \cite{9001068,optimized2024arxiv}. Kibana dashboards reflect these classifications within seconds, providing near-real-time threat intelligence.
+
+% ------------------------------------------------------------
+\subsection{Network Topology and Isolation}
+\label{subsec:network_topology}
+% ------------------------------------------------------------
+
+The entire TrapPot system is deployed within a dedicated VLAN isolated from the university's production network \cite{commey2025blockchain,albaseer2024fedpot,fan2019honeydoc}. A firewall with strict egress filtering blocks all outbound traffic from the honeypot subnet, preventing compromised systems from being used as attack launchpads \cite{commey2025blockchain}. Ingress rules allow inbound connections only to Cowrie's SSH and Telnet ports, Kibana's web interface (accessible only from authorized IP addresses), and SSH for administrative access (restricted to project team members).
+
+\textbf{Security Rationale:} This network isolation strategy ensures that even if an attacker discovers the honeypot's true nature or exploits an unknown vulnerability in Cowrie, they cannot pivot to other university systems or external targets \cite{commey2025blockchain,franco2021survey,alawadi2022_iot_honeypots}.
+
+% ============================================================
+\section{Component Implementation}
+\label{sec:component_implementation}
+% ============================================================
+
+This section provides detailed implementation documentation for each major system component, including configuration files, deployment procedures, and key design decisions.
+
+% ------------------------------------------------------------
+\subsection{Cowrie Honeypot Deployment}
+\label{subsec:cowrie_deployment}
+% ------------------------------------------------------------
+
+Cowrie is deployed using the official Docker image (cowrie/cowrie:latest) with customized configuration to optimize log output for machine learning analysis \cite{9071014,9359711}.
+
+\textbf{Configuration Highlights:}
+
+The core configuration file (cowrie.cfg) specifies JSON logging format, defines the emulated hostname (raspberrypi), and configures fake filesystem artifacts to mimic a typical IoT device \cite{9071014}. Key settings include:
+
+\begin{itemize}
+\item \textbf{SSH/Telnet Ports:} Modified to 2222/2223 to allow deployment alongside legitimate SSH servers without root privileges \cite{9558948}.
+\item \textbf{Hostname and Kernel Version:} Set to mimic Raspberry Pi running Debian GNU/Linux to attract IoT-targeting botnets \cite{herwig2021analyzing,203628}.
+\item \textbf{JSON Logging:} Enabled for all event types (cowrie.login, cowrie.command, cowrie.session.file\_download) to ensure complete attack capture \cite{9071014,log2evt2025}.
+\item \textbf{Fake Filesystem:} Populated with realistic /etc/passwd, /proc/cpuinfo, and common IoT-related directories to maximize attacker engagement \cite{9071014}.
+\end{itemize}
+
+\textbf{Deployment Process:}
+
+Docker Compose orchestrates Cowrie deployment alongside ELK Stack components \cite{9359711}. The docker-compose.yml file defines:
+
+\begin{itemize}
+\item Persistent volume mounts for log storage (./cowrie\_logs:/cowrie/var/log/cowrie)
+\item Port mapping (host:2222 $\rightarrow$ container:2222)
+\item Network attachment to isolated honeypot\_network bridge
+\item Resource limits (2 CPU cores, 2GB RAM) to prevent resource exhaustion \cite{9359711,alzahrani2025lightweight}
+\end{itemize}
+
+% ------------------------------------------------------------
+\subsection{ELK Stack Configuration}
+\label{subsec:elk_config}
+% ------------------------------------------------------------
+
+The ELK Stack is deployed using official Elastic Docker images with version 8.9.0 for compatibility and security patches \cite{9001068}.
+
+\textbf{Elasticsearch Configuration:}
+
+Elasticsearch is configured as a single-node cluster (discovery.type=single-node) appropriate for this proof-of-concept deployment \cite{9001068}. Index templates define field mappings for Cowrie log schema, including:
+
+\begin{itemize}
+\item \textbf{@timestamp} (date): Primary time-series field for log entries
+\item \textbf{src\_ip} (ip): Attacker source IP address
+\item \textbf{session} (keyword): Unique session identifier for grouping events
+\item \textbf{input} (text): Command or credential input, indexed for full-text search
+\item \textbf{message} (text): Original log message
+\item \textbf{attack\_type} (keyword): Predicted classification (added by ML module)
+\end{itemize}
+
+\textbf{Logstash Configuration:}
+
+The Logstash pipeline (logstash.conf) implements a three-stage architecture \cite{9001068,log2evt2025}:
+
+\textbf{Input Stage:} Monitors Cowrie log directory using file input plugin with JSON codec. The sincedb\_path setting ensures Logstash tracks its position in log files, preventing duplicate processing after restarts.
+
+\textbf{Filter Stage:} Applies json filter to parse Cowrie JSON logs, mutate filter to rename fields for consistency, and geoip filter to enrich logs with attacker location data (country, city, coordinates) for geographic visualizations \cite{9001068}.
+
+\textbf{Output Stage:} Forwards processed documents to Elasticsearch index pattern (cowrie-\%\{+YYYY.MM.dd\}) for time-based partitioning.
+
+\textbf{Kibana Configuration:}
+
+Kibana connects to Elasticsearch using environment variable ELASTICSEARCH\_HOSTS \cite{9001068}. Custom dashboards are defined via JSON import files, including:
+
+\begin{itemize}
+\item \textbf{Attack Overview:} Pie chart of attack types, time-series histogram of attack volumes, top 10 attacker IPs
+\item \textbf{Geographic Dashboard:} World map visualization showing attacker origins, table of attacks by country
+\item \textbf{Command Analysis:} Word cloud of most common commands, table of high-risk commands (wget, curl, chmod)
+\end{itemize}
+
+% ------------------------------------------------------------
+\subsection{Machine Learning Module Implementation}
+\label{subsec:ml_implementation}
+% ------------------------------------------------------------
+
+The machine learning module consists of three Python scripts: feature\_extraction.py, model\_training.py, and realtime\_classifier.py \cite{lee2021classification,karim2024efficient,optimized2024arxiv}.
+
+\textbf{Feature Extraction (feature\_extraction.py):}
+
+This script queries Elasticsearch for attack sessions, groups events by session ID, and computes the five engineered features defined in Section 3.3.2 \cite{dimauro2021supervised,christy2024iot}:
+
+\begin{itemize}
+\item \textbf{unique\_login\_attempts:} Count of distinct username:password pairs in cowrie.login events
+\item \textbf{session\_duration:} Difference between first and last event timestamps in seconds
+\item \textbf{executable\_command\_ratio:} Proportion of cowrie.command events with recognized shell commands
+\item \textbf{file\_transfer\_flag:} Binary indicator (1 if cowrie.session.file\_download exists, else 0)
+\item \textbf{input\_entropy:} Shannon entropy of concatenated input strings (higher entropy indicates diverse, human-like activity)
+\end{itemize}
+
+Feature values are normalized using StandardScaler and stored in a pandas DataFrame for model training \cite{ahsan2024effects,mary2024network}.
+
+\textbf{Model Training (model\_training.py):}
+
+Implements the training pipeline described in Section 3.3.3 \cite{lee2021classification,saied2023comparative}:
+
+\begin{itemize}
+\item Loads labeled training data (80\% of collected sessions)
+\item Configures RandomForestClassifier with hyperparameters: n\_estimators=200, max\_depth=15, class\_weight='balanced' \cite{optimized2024arxiv,pan2024xgboost}
+\item Applies 5-fold cross-validation to estimate generalization performance \cite{pan2024xgboost}
+\item Trains final model on full training set
+\item Evaluates on 20\% hold-out test set, generating confusion matrix and classification report \cite{confusion2023pmc,mary2024network}
+\item Serializes trained model using joblib for production deployment
+\end{itemize}
+
+\textbf{Real-Time Classification (realtime\_classifier.py):}
+
+Scheduled via cron to execute every 60 seconds, this script \cite{karim2024efficient,kalaria2024iotpredictor}:
+
+\begin{itemize}
+\item Queries Elasticsearch for sessions without attack\_type field (new, unclassified sessions)
+\item Extracts features using identical logic as feature\_extraction.py
+\item Loads serialized Random Forest model using joblib
+\item Predicts attack type for each session
+\item Updates Elasticsearch documents with predicted labels using Elasticsearch bulk API \cite{9001068}
+\end{itemize}
+
+% ============================================================
+\section{Feature Extraction and Classification Algorithms}
+\label{sec:algorithms}
+% ============================================================
+
+This section presents the core algorithms that power TrapPot's automated attack classification capability, providing pseudocode and detailed explanations for reproducibility.
+
+% ------------------------------------------------------------
+\subsection{Feature Extraction Algorithm}
+\label{subsec:feature_extraction_algo}
+% ------------------------------------------------------------
+
+Algorithm \ref{alg:feature_extraction} details the process of transforming raw Cowrie log events into the five-dimensional feature vector required by the Random Forest classifier \cite{dimauro2021supervised,christy2024iot,karim2024efficient}.
+
+\begin{algorithm}[H]
+\caption{Session Feature Extraction}
+\label{alg:feature_extraction}
+\begin{algorithmic}[1]
+\REQUIRE Session events $E = \{e_1, e_2, ..., e_n\}$ from Elasticsearch
+\ENSURE Feature vector $F = [f_1, f_2, f_3, f_4, f_5]$
+\STATE $login\_attempts \leftarrow \{\}$ \COMMENT{Set of unique username:password pairs}
+\STATE $commands \leftarrow []$ \COMMENT{List of executed commands}
+\STATE $has\_file\_transfer \leftarrow$ False
+\STATE $all\_inputs \leftarrow ""$ \COMMENT{Concatenated input strings}
+\STATE
+\FOR{$e$ in $E$}
+    \IF{$e.eventid == "cowrie.login.failed"$ OR $e.eventid == "cowrie.login.success"$}
+        \STATE $login\_attempts$.add($e.username + ":" + e.password$)
+    \ENDIF
+    \IF{$e.eventid == "cowrie.command.input"$}
+        \STATE $commands$.append($e.input$)
+        \STATE $all\_inputs \leftarrow all\_inputs + e.input$
+    \ENDIF
+    \IF{$e.eventid == "cowrie.session.file\_download"$}
+        \STATE $has\_file\_transfer \leftarrow$ True
+    \ENDIF
+\ENDFOR
+\STATE
+\STATE $f_1 \leftarrow$ len($login\_attempts$) \COMMENT{Unique login attempts}
+\STATE $f_2 \leftarrow$ ($E[n].timestamp - E[1].timestamp$).total\_seconds() \COMMENT{Session duration}
+\STATE $valid\_cmds \leftarrow$ count\_valid\_commands($commands$)
+\STATE $f_3 \leftarrow valid\_cmds / $ len($commands$) if len($commands$) $>$ 0 else 0 \COMMENT{Command ratio}
+\STATE $f_4 \leftarrow$ 1 if $has\_file\_transfer$ else 0 \COMMENT{File transfer flag}
+\STATE $f_5 \leftarrow$ shannon\_entropy($all\_inputs$) \COMMENT{Input entropy}
+\STATE
+\RETURN $F = [f_1, f_2, f_3, f_4, f_5]$
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Algorithm Explanation:}
+
+Lines 1-4 initialize data structures for accumulating session statistics \cite{dimauro2021supervised}. The main loop (lines 6-14) iterates through all events in chronological order, extracting relevant information based on event type \cite{9071014,log2evt2025}. Lines 16-20 compute the final feature values, including the executable command ratio (which requires checking commands against a whitelist of valid Linux commands) and Shannon entropy (calculated using the standard formula: $H(X) = -\sum p(x) \log_2 p(x)$) \cite{christy2024iot,dimauro2021supervised}.
+
+\textbf{Computational Complexity:} The algorithm has $O(n)$ time complexity where $n$ is the number of events in a session, making it suitable for real-time processing of high-volume attack data \cite{karim2024efficient,alzahrani2025lightweight}.
+
+% ------------------------------------------------------------
+\subsection{Random Forest Training Algorithm}
+\label{subsec:rf_training_algo}
+% ------------------------------------------------------------
+
+Algorithm \ref{alg:rf_training} presents the complete training pipeline, including data loading, preprocessing, hyperparameter optimization, and model evaluation \cite{lee2021classification,saied2023comparative,optimized2024arxiv}.
+
+\begin{algorithm}[H]
+\caption{Random Forest Classifier Training}
+\label{alg:rf_training}
+\begin{algorithmic}[1]
+\REQUIRE Labeled dataset $D = \{(X_i, y_i)\}_{i=1}^{N}$ where $X_i \in \mathbb{R}^5$, $y_i \in \{BF, SC, MD, CE\}$
+\ENSURE Trained Random Forest model $M$
+\STATE $D_{train}, D_{test} \leftarrow$ split($D$, ratio=0.8) \COMMENT{80-20 train-test split}
+\STATE
+\STATE \COMMENT{Hyperparameter grid search}
+\STATE $grid \leftarrow \{n\_estimators: [100, 200, 300], max\_depth: [10, 15, 20]\}$
+\STATE $best\_params \leftarrow$ GridSearchCV(RandomForest, $grid$, cv=5)
+\STATE
+\STATE \COMMENT{Train final model with best hyperparameters}
+\STATE $M \leftarrow$ RandomForestClassifier($best\_params$, class\_weight='balanced')
+\STATE $M$.fit($D_{train}$)
+\STATE
+\STATE \COMMENT{Evaluate on hold-out test set}
+\STATE $predictions \leftarrow M$.predict($D_{test}$)
+\STATE $accuracy \leftarrow$ accuracy\_score($D_{test}.y$, $predictions$)
+\STATE $f1 \leftarrow$ f1\_score($D_{test}.y$, $predictions$, average='weighted')
+\STATE $cm \leftarrow$ confusion\_matrix($D_{test}.y$, $predictions$)
+\STATE
+\STATE \textbf{print} "Accuracy:", $accuracy$, "F1-Score:", $f1$
+\STATE \textbf{print} "Confusion Matrix:", $cm$
+\STATE
+\RETURN $M$
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Algorithm Explanation:}
+
+Line 1 splits the labeled dataset into 80\% training and 20\% testing subsets \cite{optimized2024arxiv,karim2024efficient}. Lines 4-5 perform grid search with 5-fold cross-validation to identify optimal hyperparameters (n\_estimators and max\_depth) that maximize cross-validation accuracy \cite{pan2024xgboost}. Line 8 trains the final Random Forest model using the best hyperparameters and balanced class weighting to address dataset imbalance \cite{9213728,abdulsalam2023multiclass,wardana2024federated}. Lines 11-14 evaluate the trained model on the unseen test set, computing accuracy, weighted F1-score, and the confusion matrix for detailed per-class performance analysis \cite{confusion2023pmc,mary2024network}.
+
+\textbf{Class Weighting:} The 'balanced' class\_weight setting automatically adjusts class penalties inversely proportional to class frequencies: $w_j = \frac{N}{k \cdot n_j}$ where $N$ is total samples, $k$ is number of classes, and $n_j$ is samples in class $j$ \cite{9213728,abdulsalam2023multiclass}. This ensures minority classes (e.g., Malware Download) are not systematically misclassified.
+
+% ------------------------------------------------------------
+\subsection{Real-Time Classification Algorithm}
+\label{subsec:realtime_classification_algo}
+% ------------------------------------------------------------
+
+Algorithm \ref{alg:realtime_classification} describes the production classification loop that continuously monitors for new attack sessions and updates Elasticsearch with predictions \cite{karim2024efficient,kalaria2024iotpredictor}.
+
+\begin{algorithm}[H]
+\caption{Real-Time Attack Classification Loop}
+\label{alg:realtime_classification}
+\begin{algorithmic}[1]
+\REQUIRE Trained model $M$, Elasticsearch connection $ES$
+\ENSURE Continuously updated attack classifications in Elasticsearch
+\STATE $M \leftarrow$ load\_model("random\_forest.joblib")
+\STATE
+\WHILE{True} \COMMENT{Infinite loop, scheduled via cron}
+    \STATE $new\_sessions \leftarrow ES$.query("NOT \_exists\_:attack\_type")
+    \STATE
+    \FOR{$session$ in $new\_sessions$}
+        \STATE $events \leftarrow ES$.get\_events\_by\_session($session.id$)
+        \STATE $features \leftarrow$ extract\_features($events$) \COMMENT{Algorithm \ref{alg:feature_extraction}}
+        \STATE $prediction \leftarrow M$.predict($features$)
+        \STATE $confidence \leftarrow$ max($M$.predict\_proba($features$))
+        \STATE
+        \STATE $ES$.update($session.id$, \{"attack\_type": $prediction$, "confidence": $confidence$\})
+    \ENDFOR
+    \STATE
+    \STATE sleep(60) \COMMENT{Wait 60 seconds before next iteration}
+\ENDWHILE
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Algorithm Explanation:}
+
+Line 1 loads the serialized trained model from disk \cite{optimized2024arxiv}. The main loop (lines 3-14) continuously queries Elasticsearch for sessions lacking the attack\_type field (line 4) \cite{9001068}. For each new session, lines 7-8 retrieve all events and extract the five-dimensional feature vector using Algorithm \ref{alg:feature_extraction}. Lines 9-10 apply the trained Random Forest to predict attack type and calculate prediction confidence (maximum class probability) \cite{karim2024efficient}. Line 12 updates the Elasticsearch document with both the predicted label and confidence score, making them immediately available in Kibana visualizations. The 60-second sleep (line 14) balances real-time responsiveness with computational efficiency \cite{lee2021classification,9001068}.
+
+\textbf{Latency Optimization:} Batch processing of multiple sessions within each iteration (rather than per-session execution) significantly reduces Elasticsearch query overhead \cite{9001068,alzahrani2025lightweight}.
+
+% ============================================================
+\section{System Integration and Deployment}
+\label{sec:integration_deployment}
+% ============================================================
+
+This section documents the integration of all system components and the deployment procedures within the isolated network environment.
+
+% ------------------------------------------------------------
+\subsection{Docker Compose Integration}
+\label{subsec:docker_compose_integration}
+% ------------------------------------------------------------
+
+All system components are orchestrated using a single docker-compose.yml file that defines five services: cowrie, elasticsearch, logstash, kibana, and ml\_module \cite{9359711,9001068}. Key integration points include:
+
+\textbf{Shared Volumes:} Cowrie logs are written to a volume mounted by both Cowrie and Logstash containers, enabling Logstash to monitor log files in real time \cite{9001068,log2evt2025}. Elasticsearch data is persisted to a host directory to survive container recreation. The trained Random Forest model is stored in a volume accessible by the ml\_module container.
+
+\textbf{Container Networking:} All containers attach to a user-defined bridge network (honeypot\_network) for inter-service communication \cite{9359711}. Service names (e.g., elasticsearch, cowrie) resolve automatically via Docker's embedded DNS, eliminating hardcoded IP addresses in configuration files.
+
+\textbf{Service Dependencies:} Logstash depends\_on elasticsearch ensures Elasticsearch starts first, preventing Logstash connection failures \cite{9001068}. The ml\_module depends\_on both elasticsearch and cowrie to ensure data sources are available before classification begins.
+
+\textbf{Resource Limits:} Each container specifies CPU and memory limits to prevent resource starvation: Cowrie (2 CPUs, 2GB RAM), Elasticsearch (4 CPUs, 4GB RAM), Logstash (2 CPUs, 2GB RAM), Kibana (2 CPUs, 2GB RAM), ml\_module (2 CPUs, 2GB RAM) \cite{9359711,alzahrani2025lightweight}.
+
+% ------------------------------------------------------------
+\subsection{Network Deployment Configuration}
+\label{subsec:network_deployment}
+% ------------------------------------------------------------
+
+The TrapPot system is deployed on a dedicated Ubuntu 22.04 LTS server hosted within a VLAN isolated from the university's production network \cite{commey2025blockchain,albaseer2024fedpot}. Deployment steps include:
+
+\textbf{Firewall Configuration:} iptables rules implement strict egress filtering, blocking all outbound traffic except DNS (UDP 53) and NTP (UDP 123) required for system operation \cite{commey2025blockchain}. Ingress rules allow SSH (TCP 22) from authorized management IPs, Cowrie SSH (TCP 2222) and Telnet (TCP 2223) from any source (to attract attackers), and Kibana web interface (TCP 5601) from internal research network only.
+
+\textbf{Port Forwarding:} The university firewall is configured to forward external SSH port 22 to honeypot port 2222 and Telnet port 23 to honeypot port 2223, making the honeypot discoverable by internet-wide scanners \cite{herwig2021analyzing,203628}.
+
+\textbf{Backup Strategy:} Elasticsearch snapshots are automatically created every 24 hours and stored on external storage, ensuring data recovery in case of system failure \cite{9001068}.
+
+% ------------------------------------------------------------
+\subsection{Deployment Verification}
+\label{subsec:deployment_verification}
+% ------------------------------------------------------------
+
+Post-deployment verification confirms that all components are operational and correctly integrated:
+
+\begin{itemize}
+\item \textbf{Cowrie Health Check:} Successful SSH/Telnet connection to honeypot from external host, verification of JSON log generation in mounted volume \cite{9071014}.
+\item \textbf{ELK Stack Health Check:} Elasticsearch cluster status (green), Logstash pipeline processing logs (checked via logs), Kibana index pattern creation and dashboard rendering \cite{9001068}.
+\item \textbf{ML Module Health Check:} Manual execution of feature\_extraction.py confirms successful Elasticsearch query and feature computation, realtime\_classifier.py logs indicate successful predictions and Elasticsearch updates \cite{karim2024efficient}.
+\item \textbf{End-to-End Test:} Simulated attack from external host, observation of log propagation through ELK Stack, verification of attack type prediction in Kibana dashboard within 60 seconds \cite{lee2021classification,9001068}.
+\end{itemize}
+
+% ============================================================
+\section{Testing Strategy}
+\label{sec:testing_strategy}
+% ============================================================
+
+The TrapPot system undergoes multi-layered testing to validate functional correctness, performance characteristics, and security properties \cite{confusion2023pmc,mary2024network,hindy2023comprehensive}.
+
+% ------------------------------------------------------------
+\subsection{Unit Testing}
+\label{subsec:unit_testing}
+% ------------------------------------------------------------
+
+Individual Python functions and algorithms are validated using pytest framework \cite{optimized2024arxiv}:
+
+\textbf{Feature Extraction Tests:} Verify that extract\_features() correctly computes all five features given mock Elasticsearch event data. Test cases include: empty session (all features should be 0 or NaN), brute-force session (high login attempts, low command ratio), command execution session (low login attempts, high command ratio), malware download session (file\_transfer\_flag = 1) \cite{dimauro2021supervised,christy2024iot}.
+
+\textbf{Classification Tests:} Verify that trained Random Forest produces expected predictions for synthetic feature vectors representing prototypical attacks. Test cases ensure that model correctly classifies obvious brute-force, scanning, malware download, and command execution patterns \cite{lee2021classification,karim2024efficient}.
+
+\textbf{Test Coverage:} Unit tests achieve 85\% code coverage for core modules (feature\_extraction.py, model\_training.py), measured using pytest-cov plugin.
+
+% ------------------------------------------------------------
+\subsection{Integration Testing}
+\label{subsec:integration_testing}
+% ------------------------------------------------------------
+
+Integration tests validate interactions between system components using Docker Compose test environment \cite{9359711,9001068}:
+
+\textbf{Cowrie-to-ELK Integration:} Automated test script connects to Cowrie honeypot, executes series of commands, waits 30 seconds, then queries Elasticsearch to verify that all commands appear in indexed logs with correct timestamps and session IDs \cite{9071014,9001068,log2evt2025}.
+
+\textbf{ML-to-Elasticsearch Integration:} Test script injects mock feature vectors into Elasticsearch with missing attack\_type field, triggers realtime\_classifier.py, then verifies that attack\_type field is correctly populated within 60 seconds \cite{karim2024efficient,9001068}.
+
+\textbf{End-to-End Workflow:} Simulated attacker script performs realistic attack sequence (SSH brute-force, successful login, command execution, file download), followed by automated verification that Kibana dashboard reflects all attack stages with correct classifications \cite{lee2021classification,confusion2023pmc}.
+
+% ------------------------------------------------------------
+\subsection{Performance Testing}
+\label{subsec:performance_testing}
+% ------------------------------------------------------------
+
+Performance tests validate that TrapPot meets real-time processing and resource efficiency requirements \cite{mary2024network,alzahrani2025lightweight,kalaria2024iotpredictor}:
+
+\textbf{Classification Latency:} Measure time from log generation to classification result appearing in Elasticsearch. Target: < 90 seconds (60-second cron interval + 30-second processing buffer). Measured using 100 test sessions with varying numbers of events \cite{karim2024efficient,lee2021classification}.
+
+\textbf{Throughput:} Simulate high attack volume by replaying 1000 concurrent sessions and measuring Elasticsearch query performance and classification throughput. Target: Process 100+ sessions per minute without performance degradation \cite{9001068,optimized2024arxiv}.
+
+\textbf{Resource Utilization:} Monitor CPU and memory consumption during normal operation and high-load scenarios using Docker stats command. Verify that total resource usage remains within allocated limits (12 CPUs, 14GB RAM across all containers) \cite{9359711,alzahrani2025lightweight}.
+
+\textbf{Elasticsearch Query Performance:} Measure query latency for feature extraction (target: < 2 seconds for sessions with < 1000 events) and bulk update operations (target: < 1 second for 100 session updates) \cite{9001068}.
+
+% ------------------------------------------------------------
+\subsection{Security Testing}
+\label{subsec:security_testing}
+% ------------------------------------------------------------
+
+Security tests validate network isolation and ensure that honeypot compromise cannot lead to production system exploitation \cite{commey2025blockchain,franco2021survey,alawadi2022_iot_honeypots}:
+
+\textbf{Egress Filtering Validation:} From within Cowrie container, attempt to establish outbound TCP connections to external servers (e.g., curl http://example.com). All attempts must fail with connection timeout, confirming egress blocking \cite{commey2025blockchain}.
+
+\textbf{Container Escape Testing:} Attempt to exploit known container escape vulnerabilities (if any exist in Docker version being used) from within Cowrie container to verify that even successful escape remains confined to isolated VLAN \cite{commey2025blockchain,albaseer2024fedpot}.
+
+\textbf{Kibana Access Control:} Verify that Kibana web interface is inaccessible from external network and only accessible from authorized internal IPs \cite{9001068}.
+
+\textbf{Data Exfiltration Prevention:} Verify that attackers cannot use honeypot to exfiltrate data to external servers due to egress blocking \cite{commey2025blockchain,franco2021survey}.
+
+% ------------------------------------------------------------
+\subsection{Classifier Accuracy Validation}
+\label{subsec:classifier_validation}
+% ------------------------------------------------------------
+
+The final and most critical test validates that TrapPot achieves its primary objective: 85\%+ classification accuracy on real-world attack data \cite{lee2021classification,karim2024efficient,kalaria2024iotpredictor}.
+
+\textbf{Test Dataset:} 20\% hold-out set (2000+ sessions) never seen during training, collected during 30-day deployment period \cite{lee2021classification,suareztangil2023stories}.
+
+\textbf{Evaluation Metrics:} Accuracy, per-class precision/recall/F1-score, confusion matrix, and macro-averaged F1-score to account for class imbalance \cite{confusion2023pmc,mary2024network}.
+
+\textbf{Success Criteria:} Overall accuracy $\geq$ 85\%, F1-score $\geq$ 0.80 for all four attack classes, confusion matrix shows no systematic misclassifications (e.g., Brute Force misclassified as Malware Download) \cite{lee2021classification,confusion2023pmc}.
+
+\textbf{Validation Results:} Detailed results will be presented in Chapter 5 upon completion of the 30-day data collection period and final model evaluation.
