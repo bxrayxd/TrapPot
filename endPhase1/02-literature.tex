@@ -1,0 +1,160 @@
+\chapter{LITERATURE REVIEW}
+\pagebreak
+
+\begin{center}
+{\LARGE\textbf{LITERATURE REVIEW}}
+\end{center}
+
+
+In this chapter,we will review existing work related to IoT security, focusing on key concept The system includes multiple security features which include cyber-attack classification and intrusion detection systems (IDS) and honeypots and AI-based security measures. threat analysis. We will also examine previous research in this domain and highlight the current challenges that motivate the development of TrapPot.
+
+The rest of the chapter can be organized on many different ways depending on the story you want to tell. People usually try to either go by chronological order of the publications in the field or use a classifications approach Different approaches are also possible depending on the project domain. Below we explain two possible paths.
+
+% ============================================================
+\section{Thematic Analysis of IoT Security Challenges and Technical Foundations}
+\label{sec:first_possible_outline}
+% ============================================================
+
+% ------------------------------------------------------------
+\subsection{Challenges in Project Domain}
+\label{sub:challenges_in_project_domain}
+% ------------------------------------------------------------
+
+% ------------------------------------------------------------
+\subsubsection{IoT Security Vulnerabilities and Threat Landscape}
+\label{subsub:iot_vulnerabilities}
+% ------------------------------------------------------------
+
+The Internet of Things faces major security risks because its devices have limited resources and poor authentication systems and they only receive security updates sporadically. The 2024 survey which Mahmood and his team performed showed that encryption protection was missing from 55\% of IoT devices while authentication issues remained the primary security threat which impacted all three device and network and application layers \cite{mahmood2024exploring}. The ongoing growth of IoT botnets proves that these security weaknesses create major problems because Mirai and Gafgyt and Mozi malware use default passwords to attack millions of devices worldwide \cite{suareztangil2023stories}. The research analyzed developer communities through more than 11,000 IoT code examples to find that 39.58\% of the code included real Common Vulnerabilities and Exposures instances which resulted in 28.99\% Denial of Service errors that threaten network-based IoT devices \cite{islam2023large}. The restricted processing capabilities of IoT systems in resource-limited environments restrict security protocols which makes devices exposed to automated scanning attacks that scan multiple IP addresses for security weaknesses.
+
+% ------------------------------------------------------------
+\subsubsection{Honeypot Deployment and Isolation Challenges}
+\label{subsub:honeypot_challenges}
+% ------------------------------------------------------------
+
+The deployment of honeypots for IoT security research creates multiple technical obstacles which also affect operational procedures. The 2024 research about adaptive honeypot frameworks showed that traditional honeypot systems with fixed operation modes fail to operate effectively in IoT environments because they need to adapt to various devices and restricted resources to maintain both honeypot authenticity and attacker detection \cite{morozov2024sweet}. Network isolation continues to be vital because hackers who succeed in hacking honeypots can gain access to production networks when organizations lack proper network segmentation and containment protocols \cite{commey2025blockchain}. The process of keeping honeypots undetected has become more difficult because attackers now use behavioral analysis and timing fingerprinting methods to detect decoy systems which requires both intelligent response systems and random system interaction methods \cite{franco2021survey}. The restricted resources found in educational and research facilities make it impossible to establish distributed honeypot systems which operate with multiple protocols so researchers must pick particular high-risk attack targets from Telnet and SSH while upholding security protocols and operational stability.
+
+% ------------------------------------------------------------
+\subsubsection{Machine Learning Classification Challenges}
+\label{subsub:ml_challenges}
+% ------------------------------------------------------------
+
+Applying machine learning for attack data analysis from honeypots faces ongoing difficulties during the process. The 2023 survey about machine learning based intrusion detection systems for IoT systems identified dataset imbalance as their main problem because benign traffic data exceeded attack samples by a wide margin which resulted in models that produced unfair results with weak ability to detect rare attack types \cite{hindy2023comprehensive}. Research studies that use multiple IoT datasets show Random Forest classifiers reach more than 98\% accuracy for multi class attack detection yet they fail to perform well when dealing with large feature sets and need real-time operation for IoT systems which have limited capabilities \cite{alzahrani2025lightweight}. The process of feature engineering needs domain-specific knowledge to discover important network log characteristics because research indicates that useless features in the data set will lower classification results and make the system more resource-intensive \cite{dekeersmaeker2023survey}. The performance of intrusion detection systems depends on the quality and diversity of their training datasets because models fail to recognize attacks which were not included in the training data especially when these attacks represent zero day exploits and new botnet variants that use evasion methods.
+
+% ------------------------------------------------------------
+\subsubsection{Data Collection and Preprocessing Challenges}
+\label{subsub:data_challenges}
+% ------------------------------------------------------------
+
+Honeypots produces massive amounts of interaction data which needs optimized systems for data storage and processing and information labeling. The 2025 systematic review of honeypot data collection and threat intelligence platforms revealed that human-based attack data labeling faces three major problems which include prolonged time requirements and inconsistent annotation results and unclear attack patterns that make supervised learning methods difficult to apply \cite{rodriguezgomez2025systematic}. The absence of standardized IoT honeypot datasets which are freely accessible creates difficulties for model development because these datasets contain only traditional network attack data instead of IoT-specific threat patterns which medium interaction honeypots detect \cite{alex2023comprehensive}. The authors of \cite{dekeersmaeker2023survey} conducted a thorough assessment of public IoT datasets which revealed that different datasets used different methods to collect data and different ways to represent features and classify attacks which created challenges for evaluating models between datasets. The process of converting unprocessed log data into machine learning-ready feature vectors needs specialized methods to address absent data points and categorical data transformation and time-based relationships in the data. Research shows that incorrect preprocessing methods will decrease classification results by more than 15\% even when using modern machine learning algorithms.
+
+% ------------------------------------------------------------
+\subsection{Related Work}
+\label{sub:related_work1}
+% ------------------------------------------------------------
+
+The following section reviews studies which implement TrapPot-like systems to identify and identify IoT attacks through honeypot technology integration with machine learning methods. The discussion follows a technical overlap order which starts with systems that combine honeypots and machine learning before moving to systems using one approach and ends with TrapPot's distinctive innovation.
+
+Lee and colleagues used Cowrie honeypots to protect IoT smart factory systems in 2021 while their Random Forest classification system achieved 96 percent accuracy in identifying between brute force and scanning and malware download attacks at 0.1 milliseconds of inference time \cite{lee2021classification}. The research uses TrapPot's method by uniting their honeypot system with their machine learning system. The system Lee deployed focused on industrial IoT systems through three attack types but TrapPot operates on standard IoT infrastructure with four attack modes which include command execution as an independent category while serving an educational environment for cybersecurity training purposes. Alajrami and Abu Naser in 2025 developed an AI powered intrusion detection system integrating Cowrie honeypot with Random Forest and additional algorithms including Logistic Regression and Isolation Forest for SSH and Telnet attack detection \cite{alajrami2025aipowered}. The system employs core tools from TrapPot for its architecture but it runs different classification methods which need performance assessment and model parameter adjustment for each algorithm while TrapPot depends on a single Random Forest classifier that works best for undergraduate users and real-time operations.
+
+Research studies use Random Forest and ensemble learning methods to detect IoT attacks but these methods operate independently from honeypot systems which limits their ability to work with different tools. Saied and his team published their research in Nature Scientific Reports during 2023 to show Random Forest achieved 99.99 percent accuracy for multi class IoT botnet classification which surpassed all other machine learning approaches and neural networks \cite{saied2023comparative}. The research confirms Random Forest stands as the best algorithm for IoT attack identification but they used existing IoT attack datasets instead of TrapPot's honeypot-based threat intelligence data which contains different attack characteristics. The research team of Alzahrani and colleagues from 2025 developed lightweight Random Forest methods for IoT network multi-class attack detection through optimized feature engineering which achieved 98 percent accuracy for IoT devices with limited resources \cite{alzahrani2025lightweight}. The system design of their edge device implementation differs from TrapPot's honeypot server but helps identify important features which TrapPot should include in its preprocessing system.
+
+Research-based IoT honeypot deployment without machine learning classification methods operates in a distinct space which shows minimal connection to other approaches. Saputro and colleagues in 2021 used Cowrie to establish medium interaction honeypots for IoT environments which showed that CPU usage stayed under 6.3 percent thus confirming Cowrie based methods consume minimal resources \cite{9359711}. Their research examined honeypot system performance but they did not develop automated threat classification systems which required security analysts to manually identify captured attacks. Surnin and his team from 2019 studied honeypot fingerprinting methods which help IoT systems stay hidden from detection \cite{8685566} but their research did not solve the problem of automated attack identification. The research confirms that Cowrie operates effectively as a deployment system which TrapPot utilizes for performance assessment while showing that TrapPot fills the existing knowledge gap by using automated machine learning classification methods.
+
+The current systematic reviews demonstrate that TrapPot uses an evidence-based technical method. The 2025 study by Lanz and his team evaluated machine learning optimization for IoT honeypots which showed Random Forest achieved 96 percent accuracy and established supervised learning as the best method for honeypot attack identification \cite{lanz2025optimizing}. Rodriguez Gomez and his colleagues conducted a 2025 systematic review which proved that honeypot log management requires automated classification systems because machine learning integration with honeypots allows successful management of extensive log data collections \cite{rodriguezgomez2025systematic}. Franco and colleagues in 2021 surveyed honeypots and honeynets for IoT, confirming that medium interaction honeypots prioritizing Telnet and SSH emulation represent current best practices \cite{franco2021survey}.
+ These systematic reviews confirm TrapPot's design choices align with state of the art research recommendations.
+
+While existing research validates individual components of TrapPot's approach, no prior work combines all of the following elements: Cowrie honeypot deployment for IoT attack detection, Random Forest classification specifically for four attack types including command execution as a distinct category, ELK Stack integration for real time threat monitoring and visualization, deployment in Saudi Arabian educational contexts addressing Vision 2030 cybersecurity capacity building objectives, and design as an educationally feasible undergraduate proof of concept. The research by Lee focuses on industrial settings through his development of three classification systems while Alajrami uses complex algorithms in his system and other studies either do not incorporate machine learning or use different data sets. The system of TrapPot provides a specific operational framework which performs automated IoT attack identification and type determination to support local cybersecurity talent development initiatives.
+
+% ------------------------------------------------------------
+\subsection{Technical Background}
+\label{sub:technical_background}
+% ------------------------------------------------------------
+
+To provide clarity for the system design discussed in the Methodology chapter, this section defines the fundamental technologies and concepts that form the building blocks of TrapPot.
+
+% ------------------------------------------------------------
+\subsubsection{Honeypots}
+\label{subsub:honeypots}
+% ------------------------------------------------------------
+
+A honeypot is a cybersecurity mechanism designed to act as a decoy system that attracts and engages attackers. By mimicking vulnerable services, it captures malicious activity without risking production assets. Honeypots are categorized by interaction level: low, medium, and high, with medium interaction providing a balance between realism and security \cite{9268794}. They provide threat intelligence and labeled data essential for machine learning based detection systems.
+
+% ------------------------------------------------------------
+\subsubsection{Cowrie Honeypot}
+\label{subsub:cowrie}
+% ------------------------------------------------------------
+
+Cowrie is an open source medium interaction SSH and Telnet honeypot that emulates a UNIX shell environment. The system records complete attack information which includes all authentication attempts and executed commands and downloaded files and complete session metadata according to \cite{9071014}. The system at Cowrie stores data in JSON format which enables it to work with log analysis platforms for automated attack classification through TrapPot.
+
+% ------------------------------------------------------------
+\subsubsection{SSH and Telnet Protocols}
+\label{subsub:ssh_telnet}
+% ------------------------------------------------------------
+
+Secure Shell and Telnet are network protocols for remote command line access to devices. SSH provides encrypted communication while Telnet transmits in plaintext. Both remain primary attack vectors in IoT environments through automated brute force using default credentials \cite{9558948}. The Mirai botnet compromised over 600,000 IoT devices by exploiting these protocols with only 62 hardcoded credential pairs.
+
+% ------------------------------------------------------------
+\subsubsection{ELK Stack}
+\label{subsub:elk_stack}
+% ------------------------------------------------------------
+
+The ELK Stack consists of Elasticsearch for distributed search and storage, Logstash for data processing, and Kibana for visualization. The system enables organizations to handle their logs through one interface which performs immediate data processing \cite{9001068}. The ELK system at TrapPot handles honeypot logs through processing while it provides real-time threat monitoring and attack data storage for machine learning model training.
+
+
+% ------------------------------------------------------------
+\subsubsection{Random Forest Algorithm}
+\label{subsub:random_forest}
+% ------------------------------------------------------------
+
+Random Forest is an ensemble learning algorithm that combines multiple decision trees for classification. The system uses tree models which learn from different random data subsets and feature sets before it generates final results through majority vote selection. The method protects against model overfitting while achieving excellent results when working with complex high-dimensional datasets. The research findings show Random Forest achieves 96 to 99 percent accuracy for IoT attack classification while maintaining inference latency at less than 1 millisecond according to \cite{lee2021classification}\cite{saied2023comparative}.
+
+
+% ------------------------------------------------------------
+\subsubsection{Supervised Learning}
+\label{subsub:supervised_learning}
+% ------------------------------------------------------------
+
+Supervised learning trains models using labeled datasets where inputs are paired with correct outputs. The model learns patterns by minimizing prediction errors during training, then applies learned patterns to classify new data. TrapPot employs supervised classification where honeypot logs serve as inputs and attack types serve as outputs.
+
+% ------------------------------------------------------------
+\subsubsection{Feature Extraction}
+\label{subsub:feature_extraction}
+% ------------------------------------------------------------
+
+Feature extraction converts honeypot log data from its original form into numerical values which machine learning models can understand. The TrapPot system extracts multiple features which include authentication attempt statistics and session length measurements and attempts to access different credentials and system command usage and file transfer operations. The classification accuracy improves through well-designed features which identify attack patterns but the system performance deteriorates when unnecessary features are added to the system.
+
+
+% ------------------------------------------------------------
+\subsubsection{Classification Metrics}
+\label{subsub:metrics}
+% ------------------------------------------------------------
+
+The model performance evaluation consists of accuracy measurements and precision and recall values and F1 score calculations. The three performance metrics include Accuracy which shows total correct results and Precision which shows the percentage of correct positive predictions and Recall which shows the percentage of actual attacks that the system detects. The F1 score functions to create a balance between the two evaluation metrics which include precision and recall. The confusion matrix shows how predictions match actual results through four categories which include True Positives and True Negatives and False Positives and False Negatives.
+
+% ------------------------------------------------------------
+\subsubsection{Attack Types}
+\label{subsub:attack_types}
+% ------------------------------------------------------------
+
+TrapPot classifies four attack types captured by honeypots. Brute force attacks use systematic methods to test various username password combinations which help attackers obtain unauthorized system access. The scanning process of attacks involves system exploration to detect active ports and operating services and security weaknesses. Malware download attacks involve attackers uploading or downloading malicious files to compromised systems. Attackers who gain system access through authentication can execute commands to take control of the system while they install backdoors and move between different targets.
+
+% ============================================================
+\section{Chronological Evolution and Progress of IoT Threat Detection Systems}
+\label{sec:second_possible_outline}
+% ============================================================
+
+% ------------------------------------------------------------
+\subsection{Related Work}
+\label{sub:related_work2}
+% ------------------------------------------------------------
+
+The security challenges posed by Internet of Things devices emerged as a distinct research problem in the mid 2010s when researchers documented increasing attacks targeting IoT infrastructure through Telnet and SSH services. Pa and colleagues in 2016 developed IoTPOT, one of the first honeypots specifically designed for IoT devices, which captured Telnet attacks against ARM, MIPS, and PowerPC architectures common in consumer IoT devices. Their work revealed that Telnet scanning activity increased dramatically beginning in 2014, establishing that IoT devices represented a growing attack surface requiring dedicated monitoring. This work is directly relevant to TrapPot as it validated the need for IoT specific honeypots and confirmed Telnet as a primary attack vector. Cowrie was released in 2015 as an open source medium interaction SSH and Telnet honeypot \cite{9071014}. Cowrie is highly relevant to TrapPot because it provides the proven technical foundation for our honeypot implementation.
+
+The IoT security landscape transformed in 2016 with the Mirai botnet, which compromised over 600,000 IoT devices worldwide by exploiting weak default credentials on Telnet and SSH services. Antonakakis and colleagues conducted a comprehensive analysis documenting how Mirai systematically scanned for exposed services and used only 62 hardcoded credential pairs to gain access \cite{203628}. This work is critically relevant to TrapPot because it demonstrates why our project focuses specifically on Telnet and SSH protocols and validates that credential based attacks remain the primary threat to IoT infrastructure, including devices deployed in Saudi Arabia's Vision 2030 smart city initiatives. Herwig and colleagues later documented Mirai variants including Satori and Moobot that continue exploiting the same vulnerabilities \cite{herwig2021analyzing}, confirming the continued relevance of monitoring these attack vectors in 2025.
+
+Researchers then focused on integrating machine learning with honeypot deployments for automated attack classification. Saputro and colleagues in 2021 deployed medium interaction honeypots using Cowrie and demonstrated CPU loads remained below 6.3 percent \cite{9359711}. This work is directly relevant as it validates that TrapPot's Cowrie based approach is resource efficient enough for constrained educational environments like Qassim University. Lee and colleagues in 2021 provided highly relevant work by deploying honeypots in IoT smart factory environments and applying Random Forest classification to achieve 96 percent accuracy distinguishing between brute force, scanning, and malware download attacks with only 0.1 milliseconds inference latency \cite{lee2021classification}. This work is critically relevant because it directly validates TrapPot's use of Random Forest and proves supervised machine learning can effectively classify IoT honeypot attacks in real time. Franco and colleagues published a comprehensive survey in 2021 showing that most IoT honeypots operate at medium interaction levels and prioritize Telnet and SSH emulation \cite{9520645}. This survey is relevant because it confirms TrapPot's design choices align with established best practices in the field.
+
+Recent research from 2023 to 2025 has provided strong validation for ensemble learning approaches. Saied and colleagues in 2023 published a comparative analysis in Nature Scientific Reports demonstrating that Random Forest achieves 99.99 percent accuracy for multi-class IoT botnet classification, outperforming other machine learning algorithms including neural networks \cite{saied2023comparative}. This high impact publication is highly relevant as it provides peer reviewed evidence that Random Forest is the optimal algorithm choice for IoT attack classification. Two systematic reviews published in 2025 further confirmed these findings. Lanz and colleagues conducted a comprehensive review of machine learning optimization for IoT honeypots, confirming that Random Forest achieves up to 96 percent accuracy and identifying supervised learning as the most effective approach \cite{lanz2025optimizing}. Rodriguez Gomez and colleagues published a systematic review emphasizing the need for automated classification systems to handle large volumes of honeypot logs and validating the integration of honeypots with machine learning techniques \cite{rodriguezgomez2025systematic}. Both systematic reviews are highly relevant as they provide current evidence supporting TrapPot's technical approach and confirm alignment with state of the art research. Most directly relevant, Alajrami and Abu Naser in 2025 developed an AI powered intrusion detection system that integrates Cowrie honeypot with Random Forest classification specifically for SSH and Telnet attack detection \cite{alajrami2025aipowered}. This work is critically relevant to TrapPot because it uses the exact same technical architecture of Cowrie combined with Random Forest and demonstrates high classification accuracy with minimal false positives, validating our implementation approach.
+
+TrapPot builds upon this chronological progression of research by adopting Cowrie's proven medium interaction architecture validated by multiple studies, focusing on Telnet and SSH protocols identified as primary attack vectors by Mirai analysis, and applying Random Forest classification confirmed as optimal by recent systematic reviews and high impact publications. The system provides a practical proof of concept for automated IoT attack classification that is feasible for undergraduate implementation while contributing to cybersecurity capacity building aligned with Saudi Arabia's Vision 2030 digital transformation objectives.
