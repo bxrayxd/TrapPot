@@ -5,14 +5,13 @@
 {\LARGE\textbf{LITERATURE REVIEW}}
 \end{center}
 
-\textcolor{red}{DISCLAIMER: The outline given here is nothing but a suggestion. Please consult your advisor before using them.}
 
 In this chapter,we will review existing work related to IoT security, focusing on key concept such as cyber-attack classification, intrusion detection systems (IDS), honeypots, and AI-based threat analysis. We will also examine previous research in this domain and highlight the current challenges that motivate the development of TrapPot.
 
 The rest of the chapter can be organized on many different ways depending on the story you want to tell. People usually try to either go by chronological order of the publications in the field or use a classifications approach. Different approaches are also possible depending on the project domain. Below we explain two possible paths.
 
 % ============================================================
-\section{First Possible Outline}
+\section{Thematic Analysis of IoT Security Challenges and Technical Foundations}
 \label{sec:first_possible_outline}
 % ============================================================
 
@@ -138,7 +137,7 @@ Model performance is evaluated using accuracy, precision, recall, and F1 score. 
 TrapPot classifies four attack types captured by honeypots. Brute force attacks systematically try multiple username password combinations to gain unauthorized access. Scanning attacks probe systems to identify open ports, running services, and potential vulnerabilities. Malware download attacks involve attackers uploading or downloading malicious files to compromised systems. Command execution attacks occur when attackers successfully authenticate and execute commands to control the system, install backdoors, or pivot to other targets.
 
 % ============================================================
-\section{Second Possible Outline}
+\section{Chronological Evolution and Progress of IoT Threat Detection Systems}
 \label{sec:second_possible_outline}
 % ============================================================
 
@@ -156,10 +155,3 @@ Researchers then focused on integrating machine learning with honeypot deploymen
 Recent research from 2023 to 2025 has provided strong validation for ensemble learning approaches. Saied and colleagues in 2023 published a comparative analysis in Nature Scientific Reports demonstrating that Random Forest achieves 99.99 percent accuracy for multi-class IoT botnet classification, outperforming other machine learning algorithms including neural networks \cite{saied2023comparative}. This high impact publication is highly relevant as it provides peer reviewed evidence that Random Forest is the optimal algorithm choice for IoT attack classification. Two systematic reviews published in 2025 further confirmed these findings. Lanz and colleagues conducted a comprehensive review of machine learning optimization for IoT honeypots, confirming that Random Forest achieves up to 96 percent accuracy and identifying supervised learning as the most effective approach \cite{lanz2025optimizing}. Rodriguez Gomez and colleagues published a systematic review emphasizing the need for automated classification systems to handle large volumes of honeypot logs and validating the integration of honeypots with machine learning techniques \cite{rodriguezgomez2025systematic}. Both systematic reviews are highly relevant as they provide current evidence supporting TrapPot's technical approach and confirm alignment with state of the art research. Most directly relevant, Alajrami and Abu Naser in 2025 developed an AI powered intrusion detection system that integrates Cowrie honeypot with Random Forest classification specifically for SSH and Telnet attack detection \cite{alajrami2025aipowered}. This work is critically relevant to TrapPot because it uses the exact same technical architecture of Cowrie combined with Random Forest and demonstrates high classification accuracy with minimal false positives, validating our implementation approach.
 
 TrapPot builds upon this chronological progression of research by adopting Cowrie's proven medium interaction architecture validated by multiple studies, focusing on Telnet and SSH protocols identified as primary attack vectors by Mirai analysis, and applying Random Forest classification confirmed as optimal by recent systematic reviews and high impact publications. The system provides a practical proof of concept for automated IoT attack classification that is feasible for undergraduate implementation while contributing to cybersecurity capacity building aligned with Saudi Arabia's Vision 2030 digital transformation objectives.
-
-% ------------------------------------------------------------
-\subsection{Technical Background}
-\label{sub:technical_background2}
-% ------------------------------------------------------------
-
-Here you would have to have a subsection for any technological approach or hardware that the user might need to understand. Think of it as a reference for the reader whenever they get lost in the next chapters. For example, when in the methodology chapter you say we use divide-and-conquer algorithm, you could simply add a reference to its section here where you have described everything about the algorithm in details. And this apply for anything that can be vague for the user and you don't want to get distracted by it when you are in upcoming chapters. Thus, you describe it here and you reference it anywhere you mention the tool/techniques.
