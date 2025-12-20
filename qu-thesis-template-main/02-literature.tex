@@ -85,7 +85,7 @@ A honeypot is a cybersecurity mechanism designed to act as a decoy system that a
 \label{subsub:cowrie}
 % ------------------------------------------------------------
 
-Cowrie is an open source medium interaction SSH and Telnet honeypot that emulates a UNIX shell environment. It captures detailed attack data including authentication attempts, executed commands, downloaded files, and session metadata \cite{9071014}. Cowrie stores data in JSON format and integrates with log analysis platforms, making it suitable for automated attack classification systems like TrapPot.
+Cowrie is an open source medium interaction SSH and Telnet honeypot that emulates a UNIX shell environment. The system records complete attack information which includes all authentication attempts and executed commands and downloaded files and complete session metadata according to \cite{9071014}. The system at Cowrie stores data in JSON format which enables it to work with log analysis platforms for automated attack classification through TrapPot.
 
 % ------------------------------------------------------------
 \subsubsection{SSH and Telnet Protocols}
@@ -99,14 +99,16 @@ Secure Shell and Telnet are network protocols for remote command line access to 
 \label{subsub:elk_stack}
 % ------------------------------------------------------------
 
-The ELK Stack consists of Elasticsearch for distributed search and storage, Logstash for data processing, and Kibana for visualization. It enables centralized log management and real time analytics \cite{9001068}. TrapPot uses ELK to process honeypot logs, monitor threats in real time, and store attack data for machine learning training.
+The ELK Stack consists of Elasticsearch for distributed search and storage, Logstash for data processing, and Kibana for visualization. The system enables organizations to handle their logs through one interface which performs immediate data processing \cite{9001068}. The ELK system at TrapPot handles honeypot logs through processing while it provides real-time threat monitoring and attack data storage for machine learning model training.
+
 
 % ------------------------------------------------------------
 \subsubsection{Random Forest Algorithm}
 \label{subsub:random_forest}
 % ------------------------------------------------------------
 
-Random Forest is an ensemble learning algorithm that combines multiple decision trees for classification. Each tree trains on random subsets of data and features, with final predictions made by majority voting. This approach prevents overfitting and handles high dimensional data effectively. Recent research shows Random Forest achieves 96 to 99 percent accuracy for IoT attack classification with inference latency below 1 millisecond \cite{lee2021classification}\cite{saied2023comparative}.
+Random Forest is an ensemble learning algorithm that combines multiple decision trees for classification. The system uses tree models which learn from different random data subsets and feature sets before it generates final results through majority vote selection. The method protects against model overfitting while achieving excellent results when working with complex high-dimensional datasets. The research findings show Random Forest achieves 96 to 99 percent accuracy for IoT attack classification while maintaining inference latency at less than 1 millisecond according to \cite{lee2021classification}\cite{saied2023comparative}.
+
 
 % ------------------------------------------------------------
 \subsubsection{Supervised Learning}
@@ -120,21 +122,22 @@ Supervised learning trains models using labeled datasets where inputs are paired
 \label{subsub:feature_extraction}
 % ------------------------------------------------------------
 
-Feature extraction transforms raw honeypot logs into numerical representations for machine learning. TrapPot extracts features including authentication attempt counts, session duration, unique credentials tried, command patterns, and file transfer activities. Well engineered features that capture attack characteristics improve classification accuracy, while irrelevant features degrade performance.
+Feature extraction converts honeypot log data from its original form into numerical values which machine learning models can understand. The TrapPot system extracts multiple features which include authentication attempt statistics and session length measurements and attempts to access different credentials and system command usage and file transfer operations. The classification accuracy improves through well-designed features which identify attack patterns but the system performance deteriorates when unnecessary features are added to the system.
+
 
 % ------------------------------------------------------------
 \subsubsection{Classification Metrics}
 \label{subsub:metrics}
 % ------------------------------------------------------------
 
-Model performance is evaluated using accuracy, precision, recall, and F1 score. Accuracy measures overall correctness, precision measures what proportion of positive predictions are correct, and recall measures what proportion of actual attacks are detected. F1 score balances precision and recall. The confusion matrix organizes predictions into True Positives, True Negatives, False Positives, and False Negatives.
+The model performance evaluation consists of accuracy measurements and precision and recall values and F1 score calculations. The three performance metrics include Accuracy which shows total correct results and Precision which shows the percentage of correct positive predictions and Recall which shows the percentage of actual attacks that the system detects. The F1 score functions to create a balance between the two evaluation metrics which include precision and recall. The confusion matrix shows how predictions match actual results through four categories which include True Positives and True Negatives and False Positives and False Negatives.
 
 % ------------------------------------------------------------
 \subsubsection{Attack Types}
 \label{subsub:attack_types}
 % ------------------------------------------------------------
 
-TrapPot classifies four attack types captured by honeypots. Brute force attacks systematically try multiple username password combinations to gain unauthorized access. Scanning attacks probe systems to identify open ports, running services, and potential vulnerabilities. Malware download attacks involve attackers uploading or downloading malicious files to compromised systems. Command execution attacks occur when attackers successfully authenticate and execute commands to control the system, install backdoors, or pivot to other targets.
+TrapPot classifies four attack types captured by honeypots. Brute force attacks use systematic methods to test various username password combinations which help attackers obtain unauthorized system access. The scanning process of attacks involves system exploration to detect active ports and operating services and security weaknesses. Malware download attacks involve attackers uploading or downloading malicious files to compromised systems. Attackers who gain system access through authentication can execute commands to take control of the system while they install backdoors and move between different targets.
 
 % ============================================================
 \section{Chronological Evolution and Progress of IoT Threat Detection Systems}
