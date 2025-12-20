@@ -37,18 +37,20 @@ This depth of analysis helps reveal the practical challenges, limitations, and s
 \label{subsec:quantitative}
 % ------------------------------------------------------------
 
-The research uses a Quantitative, validation-focused approach \cite{hindy2023comprehensive,mary2024network}. A quantitative approach is suitable because all captured data are numerical and structured, allowing for statistical evaluation of model performance \cite{karim2024efficient,confusion2023pmc}. All data used in the study are machine-generated and structured, consisting of honeypot logs that capture authentication attempts, session durations, command sequences, file-transfer events, and protocol information \cite{9071014,log2evt2025}. These logs are transformed into numerical feature vectors and analyzed statistically \cite{dimauro2021supervised,ahsan2024effects}.
+
+The research uses Quantitative methods for validation purposes as described in \cite{hindy2023comprehensive,mary2024network}. The quantitative method works because all recorded data exists as numbers which follow a structured pattern which enables researchers to perform statistical assessments of model performance \cite{karim2024efficient,confusion2023pmc}. The research data consists of machine-generated structured information which includes honeypot logs that record authentication attempts and session lengths and command activities and file transfer data and network protocol details \cite{9071014,log2evt2025}. The system converts log data into numerical feature vectors which scientists use for statistical analysis according to \cite{dimauro2021supervised,ahsan2024effects}.
 
 The methodology follows a system development and experimental validation pattern \cite{lee2021classification,rodriguezgomez2025systematic}:
 
 \begin{itemize}
-    \item Development and deployment of TrapPot (Cowrie honeypot + ELK Stack + Random Forest classifier) in an isolated network \cite{9359711,commey2025blockchain}.
-    \item Data collection of live attack traffic over a defined period \cite{lee2021classification,suareztangil2023stories}.
-    \item Training and testing of the Random Forest model using the collected dataset \cite{saied2023comparative,karim2024efficient}.
-    \item Performance evaluation using standard machine-learning metrics such as accuracy, precision, recall, F1-score, and confusion matrix analysis \cite{confusion2023pmc,mary2024network}.
+	\item Development and deployment of TrapPot (Cowrie honeypot + ELK Stack + Random Forest classifier) in an isolated network \cite{9359711,commey2025blockchain}.
+	\item The collection of real-time attack traffic data needs to occur during a specific time span \cite{lee2021classification,suareztangil2023stories}.
+	\item Training and testing of the Random Forest model using the collected dataset \cite{saied2023comparative,karim2024efficient}.
+	\item Evaluation process employs standard machine learning assessment methods which include accuracy measurements together with precision and recall values and F1-score calculations and confusion matrix evaluation \cite{confusion2023pmc,mary2024network}.
 \end{itemize}
 
-Overall, this quantitative approach offers a clear basis for evaluating TrapPot's classification performance and determining its effectiveness under realistic attack conditions \cite{hindy2023comprehensive,kalaria2024iotpredictor}.
+The quantitative research approach allows scientists to assess TrapPot classification accuracy and system performance during actual cyber attacks as described in \cite{hindy2023comprehensive,kalaria2024iotpredictor}.
+
 
 % ============================================================
 \section{Data Collection}
@@ -101,15 +103,16 @@ To design, train, and validate TrapPot's AI module before live deployment, secon
 \label{subsec:post_implementation_data}
 % ------------------------------------------------------------
 
+
 Once TrapPot is deployed in an isolated network environment, it will begin collecting primary attack data in real time \cite{lee2021classification,suareztangil2023stories}. This data will:
 
 \begin{itemize}
-    \item Feed the live classification module.
-    \item Continuously retrain and improve the AI model.
-    \item Provide up-to-date threat intelligence for analysis and reporting.
+	\item Feed the live classification module.
+	\item The AI system requires continuous model training and enhancement to function properly.
+	\item The team needs to obtain current threat intelligence data right away because they will use it for their analysis and reporting work.
 \end{itemize}
 
-(This will be detailed in Chapter 4: Implementation \& Testing, and Chapter 5: Results \& Discussions.)
+(The complete details regarding this will be presented in Chapter 4: Implementation \& Testing and Chapter 5: Results \& Discussions.)
 
 % ============================================================
 \section{Data Analysis}
