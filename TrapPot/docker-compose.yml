@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # 1. The Honeypot
+  cowrie:
+    image: cowrie/cowrie
+    ports:
+      - "2222:2222"
+      - "2223:2223"
+    networks:
+      - trappot-net
+
+  # 2. The Sensor (Zeek)
+  zeek:
+    image: blacktop/zeek
+    network_mode: "service:cowrie" # Zeek sniffs cowrie's traffic directly
+    volumes:
+      - ./zeek/logs:/usr/local/zeek/logs
+    command: zeek -i eth0 local "Site::local_nets += { 172.16.0.0/12 }"
+
+  # 3. The AI Brain
+  ai_detector:
+    build: 
+      context: ./ai_detector
+      network: host  # This tells it to use your Arch Linux internet directly
+    volumes:
+      - ./zeek/logs:/logs
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    depends_on:
+      - zeek
+    networks:
+      - trappot-net
+
+networks:
+  trappot-net:
+    driver: bridge
