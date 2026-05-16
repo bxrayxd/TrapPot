@@ -15,8 +15,8 @@ services:
     image: blacktop/zeek
     network_mode: "service:cowrie" # Zeek sniffs cowrie's traffic directly
     volumes:
-      - ./zeek/logs:/usr/local/zeek/logs
-    command: zeek -i eth0 local "Site::local_nets += { 172.16.0.0/12 }"
+      - ./zeek/logs:/pcap
+    command: -C -i eth0 local "Site::local_nets += { 172.16.0.0/12 }"
 
   # 3. The AI Brain
   ai_detector:

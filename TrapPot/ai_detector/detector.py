@@ -2,6 +2,9 @@ import pandas as pd
 import joblib
 import time
 import os
+import sys
+
+sys.stdout.reconfigure(line_buffering=True)
 
 # Load the "Brain"
 model = joblib.load("trappot_model.pkl")
@@ -26,6 +29,12 @@ FEATURES = [
 LOG_FILE = "/logs/conn.log"
 
 
+def clean_number(value):
+    if value in ["-", "", "(empty)"]:
+        return 0
+    return value
+
+
 def predict_threat(data_row):
     # Prepare data for prediction
     df = pd.DataFrame([data_row], columns=FEATURES)
@@ -41,16 +50,17 @@ def predict_threat(data_row):
 
 print("🔍 TrapPot AI is watching the network...")
 
-# Tail the log file
-if not os.path.exists(LOG_FILE):
-    open(LOG_FILE, "a").close()
+# Wait until Zeek creates conn.log with its header.
+while not os.path.exists(LOG_FILE) or os.path.getsize(LOG_FILE) == 0:
+    time.sleep(1)
 
 with open(LOG_FILE, "r") as f:
-    f.seek(0, os.SEEK_END)
     while True:
         line = f.readline()
         if not line:
             time.sleep(1)
+            continue
+        if line.startswith("#"):
             continue
 
         # Zeek logs are tab-separated. We parse the 12 features here.
@@ -62,15 +72,15 @@ with open(LOG_FILE, "r") as f:
             try:
                 # Example mapping logic
                 sample = {
-                    "id.orig_p": parts[2],
-                    "id.resp_p": parts[4],
-                    "duration": parts[8],
-                    "orig_bytes": parts[9],
-                    "resp_bytes": parts[10],
-                    "orig_pkts": parts[16],
-                    "orig_ip_bytes": parts[17],
-                    "resp_pkts": parts[18],
-                    "resp_ip_bytes": parts[19],
+                    "id.orig_p": parts[3],
+                    "id.resp_p": parts[5],
+                    "duration": clean_number(parts[8]),
+                    "orig_bytes": clean_number(parts[9]),
+                    "resp_bytes": clean_number(parts[10]),
+                    "orig_pkts": clean_number(parts[16]),
+                    "orig_ip_bytes": clean_number(parts[17]),
+                    "resp_pkts": clean_number(parts[18]),
+                    "resp_ip_bytes": clean_number(parts[19]),
                     "proto": parts[6],
                     "service": parts[7],
                     "conn_state": parts[11],
