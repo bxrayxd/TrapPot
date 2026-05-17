@@ -1,0 +1,11 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	ssh
+#open	2026-05-16-15-31-06
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	version	auth_success	auth_attempts	direction	client	server	cipher_alg	mac_alg	compression_alg	kex_alg	host_key_alg	host_key	remote_location.country_code	remote_location.region	remote_location.city	remote_location.latitude	remote_location.longitude
+#types	time	string	addr	port	addr	port	count	bool	count	enum	string	string	string	string	string	string	string	string	string	string	string	double	double
+1778945461.771729	CgFCaN3clij1IXZ4qf	172.18.0.1	48496	172.18.0.2	2222	2	-	0	-	SSH-2.0-OpenSSH_10.3	SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u3	aes128-ctr	hmac-sha2-256	none	curve25519-sha256	ssh-ed25519	89:9a:d6:15:dd:d1:a6:1b:f0:1f:9d:1c:de:7a:45:1f	-	-	-	-	-
+1778945469.587651	CQiCt71w4sfJlCVkvi	172.18.0.1	56990	172.18.0.2	2222	2	F	29	-	SSH-2.0-OpenSSH_10.3	SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u3	aes128-ctr	hmac-sha2-256	none	curve25519-sha256	ssh-ed25519	89:9a:d6:15:dd:d1:a6:1b:f0:1f:9d:1c:de:7a:45:1f	-	-	-	-	-
+#close	2026-05-16-15-34-29

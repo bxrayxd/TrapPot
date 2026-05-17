@@ -1,0 +1,24 @@
+#separator \x09
+#set_separator	,
+#empty_field	(empty)
+#unset_field	-
+#path	dns
+#open	2026-05-16-15-30-38
+#fields	ts	uid	id.orig_h	id.orig_p	id.resp_h	id.resp_p	proto	trans_id	rtt	query	qclass	qclass_name	qtype	qtype_name	rcode	rcode_name	AA	TC	RD	RA	Z	answers	TTLs	rejected
+#types	time	string	addr	port	addr	port	enum	count	interval	string	count	string	count	string	count	string	bool	bool	bool	bool	count	vector[string]	vector[interval]	bool
+1778945437.446846	Cabb223rFE2pXx2g1h	172.18.0.1	5353	224.0.0.251	5353	udp	0	0.749921	archlinux.local	1	C_INTERNET	255	*	0	NOERROR	T	F	F	F	0	archlinux.local,172.18.0.1	120.000000,120.000000	F
+1778945437.764821	Cabb223rFE2pXx2g1h	172.18.0.1	5353	224.0.0.251	5353	udp	0	1.432065	archlinux.local	1	C_INTERNET	255	*	0	NOERROR	T	F	F	F	0	archlinux.local,172.18.0.1	120.000000,120.000000	F
+1778945438.446787	CepiTs3ewDIA6HkAs1	fe80::e44a:afff:fefc:460f	5353	ff02::fb	5353	udp	0	1.250034	archlinux.local	1	C_INTERNET	255	*	0	NOERROR	T	F	F	F	0	archlinux.local,fe80::e44a:afff:fefc:460f	120.000000,120.000000	F
+1778945438.554936	C04sBF4Y6VGrFB5dV1	fe80::1c6f:20ff:feaa:7f97	5353	ff02::fb	5353	udp	0	1.141979	archlinux.local	1	C_INTERNET	255	*	0	NOERROR	T	F	F	F	0	archlinux.local,fe80::1c6f:20ff:feaa:7f97	120.000000,120.000000	F
+1778945438.946811	CepiTs3ewDIA6HkAs1	fe80::e44a:afff:fefc:460f	5353	ff02::fb	5353	udp	0	2.000006	archlinux.local	1	C_INTERNET	255	*	0	NOERROR	T	F	F	F	0	archlinux.local,fe80::e44a:afff:fefc:460f	120.000000,120.000000	F
+1778945438.946885	C04sBF4Y6VGrFB5dV1	fe80::1c6f:20ff:feaa:7f97	5353	ff02::fb	5353	udp	0	2.000009	archlinux.local	1	C_INTERNET	255	*	0	NOERROR	T	F	F	F	0	archlinux.local,fe80::1c6f:20ff:feaa:7f97	120.000000,120.000000	F
+1778945437.446794	C28Ij63sDeIJWlN4de	172.18.0.1	5355	224.0.0.252	5355	udp	9613	-	archlinux	1	C_INTERNET	255	*	-	-	F	F	F	F	0	-	-	F
+1778945438.368275	CDd3ao4ZbPbNh1Axod	fe80::1c6f:20ff:feaa:7f97	5355	ff02::1:3	5355	udp	45283	-	archlinux	1	C_INTERNET	255	*	-	-	F	F	F	F	0	-	-	F
+1778945438.554945	CDd3ao4ZbPbNh1Axod	fe80::1c6f:20ff:feaa:7f97	5355	ff02::1:3	5355	udp	45283	-	archlinux	1	C_INTERNET	255	*	-	-	F	F	F	F	0	-	-	F
+1778945438.946894	CDd3ao4ZbPbNh1Axod	fe80::1c6f:20ff:feaa:7f97	5355	ff02::1:3	5355	udp	45283	-	archlinux	1	C_INTERNET	255	*	-	-	F	F	F	F	0	-	-	F
+1778945438.446759	CavYY82JpnYoVfkqGb	fe80::e44a:afff:fefc:460f	5355	ff02::1:3	5355	udp	51179	-	archlinux	1	C_INTERNET	255	*	-	-	F	F	F	F	0	-	-	F
+1778945438.554950	CavYY82JpnYoVfkqGb	fe80::e44a:afff:fefc:460f	5355	ff02::1:3	5355	udp	51179	-	archlinux	1	C_INTERNET	255	*	-	-	F	F	F	F	0	-	-	F
+1778945438.946903	CavYY82JpnYoVfkqGb	fe80::e44a:afff:fefc:460f	5355	ff02::1:3	5355	udp	51179	-	archlinux	1	C_INTERNET	255	*	-	-	F	F	F	F	0	-	-	F
+1778945439.196843	CepiTs3ewDIA6HkAs1	fe80::e44a:afff:fefc:460f	5353	ff02::fb	5353	udp	0	-	archlinux.local	1	C_INTERNET	255	*	-	-	F	F	F	F	0	-	-	F
+1778945439.196933	C04sBF4Y6VGrFB5dV1	fe80::1c6f:20ff:feaa:7f97	5353	ff02::fb	5353	udp	0	-	archlinux.local	1	C_INTERNET	255	*	-	-	F	F	F	F	0	-	-	F
+#close	2026-05-16-15-34-29

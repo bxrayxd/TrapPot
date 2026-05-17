@@ -25,6 +25,7 @@ services:
       network: host  # This tells it to use your Arch Linux internet directly
     volumes:
       - ./zeek/logs:/logs
+      - ./cowrie/keys:/lib/cowrie/var/lib/cowrie/keys
     dns:
       - 8.8.8.8
       - 1.1.1.1
