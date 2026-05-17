@@ -1,24 +1,38 @@
 # TrapPot
 
-TrapPot is a graduation project honeypot. It runs:
+TrapPot is a graduation project honeypot for SSH/Telnet traffic.
 
-- Cowrie as the SSH/Telnet honeypot
-- Zeek as the network log translator
-- A Python Random Forest detector that reads Zeek `conn.log`
-- Elasticsearch, Logstash, and Kibana for log storage and dashboards
+It runs these parts together with Docker:
+
+- **Cowrie**: fake SSH/Telnet server that records attacker sessions.
+- **Zeek**: watches the network traffic and writes `conn.log` and `ssh.log`.
+- **AI detector**: reads Zeek `conn.log` and runs the trained Random Forest model.
+- **Elasticsearch**: stores Cowrie and Zeek logs.
+- **Logstash**: sends Cowrie and Zeek logs into Elasticsearch.
+- **Kibana**: lets you view the logs in a browser.
+
+The basic flow is:
+
+```text
+SSH/Telnet connection -> Cowrie -> Zeek logs -> Random Forest detector
+                                      |
+                                      -> Logstash -> Elasticsearch -> Kibana
+```
 
 ## Requirements
 
-- Arch Linux
+This guide is for Arch Linux.
+
+You need:
+
 - Git
-- Docker Engine
+- Docker
 - Docker Compose
+- OpenSSH client
 
-If Docker is already installed, skip to [Run TrapPot](#run-trappot).
+## Install Docker
 
-## Install Docker on Arch Linux
-
-Install the required packages:
+Install the packages:
 
 ```sh
 sudo pacman -Syu
@@ -31,7 +45,7 @@ Start Docker:
 sudo systemctl enable --now docker
 ```
 
-Allow your user to run Docker without `sudo`:
+Allow your user to run Docker:
 
 ```sh
 sudo usermod -aG docker "$USER"
@@ -45,41 +59,34 @@ docker --version
 docker compose version
 ```
 
-Set the Elasticsearch kernel limit:
+Set the Elasticsearch kernel setting:
 
 ```sh
 sudo sysctl -w vm.max_map_count=1048576
 ```
 
-Arch package pages:
-
-- Docker: https://archlinux.org/packages/extra/x86_64/docker/
-- Docker Compose: https://archlinux.org/packages/extra/x86_64/docker-compose/
-
 ## Run TrapPot
 
-Clone the repository:
+Clone the repo:
 
 ```sh
 git clone https://github.com/bxrayxd/graduation-project.git
 cd graduation-project/TrapPot
 ```
 
-Start the stack:
+Start everything:
 
 ```sh
 docker compose up --build -d
 ```
 
-Docker pulls Cowrie, Zeek, and Elastic images, then builds the AI detector image.
-
-Check the containers:
+Check that the containers are running:
 
 ```sh
 docker compose ps
 ```
 
-You should see:
+You should see these services:
 
 ```text
 cowrie
@@ -90,21 +97,21 @@ logstash
 kibana
 ```
 
-## Test the Honeypot
+## Test Cowrie
 
-Connect to Cowrie:
+Open a fake SSH session:
 
 ```sh
 ssh root@localhost -p 2222
 ```
 
-Password:
+Use this password:
 
 ```text
 admin
 ```
 
-Run test commands:
+Run a few commands:
 
 ```sh
 whoami
@@ -115,33 +122,29 @@ cat /etc/passwd
 exit
 ```
 
+This creates logs for Cowrie, Zeek, the AI detector, and Kibana.
+
 ## Check the Logs
 
-Cowrie logs the SSH session:
+Cowrie logs:
 
 ```sh
 docker compose logs cowrie
 ```
 
-Zeek writes logs here:
-
-```text
-TrapPot/zeek/logs
-```
-
-Check Zeek connection logs:
+Zeek connection log:
 
 ```sh
 cat ./zeek/logs/conn.log
 ```
 
-Check Zeek SSH logs:
+Zeek SSH log:
 
 ```sh
 cat ./zeek/logs/ssh.log
 ```
 
-Check the AI detector output:
+AI detector output:
 
 ```sh
 docker compose logs ai_detector
@@ -154,21 +157,65 @@ TrapPot AI is watching the network...
 ALERT: Normal detected!
 ```
 
-Open Kibana:
+Logstash output:
+
+```sh
+docker compose logs logstash
+```
+
+## Open Kibana
+
+Open Kibana in your browser:
 
 ```text
 http://localhost:5601
 ```
 
-Create data views for:
+Kibana can take a minute to load the first time.
+
+## Configure Kibana
+
+Create three data views.
+
+In Kibana:
+
+1. Open the menu.
+2. Go to **Stack Management**.
+3. Open **Data Views**.
+4. Click **Create data view**.
+
+Create this data view:
 
 ```text
-trappot-cowrie
-trappot-zeek-conn
-trappot-zeek-ssh
+Name: Cowrie logs
+Index pattern: trappot-cowrie
+Time field: @timestamp
 ```
 
-Use `@timestamp` as the time field.
+Create this data view:
+
+```text
+Name: Zeek connection logs
+Index pattern: trappot-zeek-conn
+Time field: @timestamp
+```
+
+Create this data view:
+
+```text
+Name: Zeek SSH logs
+Index pattern: trappot-zeek-ssh
+Time field: @timestamp
+```
+
+After that, open **Discover** in Kibana and choose one of the data views.
+
+Useful things to search for:
+
+- `eventid : "cowrie.command.input"`
+- `service : "ssh"`
+- `trappot_source : "zeek_conn"`
+- `trappot_source : "cowrie"`
 
 ## Stop TrapPot
 
@@ -178,16 +225,36 @@ Stop the containers:
 docker compose down
 ```
 
+Stop and delete the stored Elasticsearch/Cowrie Docker volumes:
+
+```sh
+docker compose down -v
+```
+
+Use `down -v` only when you want a clean reset.
+
 ## Ports
 
 TrapPot uses these local ports:
 
-- `2222` for Cowrie SSH
-- `2223` for Cowrie Telnet
-- `5601` for Kibana
+- `2222`: Cowrie SSH
+- `2223`: Cowrie Telnet
+- `5601`: Kibana
 
-If Docker says port `2222` is already in use, stop the other service or change the port mapping in `TrapPot/docker-compose.yml`.
+## Common Problems
 
-## Safety Note
+If port `2222` is already used, stop the other service or change the port in `TrapPot/docker-compose.yml`.
 
-Run this project in a controlled lab environment. Do not expose the honeypot to the public internet or a university network without approval.
+If Elasticsearch does not start, run this again:
+
+```sh
+sudo sysctl -w vm.max_map_count=1048576
+```
+
+If Kibana opens but shows no data, run the SSH test again and wait 30 seconds.
+
+If the AI detector shows no alerts, check that Zeek created `./zeek/logs/conn.log`.
+
+## Safety
+
+Run TrapPot in a lab network. Do not expose it to the public internet or a university network without approval.
