@@ -5,6 +5,7 @@ TrapPot is a graduation project honeypot. It runs:
 - Cowrie as the SSH/Telnet honeypot
 - Zeek as the network log translator
 - A Python Random Forest detector that reads Zeek `conn.log`
+- Elasticsearch, Logstash, and Kibana for log storage and dashboards
 
 ## Requirements
 
@@ -44,6 +45,12 @@ docker --version
 docker compose version
 ```
 
+Set the Elasticsearch kernel limit:
+
+```sh
+sudo sysctl -w vm.max_map_count=1048576
+```
+
 Arch package pages:
 
 - Docker: https://archlinux.org/packages/extra/x86_64/docker/
@@ -64,7 +71,7 @@ Start the stack:
 docker compose up --build -d
 ```
 
-Docker pulls the Cowrie and Zeek images, then builds the AI detector image.
+Docker pulls Cowrie, Zeek, and Elastic images, then builds the AI detector image.
 
 Check the containers:
 
@@ -78,6 +85,9 @@ You should see:
 cowrie
 zeek
 ai_detector
+elasticsearch
+logstash
+kibana
 ```
 
 ## Test the Honeypot
@@ -144,6 +154,22 @@ TrapPot AI is watching the network...
 ALERT: Normal detected!
 ```
 
+Open Kibana:
+
+```text
+http://localhost:5601
+```
+
+Create data views for:
+
+```text
+trappot-cowrie
+trappot-zeek-conn
+trappot-zeek-ssh
+```
+
+Use `@timestamp` as the time field.
+
 ## Stop TrapPot
 
 Stop the containers:
@@ -158,6 +184,7 @@ TrapPot uses these local ports:
 
 - `2222` for Cowrie SSH
 - `2223` for Cowrie Telnet
+- `5601` for Kibana
 
 If Docker says port `2222` is already in use, stop the other service or change the port mapping in `TrapPot/docker-compose.yml`.
 

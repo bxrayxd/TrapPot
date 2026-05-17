@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # 1. The Honeypot
   cowrie:
@@ -7,6 +5,8 @@ services:
     ports:
       - "2222:2222"
       - "2223:2223"
+    volumes:
+      - cowrie-logs:/cowrie/cowrie-git/var/log/cowrie
     networks:
       - trappot-net
 
@@ -34,6 +34,59 @@ services:
     networks:
       - trappot-net
 
+  # 4. Log Storage
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.4.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      - trappot-net
+
+  # 5. Log Parser
+  logstash:
+    image: docker.elastic.co/logstash/logstash:9.4.0
+    environment:
+      - PIPELINE_ECS_COMPATIBILITY=disabled
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - cowrie-logs:/logs/cowrie:ro
+      - ./zeek/logs:/logs/zeek:ro
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      cowrie:
+        condition: service_started
+      zeek:
+        condition: service_started
+    networks:
+      - trappot-net
+
+  # 6. Dashboard
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.4.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - trappot-net
+
 networks:
   trappot-net:
     driver: bridge
+
+volumes:
+  cowrie-logs:
+  elasticsearch-data:
