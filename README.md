@@ -8,34 +8,29 @@ TrapPot is a graduation project honeypot. It runs:
 
 ## Requirements
 
-- Linux machine, tested with Ubuntu-style Docker commands
+- Arch Linux
 - Git
 - Docker Engine
-- Docker Compose plugin
+- Docker Compose
 
 If Docker is already installed, skip to [Run TrapPot](#run-trappot).
 
-## Install Docker on Ubuntu/Debian
+## Install Docker on Arch Linux
 
-Use Docker's official install guide if your Linux distribution is different:
-
-- Docker Engine: https://docs.docker.com/engine/install/
-- Docker Compose plugin: https://docs.docker.com/compose/install/linux/
-
-Install Docker on Ubuntu/Debian:
+Install the required packages:
 
 ```sh
-sudo apt update
-sudo apt install -y ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo pacman -Syu
+sudo pacman -S --needed git docker docker-compose docker-buildx openssh
 ```
 
-Allow your user to run Docker:
+Start Docker:
+
+```sh
+sudo systemctl enable --now docker
+```
+
+Allow your user to run Docker without `sudo`:
 
 ```sh
 sudo usermod -aG docker "$USER"
@@ -48,6 +43,11 @@ Check Docker:
 docker --version
 docker compose version
 ```
+
+Arch package pages:
+
+- Docker: https://archlinux.org/packages/extra/x86_64/docker/
+- Docker Compose: https://archlinux.org/packages/extra/x86_64/docker-compose/
 
 ## Run TrapPot
 
