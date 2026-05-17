@@ -8,8 +8,9 @@ It runs these parts together with Docker:
 - **Zeek**: watches the network traffic and writes `conn.log` and `ssh.log`.
 - **AI detector**: reads Zeek `conn.log` and runs the trained Random Forest model.
 - **Elasticsearch**: stores Cowrie and Zeek logs.
-- **Logstash**: sends Cowrie and Zeek logs into Elasticsearch.
+- **Logstash**: cleans Zeek values, adds GeoIP when possible, and sends logs into Elasticsearch.
 - **Kibana**: lets you view the logs in a browser.
+- **ELK setup**: creates Elasticsearch templates, Kibana data views, and a starter dashboard.
 
 The basic flow is:
 
@@ -95,6 +96,7 @@ ai_detector
 elasticsearch
 logstash
 kibana
+elk_setup
 ```
 
 ## Test Cowrie
@@ -175,7 +177,23 @@ Kibana can take a minute to load the first time.
 
 ## Configure Kibana
 
-Create three data views.
+TrapPot creates the Kibana data views for you when Docker starts.
+
+Open **Discover** in Kibana and choose one of these data views:
+
+```text
+Cowrie logs
+Zeek connection logs
+Zeek SSH logs
+```
+
+TrapPot also creates a starter dashboard named:
+
+```text
+TrapPot Overview
+```
+
+If the data views are missing, create them manually.
 
 In Kibana:
 
@@ -217,6 +235,8 @@ Useful things to search for:
 - `trappot_source : "zeek_conn"`
 - `trappot_source : "cowrie"`
 
+GeoIP can be empty in a local Docker test because the source IP is private. It is useful when the source IP is public.
+
 ## Stop TrapPot
 
 Stop the containers:
@@ -254,6 +274,12 @@ sudo sysctl -w vm.max_map_count=1048576
 If Kibana opens but shows no data, run the SSH test again and wait 30 seconds.
 
 If the AI detector shows no alerts, check that Zeek created `./zeek/logs/conn.log`.
+
+If the Kibana data views are missing, check the setup container:
+
+```sh
+docker compose logs elk_setup
+```
 
 ## Safety
 

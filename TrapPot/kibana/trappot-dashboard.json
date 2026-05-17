@@ -1,0 +1,12 @@
+{
+  "attributes": {
+    "title": "TrapPot Overview",
+    "description": "Starter dashboard for TrapPot logs. Use the Cowrie and Zeek data views in Discover after running the SSH test.",
+    "panelsJSON": "[]",
+    "optionsJSON": "{\"useMargins\":true,\"hidePanelTitles\":false}",
+    "timeRestore": false,
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": "{\"query\":{\"language\":\"kuery\",\"query\":\"\"},\"filter\":[]}"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "index_patterns": ["trappot-zeek-ssh"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "properties": {
+        "@timestamp": { "type": "date" },
+        "auth_attempts": { "type": "integer" },
+        "auth_success": { "type": "keyword" },
+        "client": { "type": "keyword" },
+        "id.orig_h": { "type": "ip" },
+        "id.orig_p": { "type": "integer" },
+        "id.resp_h": { "type": "ip" },
+        "id.resp_p": { "type": "integer" },
+        "server": { "type": "keyword" },
+        "trappot_source": { "type": "keyword" },
+        "uid": { "type": "keyword" },
+        "version": { "type": "integer" },
+        "geoip": {
+          "properties": {
+            "location": { "type": "geo_point" }
+          }
+        }
+      }
+    }
+  }
+}

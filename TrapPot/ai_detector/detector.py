@@ -1,16 +1,15 @@
-import pandas as pd
-import joblib
-import time
 import os
 import sys
+import time
+
+import joblib
+import pandas as pd
 
 sys.stdout.reconfigure(line_buffering=True)
 
-# Load the "Brain"
 model = joblib.load("trappot_model.pkl")
 le = joblib.load("label_encoder.pkl")
 
-# These are the 12 features your model expects
 FEATURES = [
     "id.orig_p",
     "id.resp_p",
@@ -26,6 +25,24 @@ FEATURES = [
     "conn_state",
 ]
 
+NUMERIC_FEATURES = [
+    "id.orig_p",
+    "id.resp_p",
+    "duration",
+    "orig_bytes",
+    "resp_bytes",
+    "orig_pkts",
+    "orig_ip_bytes",
+    "resp_pkts",
+    "resp_ip_bytes",
+]
+
+CATEGORY_MAPS = {
+    "proto": {"icmp": 0, "tcp": 1, "udp": 2},
+    "service": {"-": 0, "dhcp": 1, "dns": 2, "http": 3, "irc": 4, "ssh": 5, "ssl": 6},
+    "conn_state": {value: index for index, value in enumerate(le.classes_)},
+}
+
 LOG_FILE = "/logs/conn.log"
 
 
@@ -35,22 +52,26 @@ def clean_number(value):
     return value
 
 
+def encode_category(column, value):
+    mapping = CATEGORY_MAPS[column]
+    return mapping.get(str(value), mapping.get("-", 0))
+
+
 def predict_threat(data_row):
-    # Prepare data for prediction
     df = pd.DataFrame([data_row], columns=FEATURES)
 
-    # Label Encode categorical strings
+    for col in NUMERIC_FEATURES:
+        df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
+
     for col in ["proto", "service", "conn_state"]:
-        df[col] = le.fit_transform(df[col].astype(str))
+        df[col] = df[col].apply(lambda value: encode_category(col, value))
 
-    # Prediction
     prediction = model.predict(df)[0]
-    print(f"🚨 ALERT: {prediction} detected!")
+    print(f"ALERT: {prediction} detected!")
 
 
-print("🔍 TrapPot AI is watching the network...")
+print("TrapPot AI is watching the network...")
 
-# Wait until Zeek creates conn.log with its header.
 while not os.path.exists(LOG_FILE) or os.path.getsize(LOG_FILE) == 0:
     time.sleep(1)
 
@@ -63,14 +84,9 @@ with open(LOG_FILE, "r") as f:
         if line.startswith("#"):
             continue
 
-        # Zeek logs are tab-separated. We parse the 12 features here.
-        # This is a simplified parser for the demo
         parts = line.split("\t")
-        if len(parts) > 10:
-            # Map the specific Zeek log columns to your 12 features
-            # (Note: Actual column indices depend on Zeek version)
+        if len(parts) > 19:
             try:
-                # Example mapping logic
                 sample = {
                     "id.orig_p": parts[3],
                     "id.resp_p": parts[5],
@@ -86,5 +102,5 @@ with open(LOG_FILE, "r") as f:
                     "conn_state": parts[11],
                 }
                 predict_threat(sample)
-            except:
+            except Exception:
                 continue

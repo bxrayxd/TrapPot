@@ -25,7 +25,6 @@ services:
       network: host  # This tells it to use your Arch Linux internet directly
     volumes:
       - ./zeek/logs:/logs
-      - ./cowrie/keys:/lib/cowrie/var/lib/cowrie/keys
     dns:
       - 8.8.8.8
       - 1.1.1.1
@@ -61,8 +60,8 @@ services:
       - cowrie-logs:/logs/cowrie:ro
       - ./zeek/logs:/logs/zeek:ro
     depends_on:
-      elasticsearch:
-        condition: service_healthy
+      elk_setup:
+        condition: service_completed_successfully
       cowrie:
         condition: service_started
       zeek:
@@ -80,6 +79,32 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
+    networks:
+      - trappot-net
+
+  # 7. ELK Setup
+  elk_setup:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.4.0
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        curl -fsS -X PUT -H "Content-Type: application/json" http://elasticsearch:9200/_index_template/trappot-cowrie --data-binary @/setup/templates/trappot-cowrie.json
+        curl -fsS -X PUT -H "Content-Type: application/json" http://elasticsearch:9200/_index_template/trappot-zeek-conn --data-binary @/setup/templates/trappot-zeek-conn.json
+        curl -fsS -X PUT -H "Content-Type: application/json" http://elasticsearch:9200/_index_template/trappot-zeek-ssh --data-binary @/setup/templates/trappot-zeek-ssh.json
+        until curl -fsS http://kibana:5601/api/status >/dev/null; do sleep 5; done
+        curl -fsS -X POST -H "kbn-xsrf: true" -H "Content-Type: application/json" http://kibana:5601/api/data_views/data_view --data-binary @/setup/kibana/cowrie-data-view.json
+        curl -fsS -X POST -H "kbn-xsrf: true" -H "Content-Type: application/json" http://kibana:5601/api/data_views/data_view --data-binary @/setup/kibana/zeek-conn-data-view.json
+        curl -fsS -X POST -H "kbn-xsrf: true" -H "Content-Type: application/json" http://kibana:5601/api/data_views/data_view --data-binary @/setup/kibana/zeek-ssh-data-view.json
+        curl -fsS -X POST -H "kbn-xsrf: true" -H "Content-Type: application/json" "http://kibana:5601/api/saved_objects/dashboard/trappot-overview?overwrite=true" --data-binary @/setup/kibana/trappot-dashboard.json
+    volumes:
+      - ./elasticsearch/templates:/setup/templates:ro
+      - ./kibana:/setup/kibana:ro
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_started
     networks:
       - trappot-net
 

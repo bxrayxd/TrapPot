@@ -1,0 +1,10 @@
+{
+  "data_view": {
+    "id": "trappot-zeek-conn",
+    "title": "trappot-zeek-conn",
+    "name": "Zeek connection logs",
+    "timeFieldName": "@timestamp",
+    "allowNoIndex": true
+  },
+  "override": true
+}

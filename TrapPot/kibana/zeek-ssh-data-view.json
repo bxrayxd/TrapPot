@@ -1,0 +1,10 @@
+{
+  "data_view": {
+    "id": "trappot-zeek-ssh",
+    "title": "trappot-zeek-ssh",
+    "name": "Zeek SSH logs",
+    "timeFieldName": "@timestamp",
+    "allowNoIndex": true
+  },
+  "override": true
+}

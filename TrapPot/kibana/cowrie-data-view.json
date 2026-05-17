@@ -1,0 +1,10 @@
+{
+  "data_view": {
+    "id": "trappot-cowrie",
+    "title": "trappot-cowrie",
+    "name": "Cowrie logs",
+    "timeFieldName": "@timestamp",
+    "allowNoIndex": true
+  },
+  "override": true
+}
