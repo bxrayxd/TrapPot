@@ -1,0 +1,29 @@
+{
+  "index_patterns": ["trappot-detector"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "properties": {
+        "@timestamp": { "type": "date" },
+        "conn_state": { "type": "keyword" },
+        "detected_at": { "type": "date" },
+        "duration": { "type": "float" },
+        "id.orig_p": { "type": "integer" },
+        "id.resp_p": { "type": "integer" },
+        "orig_bytes": { "type": "integer" },
+        "orig_ip_bytes": { "type": "integer" },
+        "orig_pkts": { "type": "integer" },
+        "prediction": { "type": "keyword" },
+        "proto": { "type": "keyword" },
+        "resp_bytes": { "type": "integer" },
+        "resp_ip_bytes": { "type": "integer" },
+        "resp_pkts": { "type": "integer" },
+        "service": { "type": "keyword" },
+        "trappot_source": { "type": "keyword" }
+      }
+    }
+  }
+}

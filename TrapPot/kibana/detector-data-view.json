@@ -1,0 +1,10 @@
+{
+  "data_view": {
+    "id": "trappot-detector",
+    "title": "trappot-detector",
+    "name": "AI detector results",
+    "timeFieldName": "@timestamp",
+    "allowNoIndex": true
+  },
+  "override": true
+}

@@ -1,6 +1,6 @@
 {
   "title": "TrapPot Overview",
-  "description": "Basic view of Cowrie and Zeek logs after running the SSH test.",
+  "description": "Operational view for Cowrie honeypot activity, Zeek network logs, and Random Forest detector results.",
   "time_range": {
     "from": "now-24h",
     "to": "now",
@@ -12,12 +12,12 @@
         "x": 0,
         "y": 0,
         "w": 48,
-        "h": 5
+        "h": 4
       },
       "type": "markdown",
       "config": {
-        "title": "How to read this dashboard",
-        "content": "Run the Cowrie SSH test, wait about 30 seconds, then refresh. Local Docker tests usually use private IP addresses, so GeoIP fields can stay empty until public traffic reaches the honeypot.",
+        "title": "TrapPot monitoring flow",
+        "content": "Cowrie captures SSH/Telnet activity, Zeek summarizes the network connection, the Random Forest detector scores Zeek connection rows, and Logstash sends everything to Elasticsearch for this dashboard.",
         "settings": {
           "open_links_in_new_tab": true
         }
@@ -26,8 +26,8 @@
     {
       "grid": {
         "x": 0,
-        "y": 5,
-        "w": 16,
+        "y": 4,
+        "w": 12,
         "h": 5
       },
       "type": "vis",
@@ -39,19 +39,198 @@
           "index_pattern": "trappot-cowrie",
           "time_field": "@timestamp"
         },
+        "metrics": [
+          {
+            "type": "primary",
+            "operation": "count",
+            "label": "Events"
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 12,
+        "y": 4,
+        "w": 12,
+        "h": 5
+      },
+      "type": "vis",
+      "config": {
+        "type": "metric",
+        "title": "Login attempts",
+        "data_source": {
+          "type": "data_view_spec",
+          "index_pattern": "trappot-cowrie",
+          "time_field": "@timestamp"
+        },
         "query": {
-          "expression": "",
+          "expression": "eventid : \"cowrie.login.success\" or eventid : \"cowrie.login.failed\"",
           "language": "kql"
         },
         "metrics": [
           {
             "type": "primary",
             "operation": "count",
-            "label": "Events",
-            "filter": {
-              "expression": "",
-              "language": "kql"
+            "label": "Attempts"
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 24,
+        "y": 4,
+        "w": 12,
+        "h": 5
+      },
+      "type": "vis",
+      "config": {
+        "type": "metric",
+        "title": "Commands captured",
+        "data_source": {
+          "type": "data_view_spec",
+          "index_pattern": "trappot-cowrie",
+          "time_field": "@timestamp"
+        },
+        "query": {
+          "expression": "eventid : \"cowrie.command.input\"",
+          "language": "kql"
+        },
+        "metrics": [
+          {
+            "type": "primary",
+            "operation": "count",
+            "label": "Commands"
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 36,
+        "y": 4,
+        "w": 12,
+        "h": 5
+      },
+      "type": "vis",
+      "config": {
+        "type": "metric",
+        "title": "AI detections",
+        "data_source": {
+          "type": "data_view_spec",
+          "index_pattern": "trappot-detector",
+          "time_field": "@timestamp"
+        },
+        "metrics": [
+          {
+            "type": "primary",
+            "operation": "count",
+            "label": "Predictions"
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 0,
+        "y": 9,
+        "w": 24,
+        "h": 10
+      },
+      "type": "vis",
+      "config": {
+        "type": "xy",
+        "title": "Cowrie activity over time",
+        "layers": [
+          {
+            "type": "line",
+            "data_source": {
+              "type": "data_view_spec",
+              "index_pattern": "trappot-cowrie",
+              "time_field": "@timestamp"
+            },
+            "x": {
+              "operation": "date_histogram",
+              "field": "@timestamp"
+            },
+            "y": [
+              {
+                "operation": "count"
+              }
+            ],
+            "breakdown_by": {
+              "operation": "terms",
+              "fields": ["protocol"],
+              "limit": 5
             }
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 24,
+        "y": 9,
+        "w": 24,
+        "h": 10
+      },
+      "type": "vis",
+      "config": {
+        "type": "xy",
+        "title": "Zeek connections over time",
+        "layers": [
+          {
+            "type": "line",
+            "data_source": {
+              "type": "data_view_spec",
+              "index_pattern": "trappot-zeek-conn",
+              "time_field": "@timestamp"
+            },
+            "x": {
+              "operation": "date_histogram",
+              "field": "@timestamp"
+            },
+            "y": [
+              {
+                "operation": "count"
+              }
+            ],
+            "breakdown_by": {
+              "operation": "terms",
+              "fields": ["service"],
+              "limit": 6
+            }
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 0,
+        "y": 19,
+        "w": 16,
+        "h": 10
+      },
+      "type": "vis",
+      "config": {
+        "type": "pie",
+        "title": "Honeypot protocol split",
+        "data_source": {
+          "type": "data_view_spec",
+          "index_pattern": "trappot-cowrie",
+          "time_field": "@timestamp"
+        },
+        "metrics": [
+          {
+            "operation": "count"
+          }
+        ],
+        "group_by": [
+          {
+            "operation": "terms",
+            "fields": ["protocol"],
+            "limit": 5
           }
         ]
       }
@@ -59,32 +238,32 @@
     {
       "grid": {
         "x": 16,
-        "y": 5,
+        "y": 19,
         "w": 16,
-        "h": 5
+        "h": 10
       },
       "type": "vis",
       "config": {
-        "type": "metric",
-        "title": "Zeek connections",
-        "data_source": {
-          "type": "data_view_spec",
-          "index_pattern": "trappot-zeek-conn",
-          "time_field": "@timestamp"
-        },
-        "query": {
-          "expression": "",
-          "language": "kql"
-        },
-        "metrics": [
+        "type": "xy",
+        "title": "Top source IPs",
+        "layers": [
           {
-            "type": "primary",
-            "operation": "count",
-            "label": "Connections",
-            "filter": {
-              "expression": "",
-              "language": "kql"
-            }
+            "type": "bar_stacked",
+            "data_source": {
+              "type": "data_view_spec",
+              "index_pattern": "trappot-cowrie",
+              "time_field": "@timestamp"
+            },
+            "x": {
+              "operation": "terms",
+              "fields": ["src_ip"],
+              "limit": 10
+            },
+            "y": [
+              {
+                "operation": "count"
+              }
+            ]
           }
         ]
       }
@@ -92,32 +271,242 @@
     {
       "grid": {
         "x": 32,
-        "y": 5,
+        "y": 19,
         "w": 16,
-        "h": 5
+        "h": 10
       },
       "type": "vis",
       "config": {
-        "type": "metric",
-        "title": "Zeek SSH records",
+        "type": "pie",
+        "title": "AI prediction split",
         "data_source": {
           "type": "data_view_spec",
-          "index_pattern": "trappot-zeek-ssh",
+          "index_pattern": "trappot-detector",
           "time_field": "@timestamp"
-        },
-        "query": {
-          "expression": "",
-          "language": "kql"
         },
         "metrics": [
           {
-            "type": "primary",
-            "operation": "count",
-            "label": "SSH records",
-            "filter": {
-              "expression": "",
-              "language": "kql"
-            }
+            "operation": "count"
+          }
+        ],
+        "group_by": [
+          {
+            "operation": "terms",
+            "fields": ["prediction"],
+            "limit": 10
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 0,
+        "y": 29,
+        "w": 24,
+        "h": 10
+      },
+      "type": "vis",
+      "config": {
+        "type": "xy",
+        "title": "Top usernames",
+        "layers": [
+          {
+            "type": "bar_stacked",
+            "data_source": {
+              "type": "data_view_spec",
+              "index_pattern": "trappot-cowrie",
+              "time_field": "@timestamp"
+            },
+            "x": {
+              "operation": "terms",
+              "fields": ["username.keyword"],
+              "limit": 10
+            },
+            "y": [
+              {
+                "operation": "count"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 24,
+        "y": 29,
+        "w": 24,
+        "h": 10
+      },
+      "type": "vis",
+      "config": {
+        "type": "xy",
+        "title": "Top commands",
+        "layers": [
+          {
+            "type": "bar_stacked",
+            "data_source": {
+              "type": "data_view_spec",
+              "index_pattern": "trappot-cowrie",
+              "time_field": "@timestamp"
+            },
+            "x": {
+              "operation": "terms",
+              "fields": ["input.keyword"],
+              "limit": 10
+            },
+            "y": [
+              {
+                "operation": "count"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 0,
+        "y": 39,
+        "w": 24,
+        "h": 12
+      },
+      "type": "vis",
+      "config": {
+        "type": "data_table",
+        "title": "Credentials tried",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM trappot-cowrie | WHERE eventid == \"cowrie.login.success\" OR eventid == \"cowrie.login.failed\" | STATS attempts = COUNT(*) BY username, password, protocol, src_ip | SORT attempts DESC | LIMIT 20"
+        },
+        "rows": [
+          {
+            "column": "username"
+          },
+          {
+            "column": "password"
+          },
+          {
+            "column": "protocol"
+          },
+          {
+            "column": "src_ip"
+          }
+        ],
+        "metrics": [
+          {
+            "column": "attempts"
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 24,
+        "y": 39,
+        "w": 24,
+        "h": 12
+      },
+      "type": "vis",
+      "config": {
+        "type": "data_table",
+        "title": "Commands captured",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM trappot-cowrie | WHERE eventid == \"cowrie.command.input\" | STATS events = COUNT(*) BY input, protocol, src_ip | SORT events DESC | LIMIT 20"
+        },
+        "rows": [
+          {
+            "column": "input"
+          },
+          {
+            "column": "protocol"
+          },
+          {
+            "column": "src_ip"
+          }
+        ],
+        "metrics": [
+          {
+            "column": "events"
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 0,
+        "y": 51,
+        "w": 24,
+        "h": 12
+      },
+      "type": "vis",
+      "config": {
+        "type": "data_table",
+        "title": "AI detector decisions",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM trappot-detector | EVAL resp_port = `id.resp_p` | STATS detections = COUNT(*) BY prediction, proto, service, conn_state, resp_port | SORT detections DESC | LIMIT 20"
+        },
+        "rows": [
+          {
+            "column": "prediction"
+          },
+          {
+            "column": "proto"
+          },
+          {
+            "column": "service"
+          },
+          {
+            "column": "conn_state"
+          },
+          {
+            "column": "resp_port"
+          }
+        ],
+        "metrics": [
+          {
+            "column": "detections"
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 24,
+        "y": 51,
+        "w": 24,
+        "h": 12
+      },
+      "type": "vis",
+      "config": {
+        "type": "data_table",
+        "title": "Zeek connection summary",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM trappot-zeek-conn | EVAL resp_port = `id.resp_p` | WHERE resp_port > 0 | STATS connections = COUNT(*), avg_duration = AVG(duration) BY proto, service, conn_state, resp_port | SORT connections DESC | LIMIT 20"
+        },
+        "rows": [
+          {
+            "column": "proto"
+          },
+          {
+            "column": "service"
+          },
+          {
+            "column": "conn_state"
+          },
+          {
+            "column": "resp_port"
+          }
+        ],
+        "metrics": [
+          {
+            "column": "connections"
+          },
+          {
+            "column": "avg_duration"
           }
         ]
       }

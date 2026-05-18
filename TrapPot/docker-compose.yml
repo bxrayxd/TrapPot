@@ -94,10 +94,12 @@ services:
         curl -fsS -X PUT -H "Content-Type: application/json" http://elasticsearch:9200/_index_template/trappot-cowrie --data-binary @/setup/templates/trappot-cowrie.json
         curl -fsS -X PUT -H "Content-Type: application/json" http://elasticsearch:9200/_index_template/trappot-zeek-conn --data-binary @/setup/templates/trappot-zeek-conn.json
         curl -fsS -X PUT -H "Content-Type: application/json" http://elasticsearch:9200/_index_template/trappot-zeek-ssh --data-binary @/setup/templates/trappot-zeek-ssh.json
+        curl -fsS -X PUT -H "Content-Type: application/json" http://elasticsearch:9200/_index_template/trappot-detector --data-binary @/setup/templates/trappot-detector.json
         until curl -fsS http://kibana:5601/api/status >/dev/null 2>&1; do sleep 5; done
         curl -fsS -X POST -H "kbn-xsrf: true" -H "Content-Type: application/json" http://kibana:5601/api/data_views/data_view --data-binary @/setup/kibana/cowrie-data-view.json
         curl -fsS -X POST -H "kbn-xsrf: true" -H "Content-Type: application/json" http://kibana:5601/api/data_views/data_view --data-binary @/setup/kibana/zeek-conn-data-view.json
         curl -fsS -X POST -H "kbn-xsrf: true" -H "Content-Type: application/json" http://kibana:5601/api/data_views/data_view --data-binary @/setup/kibana/zeek-ssh-data-view.json
+        curl -fsS -X POST -H "kbn-xsrf: true" -H "Content-Type: application/json" http://kibana:5601/api/data_views/data_view --data-binary @/setup/kibana/detector-data-view.json
         curl -fsS -X PUT -H "kbn-xsrf: true" -H "Content-Type: application/json" http://kibana:5601/api/dashboards/trappot-overview --data-binary @/setup/kibana/trappot-dashboard.json
     volumes:
       - ./elasticsearch/templates:/setup/templates:ro

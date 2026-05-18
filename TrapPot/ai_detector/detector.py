@@ -1,6 +1,8 @@
 import os
 import sys
 import time
+import json
+from datetime import datetime, timezone
 
 import joblib
 import pandas as pd
@@ -44,6 +46,7 @@ CATEGORY_MAPS = {
 }
 
 LOG_FILE = "/logs/conn.log"
+DETECTION_LOG_FILE = "/logs/detections.json"
 
 
 def clean_number(value):
@@ -68,6 +71,12 @@ def predict_threat(data_row):
 
     prediction = model.predict(df)[0]
     print(f"ALERT: {prediction} detected!")
+    with open(DETECTION_LOG_FILE, "a") as detections:
+        detections.write(json.dumps({
+            "detected_at": datetime.now(timezone.utc).isoformat(),
+            "prediction": str(prediction),
+            **data_row,
+        }) + "\n")
 
 
 print("TrapPot AI is watching the network...")
