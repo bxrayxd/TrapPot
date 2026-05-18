@@ -9,6 +9,17 @@ services:
       - cowrie-logs:/cowrie/cowrie-git/var/log/cowrie
       - ./cowrie/etc/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro
       - ./cowrie/etc/userdb.txt:/cowrie/cowrie-git/etc/userdb.txt:ro
+      - ./cowrie/honeyfs/etc/debian_version:/cowrie/cowrie-git/honeyfs/etc/debian_version:ro
+      - ./cowrie/honeyfs/etc/group:/cowrie/cowrie-git/honeyfs/etc/group:ro
+      - ./cowrie/honeyfs/etc/hostname:/cowrie/cowrie-git/honeyfs/etc/hostname:ro
+      - ./cowrie/honeyfs/etc/hosts:/cowrie/cowrie-git/honeyfs/etc/hosts:ro
+      - ./cowrie/honeyfs/etc/issue:/cowrie/cowrie-git/honeyfs/etc/issue:ro
+      - ./cowrie/honeyfs/etc/issue.net:/cowrie/cowrie-git/honeyfs/etc/issue.net:ro
+      - ./cowrie/honeyfs/etc/motd:/cowrie/cowrie-git/honeyfs/etc/motd:ro
+      - ./cowrie/honeyfs/etc/os-release:/cowrie/cowrie-git/honeyfs/etc/os-release:ro
+      - ./cowrie/honeyfs/etc/passwd:/cowrie/cowrie-git/honeyfs/etc/passwd:ro
+      - ./cowrie/honeyfs/etc/shadow:/cowrie/cowrie-git/honeyfs/etc/shadow:ro
+      - ./cowrie/honeyfs/proc/version:/cowrie/cowrie-git/honeyfs/proc/version:ro
     networks:
       - trappot-net
 
