@@ -87,6 +87,12 @@ Cowrie reads its fake hostname and ports from:
 TrapPot/cowrie/etc/cowrie.cfg
 ```
 
+Cowrie reads its login rules from:
+
+```text
+TrapPot/cowrie/etc/userdb.txt
+```
+
 Check that the containers are running:
 
 ```sh
