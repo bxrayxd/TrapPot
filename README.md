@@ -10,7 +10,7 @@ It runs these parts together with Docker:
 - **Elasticsearch**: stores Cowrie and Zeek logs.
 - **Logstash**: cleans Zeek values, adds GeoIP when possible, and sends logs into Elasticsearch.
 - **Kibana**: lets you view the logs in a browser.
-- **ELK setup**: creates Elasticsearch templates, Kibana data views, and a starter dashboard.
+- **ELK setup**: creates Elasticsearch templates, Kibana data views, and the TrapPot dashboard.
 
 The basic flow is:
 
@@ -79,6 +79,12 @@ Start everything:
 
 ```sh
 docker compose up --build -d
+```
+
+Cowrie reads its fake hostname and ports from:
+
+```text
+TrapPot/cowrie/etc/cowrie.cfg
 ```
 
 Check that the containers are running:
@@ -187,7 +193,7 @@ Zeek connection logs
 Zeek SSH logs
 ```
 
-TrapPot also creates a starter dashboard named:
+TrapPot also creates a dashboard named:
 
 ```text
 TrapPot Overview

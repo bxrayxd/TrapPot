@@ -1,12 +1,126 @@
 {
-  "attributes": {
-    "title": "TrapPot Overview",
-    "description": "Starter dashboard for TrapPot logs. Use the Cowrie and Zeek data views in Discover after running the SSH test.",
-    "panelsJSON": "[]",
-    "optionsJSON": "{\"useMargins\":true,\"hidePanelTitles\":false}",
-    "timeRestore": false,
-    "kibanaSavedObjectMeta": {
-      "searchSourceJSON": "{\"query\":{\"language\":\"kuery\",\"query\":\"\"},\"filter\":[]}"
+  "title": "TrapPot Overview",
+  "description": "Basic view of Cowrie and Zeek logs after running the SSH test.",
+  "time_range": {
+    "from": "now-24h",
+    "to": "now",
+    "mode": "relative"
+  },
+  "panels": [
+    {
+      "grid": {
+        "x": 0,
+        "y": 0,
+        "w": 48,
+        "h": 5
+      },
+      "type": "markdown",
+      "config": {
+        "title": "How to read this dashboard",
+        "content": "Run the Cowrie SSH test, wait about 30 seconds, then refresh. Local Docker tests usually use private IP addresses, so GeoIP fields can stay empty until public traffic reaches the honeypot.",
+        "settings": {
+          "open_links_in_new_tab": true
+        }
+      }
+    },
+    {
+      "grid": {
+        "x": 0,
+        "y": 5,
+        "w": 16,
+        "h": 5
+      },
+      "type": "vis",
+      "config": {
+        "type": "metric",
+        "title": "Cowrie events",
+        "data_source": {
+          "type": "data_view_spec",
+          "index_pattern": "trappot-cowrie",
+          "time_field": "@timestamp"
+        },
+        "query": {
+          "expression": "",
+          "language": "kql"
+        },
+        "metrics": [
+          {
+            "type": "primary",
+            "operation": "count",
+            "label": "Events",
+            "filter": {
+              "expression": "",
+              "language": "kql"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 16,
+        "y": 5,
+        "w": 16,
+        "h": 5
+      },
+      "type": "vis",
+      "config": {
+        "type": "metric",
+        "title": "Zeek connections",
+        "data_source": {
+          "type": "data_view_spec",
+          "index_pattern": "trappot-zeek-conn",
+          "time_field": "@timestamp"
+        },
+        "query": {
+          "expression": "",
+          "language": "kql"
+        },
+        "metrics": [
+          {
+            "type": "primary",
+            "operation": "count",
+            "label": "Connections",
+            "filter": {
+              "expression": "",
+              "language": "kql"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "grid": {
+        "x": 32,
+        "y": 5,
+        "w": 16,
+        "h": 5
+      },
+      "type": "vis",
+      "config": {
+        "type": "metric",
+        "title": "Zeek SSH records",
+        "data_source": {
+          "type": "data_view_spec",
+          "index_pattern": "trappot-zeek-ssh",
+          "time_field": "@timestamp"
+        },
+        "query": {
+          "expression": "",
+          "language": "kql"
+        },
+        "metrics": [
+          {
+            "type": "primary",
+            "operation": "count",
+            "label": "SSH records",
+            "filter": {
+              "expression": "",
+              "language": "kql"
+            }
+          }
+        ]
+      }
     }
-  }
+  ]
 }
