@@ -10,7 +10,7 @@ It runs these parts together with Docker:
 - **Elasticsearch**: stores Cowrie and Zeek logs.
 - **Logstash**: cleans Zeek values, adds GeoIP when possible, and sends logs into Elasticsearch.
 - **Kibana**: lets you view the logs in a browser.
-- **ELK setup**: creates Elasticsearch templates, Kibana data views, and the TrapPot dashboard.
+- **ELK setup**: enables Elastic login, creates Elasticsearch templates, Kibana data views, and the TrapPot dashboard.
 
 The basic flow is:
 
@@ -75,6 +75,21 @@ git clone https://github.com/bxrayxd/graduation-project.git
 cd graduation-project/TrapPot
 ```
 
+Create the local password file:
+
+```sh
+cp .env.example .env
+```
+
+The default demo login is:
+
+```text
+username: elastic
+password: trappotadmin
+```
+
+You can change the passwords in `.env` before starting Docker. Use only letters and numbers. Keep `KIBANA_ENCRYPTION_KEY` at least 32 characters long.
+
 Start everything:
 
 ```sh
@@ -108,7 +123,8 @@ ai_detector
 elasticsearch
 logstash
 kibana
-elk_setup
+elastic_setup
+kibana_setup
 ```
 
 ## Test Cowrie
@@ -186,6 +202,13 @@ http://localhost:5601
 ```
 
 Kibana can take a minute to load the first time.
+
+Log in with the `elastic` user from your `.env` file:
+
+```text
+username: elastic
+password: trappotadmin
+```
 
 ## Configure Kibana
 
@@ -290,7 +313,14 @@ If the AI detector shows no alerts, check that Zeek created `./zeek/logs/conn.lo
 If the Kibana data views are missing, check the setup container:
 
 ```sh
-docker compose logs elk_setup
+docker compose logs kibana_setup
+```
+
+If you ran an older unsecured version before this one, reset the stored Docker volumes once:
+
+```sh
+docker compose down -v
+docker compose up --build -d
 ```
 
 ## Safety
