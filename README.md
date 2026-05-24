@@ -323,6 +323,8 @@ If the AI detector shows no alerts, check that Zeek created:
 ./zeek/logs/conn.log
 ```
 
+If the AI detector prints `Detector skipped malformed Zeek row`, check `conn.log`. The detector expects the normal Zeek connection fields.
+
 If the dashboard or data views are missing, check:
 
 ```sh

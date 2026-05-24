@@ -8,6 +8,7 @@ import joblib
 import pandas as pd
 
 sys.stdout.reconfigure(line_buffering=True)
+sys.stderr.reconfigure(line_buffering=True)
 
 model = joblib.load("trappot_model.pkl")
 le = joblib.load("label_encoder.pkl")
@@ -50,6 +51,7 @@ DETECTION_LOG_FILE = "/logs/detections.json"
 
 
 def clean_number(value):
+    value = str(value).strip()
     if value in ["-", "", "(empty)"]:
         return 0
     return value
@@ -57,7 +59,8 @@ def clean_number(value):
 
 def encode_category(column, value):
     mapping = CATEGORY_MAPS[column]
-    return mapping.get(str(value), mapping.get("-", 0))
+    value = str(value).strip()
+    return mapping.get(value, mapping.get("-", 0))
 
 
 def predict_threat(data_row):
@@ -71,12 +74,12 @@ def predict_threat(data_row):
 
     prediction = model.predict(df)[0]
     print(f"ALERT: {prediction} detected!")
-    with open(DETECTION_LOG_FILE, "a") as detections:
+    with open(DETECTION_LOG_FILE, "a", encoding="utf-8") as detections:
         detections.write(json.dumps({
             "detected_at": datetime.now(timezone.utc).isoformat(),
             "prediction": str(prediction),
             **data_row,
-        }) + "\n")
+        }, ensure_ascii=False) + "\n")
 
 
 print("TrapPot AI is watching the network...")
@@ -84,7 +87,7 @@ print("TrapPot AI is watching the network...")
 while not os.path.exists(LOG_FILE) or os.path.getsize(LOG_FILE) == 0:
     time.sleep(1)
 
-with open(LOG_FILE, "r") as f:
+with open(LOG_FILE, "r", encoding="utf-8") as f:
     while True:
         line = f.readline()
         if not line:
@@ -93,8 +96,9 @@ with open(LOG_FILE, "r") as f:
         if line.startswith("#"):
             continue
 
+        line = line.rstrip("\n")
         parts = line.split("\t")
-        if len(parts) > 19:
+        if len(parts) >= 20:
             try:
                 sample = {
                     "id.orig_p": parts[3],
@@ -111,5 +115,6 @@ with open(LOG_FILE, "r") as f:
                     "conn_state": parts[11],
                 }
                 predict_threat(sample)
-            except Exception:
+            except Exception as exc:
+                print(f"Detector skipped malformed Zeek row ({exc.__class__.__name__}): {exc}", file=sys.stderr)
                 continue

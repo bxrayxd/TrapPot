@@ -2,17 +2,26 @@
   "title": "TrapPot Overview",
   "description": "Operational view for Cowrie honeypot activity, Zeek network logs, and Random Forest detector results.",
   "time_range": {
-    "from": "now-24h",
+    "from": "now-6h",
     "to": "now",
     "mode": "relative"
+  },
+  "options": {
+    "hide_panel_titles": false,
+    "hide_panel_borders": true,
+    "use_margins": true,
+    "auto_apply_filters": true,
+    "sync_colors": true,
+    "sync_cursor": true,
+    "sync_tooltips": true
   },
   "panels": [
     {
       "grid": {
         "x": 0,
-        "y": 0,
+        "y": 49,
         "w": 48,
-        "h": 4
+        "h": 3
       },
       "type": "markdown",
       "config": {
@@ -26,9 +35,9 @@
     {
       "grid": {
         "x": 0,
-        "y": 4,
+        "y": 0,
         "w": 12,
-        "h": 5
+        "h": 4
       },
       "type": "vis",
       "config": {
@@ -51,9 +60,9 @@
     {
       "grid": {
         "x": 12,
-        "y": 4,
+        "y": 0,
         "w": 12,
-        "h": 5
+        "h": 4
       },
       "type": "vis",
       "config": {
@@ -80,9 +89,9 @@
     {
       "grid": {
         "x": 24,
-        "y": 4,
+        "y": 0,
         "w": 12,
-        "h": 5
+        "h": 4
       },
       "type": "vis",
       "config": {
@@ -109,9 +118,9 @@
     {
       "grid": {
         "x": 36,
-        "y": 4,
+        "y": 0,
         "w": 12,
-        "h": 5
+        "h": 4
       },
       "type": "vis",
       "config": {
@@ -134,9 +143,9 @@
     {
       "grid": {
         "x": 0,
-        "y": 9,
+        "y": 4,
         "w": 24,
-        "h": 10
+        "h": 8
       },
       "type": "vis",
       "config": {
@@ -171,9 +180,9 @@
     {
       "grid": {
         "x": 24,
-        "y": 9,
+        "y": 4,
         "w": 24,
-        "h": 10
+        "h": 8
       },
       "type": "vis",
       "config": {
@@ -208,9 +217,9 @@
     {
       "grid": {
         "x": 0,
-        "y": 19,
-        "w": 16,
-        "h": 10
+        "y": 12,
+        "w": 12,
+        "h": 7
       },
       "type": "vis",
       "config": {
@@ -237,10 +246,10 @@
     },
     {
       "grid": {
-        "x": 16,
-        "y": 19,
-        "w": 16,
-        "h": 10
+        "x": 12,
+        "y": 12,
+        "w": 24,
+        "h": 7
       },
       "type": "vis",
       "config": {
@@ -270,10 +279,10 @@
     },
     {
       "grid": {
-        "x": 32,
-        "y": 19,
-        "w": 16,
-        "h": 10
+        "x": 36,
+        "y": 12,
+        "w": 12,
+        "h": 7
       },
       "type": "vis",
       "config": {
@@ -301,9 +310,9 @@
     {
       "grid": {
         "x": 0,
-        "y": 29,
+        "y": 19,
         "w": 24,
-        "h": 10
+        "h": 8
       },
       "type": "vis",
       "config": {
@@ -334,9 +343,9 @@
     {
       "grid": {
         "x": 24,
-        "y": 29,
+        "y": 19,
         "w": 24,
-        "h": 10
+        "h": 8
       },
       "type": "vis",
       "config": {
@@ -367,9 +376,9 @@
     {
       "grid": {
         "x": 0,
-        "y": 39,
+        "y": 27,
         "w": 24,
-        "h": 12
+        "h": 11
       },
       "type": "vis",
       "config": {
@@ -403,9 +412,9 @@
     {
       "grid": {
         "x": 24,
-        "y": 39,
+        "y": 27,
         "w": 24,
-        "h": 12
+        "h": 11
       },
       "type": "vis",
       "config": {
@@ -436,9 +445,9 @@
     {
       "grid": {
         "x": 0,
-        "y": 51,
+        "y": 38,
         "w": 24,
-        "h": 12
+        "h": 11
       },
       "type": "vis",
       "config": {
@@ -475,9 +484,9 @@
     {
       "grid": {
         "x": 24,
-        "y": 51,
+        "y": 38,
         "w": 24,
-        "h": 12
+        "h": 11
       },
       "type": "vis",
       "config": {
