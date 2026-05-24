@@ -1,39 +1,39 @@
 # TrapPot
 
-TrapPot is a graduation project honeypot for SSH/Telnet traffic.
+TrapPot is an AI-powered IoT honeypot system for SSH and Telnet activity.
 
-It runs these parts together with Docker:
-
-- **Cowrie**: fake SSH/Telnet server that records attacker sessions.
-- **Zeek**: watches the network traffic and writes `conn.log` and `ssh.log`.
-- **AI detector**: reads Zeek `conn.log` and runs the trained Random Forest model.
-- **Elasticsearch**: stores Cowrie and Zeek logs.
-- **Logstash**: cleans Zeek values, adds GeoIP when possible, and sends logs into Elasticsearch.
-- **Kibana**: lets you view the logs in a browser.
-- **ELK setup**: enables Elastic login, creates Elasticsearch templates, Kibana data views, and the TrapPot dashboard.
-
-The basic flow is:
+It runs a full local pipeline:
 
 ```text
-SSH/Telnet connection -> Cowrie -> Zeek logs -> Random Forest detector
-                                      |
-                                      -> Logstash -> Elasticsearch -> Kibana
+Attacker SSH/Telnet session
+        |
+        v
+Cowrie honeypot logs
+        |
+        v
+Zeek conn.log and ssh.log
+        |
+        v
+Random Forest detector
+        |
+        v
+Logstash -> Elasticsearch -> Kibana dashboard
 ```
+
+## What Runs
+
+- **Cowrie** records fake SSH/Telnet attacker sessions.
+- **Zeek** watches the Cowrie network traffic and writes `conn.log` and `ssh.log`.
+- **AI detector** reads Zeek `conn.log` and runs the trained Random Forest model.
+- **Logstash** cleans the logs and sends them to Elasticsearch.
+- **Elasticsearch** stores Cowrie, Zeek, and detector records with login protection enabled.
+- **Kibana** shows the ready-made TrapPot dashboard.
 
 ## Requirements
 
-This guide is for Arch Linux.
+This guide targets Arch Linux.
 
-You need:
-
-- Git
-- Docker
-- Docker Compose
-- OpenSSH client
-
-## Install Docker
-
-Install the packages:
+Install the required packages:
 
 ```sh
 sudo pacman -Syu
@@ -60,7 +60,7 @@ docker --version
 docker compose version
 ```
 
-Set the Elasticsearch kernel setting:
+Set the Elasticsearch kernel value:
 
 ```sh
 sudo sysctl -w vm.max_map_count=1048576
@@ -81,58 +81,52 @@ Create the local password file:
 cp .env.example .env
 ```
 
-The default demo login is:
+Default local credentials:
 
 ```text
-username: elastic
-password: trappotadmin
+Kibana username: elastic
+Kibana password: trappotadmin
+Cowrie username: root
+Cowrie password: admin
 ```
 
-You can change the passwords in `.env` before starting Docker. Use only letters and numbers. Keep `KIBANA_ENCRYPTION_KEY` at least 32 characters long.
+You can change the Elastic passwords in `.env` before the first run. Keep `KIBANA_ENCRYPTION_KEY` at least 32 characters long.
 
-Start everything:
+Do not commit `TrapPot/.env`. The repo ignores it on purpose.
+
+Start the system:
 
 ```sh
 docker compose up --build -d
 ```
 
-Cowrie reads its fake hostname and ports from:
-
-```text
-TrapPot/cowrie/etc/cowrie.cfg
-```
-
-Cowrie reads its login rules from:
-
-```text
-TrapPot/cowrie/etc/userdb.txt
-```
-
-Check that the containers are running:
+Check the containers:
 
 ```sh
 docker compose ps
 ```
 
-You should see these services:
+You should see:
 
 ```text
 cowrie
 zeek
 ai_detector
 elasticsearch
+elastic_setup
 logstash
 kibana
-elastic_setup
 kibana_setup
 ```
 
-## Test Cowrie
+`elastic_setup` and `kibana_setup` should exit with code `0`. That is normal. They create users, templates, data views, and the dashboard.
+
+## Test The Honeypot
 
 Open a fake SSH session:
 
 ```sh
-ssh root@localhost -p 2222
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@localhost -p 2222
 ```
 
 Use this password:
@@ -146,15 +140,15 @@ Run a few commands:
 ```sh
 whoami
 pwd
-ls -la
+uname -a
 mkdir test_dir
 cat /etc/passwd
 exit
 ```
 
-This creates logs for Cowrie, Zeek, the AI detector, and Kibana.
+Wait about 30 seconds. Cowrie, Zeek, the AI detector, Logstash, Elasticsearch, and Kibana need a short moment to process the session.
 
-## Check the Logs
+## Check The Output
 
 Cowrie logs:
 
@@ -174,7 +168,7 @@ Zeek SSH log:
 cat ./zeek/logs/ssh.log
 ```
 
-AI detector output:
+AI detector:
 
 ```sh
 docker compose logs ai_detector
@@ -187,7 +181,7 @@ TrapPot AI is watching the network...
 ALERT: Normal detected!
 ```
 
-Logstash output:
+Logstash should not show indexing errors:
 
 ```sh
 docker compose logs logstash
@@ -195,84 +189,92 @@ docker compose logs logstash
 
 ## Open Kibana
 
-Open Kibana in your browser:
+Open:
 
 ```text
 http://localhost:5601
 ```
 
-Kibana can take a minute to load the first time.
-
-Log in with the `elastic` user from your `.env` file:
+Log in with:
 
 ```text
 username: elastic
 password: trappotadmin
 ```
 
-## Configure Kibana
-
-TrapPot creates the Kibana data views for you when Docker starts.
-
-Open **Discover** in Kibana and choose one of these data views:
-
-```text
-Cowrie logs
-Zeek connection logs
-Zeek SSH logs
-```
-
-TrapPot also creates a dashboard named:
+Open **Dashboards**, then open:
 
 ```text
 TrapPot Overview
 ```
 
-If the data views are missing, create them manually.
+The dashboard shows:
 
-In Kibana:
+- Cowrie events
+- login attempts
+- captured commands
+- Zeek connections
+- AI detector decisions
+- top source IPs, usernames, credentials, and commands
 
-1. Open the menu.
-2. Go to **Stack Management**.
-3. Open **Data Views**.
-4. Click **Create data view**.
+GeoIP fields can stay empty during a local Docker test because the source IP is private. GeoIP becomes useful when traffic comes from public IP addresses.
 
-Create this data view:
+## Security Notes
 
-```text
-Name: Cowrie logs
-Index pattern: trappot-cowrie
-Time field: @timestamp
+TrapPot enables Elastic username/password security by default.
+
+The local demo uses these accounts:
+
+- `elastic`: Kibana login and admin account.
+- `kibana_system`: Kibana service account.
+- `trappot_writer`: Logstash writer account for `trappot-*` indices.
+
+Elasticsearch port `9200` is not published to your host. Kibana port `5601` is published so you can open the dashboard.
+
+This setup still uses HTTP inside the local Docker lab. Do not expose Kibana or Cowrie to a public network without approval and firewall rules.
+
+Check that Elasticsearch rejects requests without a login:
+
+```sh
+docker compose exec elasticsearch curl -s -o /dev/null -w "%{http_code}\n" http://localhost:9200
 ```
 
-Create this data view:
+Expected result:
 
 ```text
-Name: Zeek connection logs
-Index pattern: trappot-zeek-conn
-Time field: @timestamp
+401
 ```
 
-Create this data view:
+Check that the Elastic login works:
+
+```sh
+docker compose exec elasticsearch curl -s -u "elastic:$ELASTIC_PASSWORD" http://localhost:9200/_security/_authenticate
+```
+
+## Useful Files
+
+Main runtime files:
 
 ```text
-Name: Zeek SSH logs
-Index pattern: trappot-zeek-ssh
-Time field: @timestamp
+TrapPot/docker-compose.yml
+TrapPot/.env.example
+TrapPot/cowrie/etc/cowrie.cfg
+TrapPot/cowrie/etc/userdb.txt
+TrapPot/ai_detector/detector.py
+TrapPot/logstash/pipeline/trappot.conf
+TrapPot/elasticsearch/templates/
+TrapPot/kibana/
 ```
 
-After that, open **Discover** in Kibana and choose one of the data views.
+Generated logs:
 
-Useful things to search for:
+```text
+TrapPot/zeek/logs/conn.log
+TrapPot/zeek/logs/ssh.log
+TrapPot/zeek/logs/detections.json
+```
 
-- `eventid : "cowrie.command.input"`
-- `service : "ssh"`
-- `trappot_source : "zeek_conn"`
-- `trappot_source : "cowrie"`
-
-GeoIP can be empty in a local Docker test because the source IP is private. It is useful when the source IP is public.
-
-## Stop TrapPot
+## Stop Or Reset
 
 Stop the containers:
 
@@ -280,17 +282,24 @@ Stop the containers:
 docker compose down
 ```
 
-Stop and delete the stored Elasticsearch/Cowrie Docker volumes:
+Delete stored Cowrie and Elasticsearch data:
 
 ```sh
 docker compose down -v
 ```
 
-Use `down -v` only when you want a clean reset.
+Use `down -v` when you want a clean test.
+
+Run a clean reset:
+
+```sh
+docker compose down -v
+docker compose up --build -d
+```
+
+If you change `.env` after Elasticsearch already started, run the clean reset command. Elasticsearch stores passwords inside its Docker volume.
 
 ## Ports
-
-TrapPot uses these local ports:
 
 - `2222`: Cowrie SSH
 - `2223`: Cowrie Telnet
@@ -298,9 +307,9 @@ TrapPot uses these local ports:
 
 ## Common Problems
 
-If port `2222` is already used, stop the other service or change the port in `TrapPot/docker-compose.yml`.
+If port `2222` is busy, stop the other service or change the Cowrie port in `TrapPot/docker-compose.yml`.
 
-If Elasticsearch does not start, run this again:
+If Elasticsearch does not start, run:
 
 ```sh
 sudo sysctl -w vm.max_map_count=1048576
@@ -308,21 +317,25 @@ sudo sysctl -w vm.max_map_count=1048576
 
 If Kibana opens but shows no data, run the SSH test again and wait 30 seconds.
 
-If the AI detector shows no alerts, check that Zeek created `./zeek/logs/conn.log`.
+If the AI detector shows no alerts, check that Zeek created:
 
-If the Kibana data views are missing, check the setup container:
+```text
+./zeek/logs/conn.log
+```
+
+If the dashboard or data views are missing, check:
 
 ```sh
 docker compose logs kibana_setup
 ```
 
-If you ran an older unsecured version before this one, reset the stored Docker volumes once:
+If Logstash cannot write to Elasticsearch, check:
 
 ```sh
-docker compose down -v
-docker compose up --build -d
+docker compose logs logstash
+docker compose logs elastic_setup
 ```
 
 ## Safety
 
-Run TrapPot in a lab network. Do not expose it to the public internet or a university network without approval.
+Run TrapPot in a lab network. Do not expose it to the public internet or a university network without written approval.
