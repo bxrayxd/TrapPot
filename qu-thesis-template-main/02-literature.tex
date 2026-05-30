@@ -39,7 +39,7 @@ The deployment of honeypots for IoT security research creates multiple technical
 \label{subsub:ml_challenges}
 % ------------------------------------------------------------
 
-Applying machine learning for attack data analysis from honeypots faces ongoing difficulties during the process. The 2023 survey about machine learning based intrusion detection systems for IoT systems identified dataset imbalance as their main problem because benign traffic data exceeded attack samples by a wide margin which resulted in models that produced unfair results with weak ability to detect rare attack types \cite{hindy2023comprehensive}. Research studies that use multiple IoT datasets show Random Forest classifiers reach more than 98\% accuracy for multi class attack detection yet they fail to perform well when dealing with large feature sets and need real-time operation for IoT systems which have limited capabilities \cite{alzahrani2025lightweight}. The process of feature engineering needs domain-specific knowledge to discover important network log characteristics because research indicates that useless features in the data set will lower classification results and make the system more resource-intensive \cite{dekeersmaeker2023survey}. The performance of intrusion detection systems depends on the quality and diversity of their training datasets because models fail to recognize attacks which were not included in the training data especially when these attacks represent zero day exploits and new botnet variants that use evasion methods.
+Applying machine learning for attack data analysis from honeypots faces ongoing difficulties during the process. The 2023 survey about machine learning based intrusion detection systems for IoT systems identified dataset imbalance as their main problem because benign traffic data exceeded attack samples by a wide margin which resulted in models that produced unfair results with weak ability to detect rare attack types \cite{hindy2023comprehensive}. Research studies that use multiple IoT datasets show Random Forest classifiers reach more than 99\% accuracy for multi class attack detection yet they fail to perform well when dealing with large feature sets and need real-time operation for IoT systems which have limited capabilities \cite{alzahrani2025lightweight}. The process of feature engineering needs domain-specific knowledge to discover important network log characteristics because research indicates that useless features in the data set will lower classification results and make the system more resource-intensive \cite{dekeersmaeker2023survey}. The performance of intrusion detection systems depends on the quality and diversity of their training datasets because models fail to recognize attacks which were not included in the training data especially when these attacks represent zero day exploits and new botnet variants that use evasion methods.
 
 % ------------------------------------------------------------
 \subsubsection{Data Collection and Preprocessing Challenges}
@@ -111,6 +111,13 @@ Random Forest is an ensemble learning algorithm that combines multiple decision 
 
 
 % ------------------------------------------------------------
+\subsubsection{Zeek Network Security Monitor}
+\label{subsub:Zeek}
+% ------------------------------------------------------------
+
+Zeek is a powerful, open-source network analysis framework that functions as a passive network monitor. Unlike traditional signature-based intrusion detection systems that look for known malicious patterns, Zeek excels at extracting deep metadata from network traffic. In the TrapPot architecture, Zeek serves as the primary sensor that silently observes all traffic interacting with the Cowrie honeypot. It automatically parses low-level network flows into high-level events—such as connection duration, packet counts, and service-level metadata—providing the essential numerical features required for the machine learning model to function.
+
+% ------------------------------------------------------------
 \subsubsection{Supervised Learning}
 \label{subsub:supervised_learning}
 % ------------------------------------------------------------
@@ -137,7 +144,7 @@ The model performance evaluation consists of accuracy measurements and precision
 \label{subsub:attack_types}
 % ------------------------------------------------------------
 
-TrapPot classifies four attack types captured by honeypots. Brute force attacks use systematic methods to test various username password combinations which help attackers obtain unauthorized system access. The scanning process of attacks involves system exploration to detect active ports and operating services and security weaknesses. Malware download attacks involve attackers uploading or downloading malicious files to compromised systems. Attackers who gain system access through authentication can execute commands to take control of the system while they install backdoors and move between different targets.
+TrapPot classifies five attack types captured by honeypots. Brute force attacks use systematic methods to test various username password combinations which help attackers obtain unauthorized system access. The scanning process of attacks involves system exploration to detect active ports and operating services and security weaknesses. Malware download attacks involve attackers uploading or downloading malicious files to compromised systems. Attackers who gain system access through authentication can execute commands to take control of the system while they install backdoors and move between different targets.
 
 % ============================================================
 \section{Chronological Evolution and Progress of IoT Threat Detection Systems}
