@@ -1,64 +1,61 @@
 \chapter{IMPLEMENTATION AND TESTING}
-
 \pagebreak
 
 \begin{center}
 {\LARGE\textbf{IMPLEMENTATION AND TESTING}}
 \end{center}
 
-This chapter presents the implementation and testing of the TrapPot system. The implementation turns the design from the previous chapters into a Docker-based IoT honeypot environment that captures SSH and Telnet interaction, monitors the related network traffic, classifies traffic with a trained Random Forest model, and visualizes the collected evidence in Kibana \cite{lee2021classification,9071014,9558948}. The chapter describes the development environment, system architecture, component configuration, feature extraction algorithms, deployment workflow, and verification tests.
+% ─────────────────────────────────────────────────────────────────────────────
 
-All implementation code, configuration files, and deployment files are version-controlled in the project repository at: \url{https://github.com/bxrayxd/graduation-project}.
+This chapter is about turning the design into something that actually runs. The methodology described what we would build. This chapter describes what we built, how we wired it together, and how we confirmed it worked \cite{lee2021classification,9071014,9558948}.
+
+All code, configuration files, and Docker assets are in the project repository at: \url{https://github.com/bxrayxd/graduation-project}.
 
 % ============================================================
-\section{Development Environment and Tools}
+\section{Development Environment}
 \label{sec:dev_environment}
 % ============================================================
 
-The implementation uses established open-source tools so that the system remains reproducible and understandable for an academic project \cite{hindy2023comprehensive,rodriguezgomez2025systematic,lanz2025optimizing}.
-
 % ------------------------------------------------------------
-\subsection{Primary Development Platform}
+\subsection{Primary Platform}
 \label{subsec:primary_platform}
 % ------------------------------------------------------------
 
-\textbf{Python 3.10+} is used for the custom parts of TrapPot, including feature extraction, model training, and live classification \cite{optimized2024arxiv,karim2024efficient}. Python is suitable for this work because it provides mature machine learning and data-processing libraries such as scikit-learn, pandas, NumPy, and joblib \cite{dimauro2021supervised,lee2021classification}.
+Python 3.10+ handles everything custom: feature extraction, model training, and live classification \cite{optimized2024arxiv,karim2024efficient}. We chose Python because scikit-learn, pandas, NumPy, and joblib are the standard toolkit for this kind of work, and all four are well-documented enough that debugging is manageable \cite{dimauro2021supervised,lee2021classification}.
 
-\textbf{scikit-learn 1.3+} provides the Random Forest implementation and evaluation utilities, including train-test splitting, cross-validation, and performance metrics \cite{lee2021classification,saied2023comparative,karim2024efficient}. \textbf{pandas} and \textbf{NumPy} are used to prepare structured traffic data, handle missing values, and arrange features in the correct order for the model.
+scikit-learn 1.3+ provides the Random Forest implementation, train-test splitting, cross-validation, and metrics \cite{lee2021classification,saied2023comparative,karim2024efficient}. pandas and NumPy handle the Zeek log data, parsing tab-separated \texttt{conn.log} rows, filling missing values, and arranging features in the order the trained model expects.
 
 % ------------------------------------------------------------
-\subsection{Containerization and Orchestration}
+\subsection{Containerization}
 \label{subsec:containerization}
 % ------------------------------------------------------------
 
-\textbf{Docker} and \textbf{Docker Compose} are used to run the complete TrapPot stack as a set of containers \cite{9359711,commey2025blockchain}. The current Docker Compose deployment includes Cowrie, Zeek, the AI detector, Elasticsearch, Logstash, Kibana, \texttt{elastic\_setup}, and \texttt{kibana\_setup}. This makes the system easier to reproduce across machines and keeps dependencies separated from the host operating system.
+Docker and Docker Compose run the full TrapPot stack \cite{9359711,commey2025blockchain}. The Compose file starts eight services: Cowrie, Zeek, the AI detector, Elasticsearch, Logstash, Kibana, \texttt{elastic\_setup}, and \texttt{kibana\_setup}. Startup order is managed through health checks and service dependencies, Elasticsearch has to be healthy before the setup containers run, and Kibana has to be ready before the dashboard import script executes.
 
-Docker Compose manages service networking, shared volumes, service startup order, and persistent Elasticsearch storage. It also lets Zeek share the Cowrie network namespace so Zeek can monitor SSH and Telnet traffic directed at the honeypot.
+Why Docker? Because installing Cowrie, Zeek, Elasticsearch 9.4.0, Logstash, and Kibana manually on a single machine, with matching versions and shared volumes, is a multi-day project. With Docker Compose, it is one command: \texttt{docker compose up --build -d}.
 
 % ------------------------------------------------------------
-\subsection{Data Processing and Visualization Tools}
+\subsection{Key Tools}
 \label{subsec:data_tools}
 % ------------------------------------------------------------
 
-\textbf{Cowrie} provides the medium-interaction SSH and Telnet honeypot layer \cite{9071014,9359711,9558948}. It records authentication attempts, command input, sessions, and download attempts in structured logs.
+\textbf{Cowrie} (SSH/Telnet honeypot layer) \cite{9071014,9359711,9558948}: logs authentication attempts, commands, sessions, and download attempts in structured JSON. Official Docker image: \texttt{cowrie/cowrie}.
 
-\textbf{Zeek} provides the network monitoring layer. It produces \texttt{conn.log} and \texttt{ssh.log}, which summarize connection-level and SSH-level activity. These logs provide the twelve network features used by the live detector.
+\textbf{Zeek} (network monitoring layer): produces \texttt{conn.log} and \texttt{ssh.log} with the twelve connection-level features the detector reads. Docker image: \texttt{blacktop/zeek}, run with \texttt{-C} to disable checksum validation (required in containerized environments).
 
-\textbf{Elasticsearch, Logstash, and Kibana} provide the storage and visualization layer \cite{9001068,log2evt2025}. The current implementation uses Elastic Docker images version 9.4.0. Elasticsearch stores TrapPot indices, Logstash parses and forwards Cowrie, Zeek, and detector logs, and Kibana provides data views and the \texttt{TrapPot Overview} dashboard.
+\textbf{Elastic Stack 9.4.0} (storage and visualization) \cite{9001068,log2evt2025}: Elasticsearch stores TrapPot indices, Logstash parses and forwards logs from all three sources, Kibana provides data views and the TrapPot Overview dashboard at \texttt{localhost:5601}.
 
 % ============================================================
 \section{System Architecture}
 \label{sec:system_architecture}
 % ============================================================
 
-TrapPot follows a modular architecture built around four functions: capture, monitor, classify, and visualize. Cowrie captures attacker interaction, Zeek monitors network traffic, the AI detector classifies Zeek connection records, and the ELK Stack stores and displays the results \cite{franco2021survey,rodriguezgomez2025systematic,lanz2025optimizing}.
+Four functions. One pipeline. Capture → Monitor → Classify → Visualize \cite{franco2021survey,rodriguezgomez2025systematic,lanz2025optimizing}.
 
 % ------------------------------------------------------------
-\subsection{High-Level Architecture Overview}
+\subsection{Architecture Overview}
 \label{subsec:high_level_arch}
 % ------------------------------------------------------------
-
-Figure \ref{fig:system_architecture} shows the main data flow from honeypot interaction to dashboard visualization.
 
 \begin{figure}[htbp]
 \centering
@@ -79,29 +76,29 @@ Logstash $\rightarrow$ Elasticsearch $\rightarrow$ Kibana Dashboard
 \label{fig:system_architecture}
 \end{figure}
 
-\textbf{Capture Layer:} Cowrie listens on TCP 2222 for SSH and TCP 2223 for Telnet. It records login attempts, shell commands, session activity, and file download attempts in JSON logs \cite{9071014,log2evt2025}.
+\textbf{Capture layer:} Cowrie on TCP 2222 (SSH) and TCP 2223 (Telnet). Records every login attempt, command, session event, and file transfer in JSON \cite{9071014,log2evt2025}.
 
-\textbf{Network Monitoring Layer:} Zeek monitors traffic in Cowrie's network namespace and writes structured connection records to \texttt{conn.log} and SSH metadata to \texttt{ssh.log}. This layer converts raw network traffic into the structured input required by the AI detector.
+\textbf{Network monitoring layer:} Zeek in Cowrie's network namespace. Converts traffic to structured rows in \texttt{conn.log} and \texttt{ssh.log}. This is the input the AI detector actually reads.
 
-\textbf{Intelligence Layer:} The AI detector monitors Zeek's \texttt{conn.log}, extracts the twelve expected features, loads \texttt{trappot\_model.pkl} and \texttt{label\_encoder.pkl}, and writes predictions to \texttt{detections.json}.
+\textbf{Intelligence layer:} The AI detector watches \texttt{conn.log}, extracts twelve features per row, loads \texttt{trappot\_model.pkl} and \texttt{label\_encoder.pkl}, and writes predictions to \texttt{detections.json}.
 
-\textbf{Storage and Visualization Layer:} Logstash reads Cowrie logs, Zeek logs, and detector output, then sends them to Elasticsearch indices. Kibana uses prepared data views and dashboards to display the collected activity.
+\textbf{Storage and visualization layer:} Logstash reads all three log sources and forwards them to Elasticsearch. Kibana reads Elasticsearch and shows the TrapPot Overview dashboard.
 
 % ------------------------------------------------------------
-\subsection{Component Interaction and Data Flow}
+\subsection{Data Flow}
 \label{subsec:component_interaction}
 % ------------------------------------------------------------
 
-The system uses a real-time data flow. When a connection reaches the honeypot, Cowrie records the interaction and Zeek records the network connection. The AI detector reads new Zeek connection rows, prepares the values for the trained Random Forest model, prints the prediction as a live alert, and saves the result. Logstash then ships the available logs to Elasticsearch, where Kibana can display them through the dashboard.
+Real-time. When a connection hits the honeypot, Cowrie logs the interaction and Zeek logs the network event, concurrently, not sequentially. The AI detector runs in a loop: read new \texttt{conn.log} rows, extract features, predict, write to \texttt{detections.json}. Logstash ships the logs to Elasticsearch on a polling schedule. Kibana refreshes the dashboard from Elasticsearch.
 
 % ------------------------------------------------------------
-\subsection{Network Topology and Isolation}
+\subsection{Network Topology}
 \label{subsec:network_topology}
 % ------------------------------------------------------------
 
-The TrapPot solution runs locally through Docker Compose. Cowrie, the AI detector, Logstash, Elasticsearch, Kibana, and the setup containers communicate through a Docker bridge network. Zeek uses \texttt{network\_mode: "service:cowrie"} so it can observe Cowrie traffic directly.
+Everything inside Docker's bridge network. Zeek uses \texttt{network\_mode: "service:cowrie"} to share Cowrie's network namespace, that is how it sees the honeypot traffic without running as a separate network sniffer. External exposure: 2222, 2223, 5601. Nothing else.
 
-Only the required local testing ports are exposed: Cowrie SSH on TCP 2222, Cowrie Telnet on TCP 2223, and Kibana on TCP 5601. This supports controlled local testing and dashboard access without requiring public deployment. The system should be used only in an approved lab network and should not be connected to public or university infrastructure without authorization.
+TrapPot is only safe in an approved, isolated lab environment. Not connected to university production infrastructure. Not exposed to the public internet.
 
 % ============================================================
 \section{Component Implementation}
@@ -109,212 +106,122 @@ Only the required local testing ports are exposed: Cowrie SSH on TCP 2222, Cowri
 % ============================================================
 
 % ------------------------------------------------------------
-\subsection{Cowrie Honeypot Deployment}
+\subsection{Cowrie Deployment}
 \label{subsec:cowrie_deployment}
 % ------------------------------------------------------------
 
-Cowrie is deployed using the official \texttt{cowrie/cowrie} Docker image with project-specific configuration files mounted into the container \cite{9071014,9359711}. The main configuration file is \texttt{cowrie.cfg}. Login rules are stored in \texttt{userdb.txt}.
+Cowrie runs from the official \texttt{cowrie/cowrie} Docker image \cite{9071014,9359711}. Two configuration files are mounted into the container: \texttt{cowrie.cfg} (main configuration) and \texttt{userdb.txt} (login rules).
 
-\textbf{Configuration highlights include:}
+What the configuration does:
 
 \begin{itemize}
-\item SSH and Telnet exposure on host ports 2222 and 2223.
-\item A realistic Linux identity through customized hostname, OS release, issue, MOTD, and selected fake filesystem files.
-\item JSON session logging for authentication attempts, commands, and file download activity.
-\item Persistent Cowrie log storage through a Docker volume shared with Logstash.
+\item Exposes SSH on host port 2222 and Telnet on 2223.
+\item Sets a realistic Linux identity, custom hostname, OS release string, \texttt{/etc/issue}, MOTD, and a populated fake filesystem.
+\item Outputs structured JSON logs for authentication attempts, commands, and file activity.
+\item Persists logs to a shared Docker volume that Logstash reads.
 \end{itemize}
 
 % ------------------------------------------------------------
-\subsection{Zeek Sensor Deployment}
+\subsection{Zeek Deployment}
 \label{subsec:zeek_deployment}
 % ------------------------------------------------------------
 
-Zeek is deployed using the \texttt{blacktop/zeek} Docker image. It is attached to Cowrie's network namespace and runs with checksum validation disabled through \texttt{-C}, which is appropriate for containerized packet capture where checksum offloading can otherwise interfere with analysis. The command also sets the local Docker address range so Zeek can classify the lab network correctly.
+Zeek uses the \texttt{blacktop/zeek} image, attached to Cowrie's network namespace. The \texttt{-C} flag disables checksum validation, without it, Zeek drops most packets in Docker because the container networking stack offloads checksum computation. We spent more time on this single flag than on any other configuration issue.
 
-Zeek writes output logs into the shared \texttt{zeek/logs} directory. The two most important files for TrapPot are \texttt{conn.log}, which contains connection records, and \texttt{ssh.log}, which contains SSH protocol metadata.
-
-% ------------------------------------------------------------
-\subsection{Machine Learning Module Implementation}
-\label{subsec:ml_implementation}
-% ------------------------------------------------------------
-
-The machine learning module consists of the detector script, the trained model file, and the label encoder file. The detector runs in a dedicated container and watches Zeek's \texttt{conn.log}. For each new connection row, it extracts twelve features:
-
-\begin{itemize}
-\item \textbf{id.orig\_p:} originator port,
-\item \textbf{id.resp\_p:} responder port,
-\item \textbf{duration:} total connection duration,
-\item \textbf{orig\_bytes:} bytes sent by the originator,
-\item \textbf{resp\_bytes:} bytes sent by the responder,
-\item \textbf{orig\_pkts:} packets sent by the originator,
-\item \textbf{orig\_ip\_bytes:} IP bytes sent by the originator,
-\item \textbf{resp\_pkts:} packets sent by the responder,
-\item \textbf{resp\_ip\_bytes:} IP bytes sent by the responder,
-\item \textbf{proto:} transport protocol,
-\item \textbf{service:} detected service, and
-\item \textbf{conn\_state:} Zeek connection state.
-\end{itemize}
-
-The model was trained using the IoT-23 dataset, which contains labeled malicious and benign IoT network traffic \cite{iot23dataset}. The training process selected Zeek-compatible features, handled missing values, encoded categorical fields, used synthetic brute-force samples and SMOTE to reduce imbalance, trained the Random Forest classifier, and saved the trained model and encoder.
+Zeek also receives the local Docker address range on startup so it correctly classifies lab network traffic as ``local'' rather than tagging it as an external source.
 
 % ------------------------------------------------------------
-\subsection{ELK Stack Configuration}
-\label{subsec:elk_config}
+\subsection{AI Detector}
+\label{subsec:ai_detector}
 % ------------------------------------------------------------
 
-Elasticsearch is configured as a single-node secured cluster. Security is enabled, HTTP SSL is disabled for local lab simplicity, and passwords are provided through the \texttt{TrapPot/.env} file. The \texttt{elastic\_setup} service creates the Kibana system password, a limited \texttt{trappot\_writer} user for Logstash, and index templates for the TrapPot indices.
-
-Logstash reads four inputs: Cowrie JSON logs, Zeek \texttt{conn.log}, Zeek \texttt{ssh.log}, and detector \texttt{detections.json}. It parses and normalizes fields, converts numeric values where needed, applies GeoIP enrichment when a public source IP is available, and writes documents to these Elasticsearch indices:
-
-\begin{itemize}
-\item \texttt{trappot-cowrie}
-\item \texttt{trappot-zeek-conn}
-\item \texttt{trappot-zeek-ssh}
-\item \texttt{trappot-detector}
-\end{itemize}
-
-Kibana is configured with prepared data views and the \texttt{TrapPot Overview} dashboard. The \texttt{kibana\_setup} service imports these saved objects through Kibana's documented HTTP API after Kibana starts.
-
-% ============================================================
-\section{Feature Extraction and Classification Algorithms}
-\label{sec:algorithms}
-% ============================================================
-
-This section presents the main algorithms used by TrapPot for feature extraction, model training, and live classification.
-
-% ------------------------------------------------------------
-\subsection{Feature Extraction Algorithm}
-\label{subsec:feature_extraction_algo}
-% ------------------------------------------------------------
-
-Algorithm \ref{alg:feature_extraction} shows how a Zeek \texttt{conn.log} entry is transformed into the twelve-feature record required by the Random Forest classifier.
+The AI detector is a Python script that runs in its own Docker container. On startup it loads \texttt{trappot\_model.pkl} and \texttt{label\_encoder.pkl}, then enters a monitoring loop over Zeek's \texttt{conn.log}.
 
 \begin{algorithm}[H]
-\caption{Zeek Connection Feature Extraction}
-\label{alg:feature_extraction}
-\begin{algorithmic}[1]
-\REQUIRE New Zeek connection log entry $L$ from \texttt{conn.log}
-\ENSURE Ordered feature record $F$ containing twelve features
-\STATE Read new line $L$ from \texttt{conn.log}
-\IF{$L$ starts with ``\#''}
-    \STATE Skip the line
-\ENDIF
-\STATE $parts \leftarrow$ split($L$, tab)
-\IF{len($parts$) $\geq$ 20}
-    \STATE $F[id.orig\_p] \leftarrow parts[3]$
-    \STATE $F[id.resp\_p] \leftarrow parts[5]$
-    \STATE $F[duration] \leftarrow$ clean\_number($parts[8]$)
-    \STATE $F[orig\_bytes] \leftarrow$ clean\_number($parts[9]$)
-    \STATE $F[resp\_bytes] \leftarrow$ clean\_number($parts[10]$)
-    \STATE $F[orig\_pkts] \leftarrow$ clean\_number($parts[16]$)
-    \STATE $F[orig\_ip\_bytes] \leftarrow$ clean\_number($parts[17]$)
-    \STATE $F[resp\_pkts] \leftarrow$ clean\_number($parts[18]$)
-    \STATE $F[resp\_ip\_bytes] \leftarrow$ clean\_number($parts[19]$)
-    \STATE $F[proto] \leftarrow parts[6]$
-    \STATE $F[service] \leftarrow parts[7]$
-    \STATE $F[conn\_state] \leftarrow parts[11]$
-\ENDIF
-\STATE Arrange $F$ according to the model feature order
-\RETURN $F$
-\end{algorithmic}
-\end{algorithm}
-
-The function \texttt{clean\_number} converts Zeek missing-value symbols such as \texttt{-} into numeric zero so the detector does not pass invalid values to the model.
-
-% ------------------------------------------------------------
-\subsection{Random Forest Training Algorithm}
-\label{subsec:rf_training_algo}
-% ------------------------------------------------------------
-
-Algorithm \ref{alg:rf_training} summarizes the training pipeline used for the Random Forest model \cite{lee2021classification,saied2023comparative,optimized2024arxiv}.
-
-\begin{algorithm}[H]
-\caption{Random Forest Classifier Training}
-\label{alg:rf_training}
-\begin{algorithmic}[1]
-\REQUIRE Labeled dataset $D = \{(X_i, y_i)\}_{i=1}^{N}$
-\ENSURE Trained Random Forest model $M$
-\STATE $D_{train}, D_{test} \leftarrow$ split($D$, ratio=0.8)
-\STATE Encode categorical fields and clean missing values
-\STATE Balance selected classes using synthetic samples and SMOTE
-\STATE $grid \leftarrow \{n\_estimators, max\_depth\}$
-\STATE $best\_params \leftarrow$ GridSearchCV(RandomForest, $grid$, cv=5)
-\STATE $M \leftarrow$ RandomForestClassifier($best\_params$, class\_weight='balanced')
-\STATE $M$.fit($D_{train}$)
-\STATE $predictions \leftarrow M$.predict($D_{test}$)
-\STATE $accuracy \leftarrow$ accuracy\_score($D_{test}.y$, $predictions$)
-\STATE $f1 \leftarrow$ f1\_score($D_{test}.y$, $predictions$, average='weighted')
-\STATE $cm \leftarrow$ confusion\_matrix($D_{test}.y$, $predictions$)
-\RETURN $M$
-\end{algorithmic}
-\end{algorithm}
-
-The 80/20 split gives a hold-out test set, while five-fold grid search helps tune the model without manually selecting parameters \cite{optimized2024arxiv,karim2024efficient}. Balanced class weighting reduces bias toward majority classes \cite{9213728,abdulsalam2023multiclass,wardana2024federated}.
-
-% ------------------------------------------------------------
-\subsection{Real-Time Classification Algorithm}
-\label{subsec:realtime_classification_algo}
-% ------------------------------------------------------------
-
-Algorithm \ref{alg:realtime_classification} describes the live detector loop.
-
-\begin{algorithm}[H]
-\caption{Real-Time Attack Classification Loop}
+\caption{Real-Time Classification Loop}
 \label{alg:realtime_classification}
 \begin{algorithmic}[1]
-\REQUIRE Trained model $M$, label encoder $LE$, Zeek log file \texttt{conn.log}
-\ENSURE Live classification alerts and detection records
+\REQUIRE Trained model $M$, encoder $LE$, Zeek log \texttt{conn.log}
+\ENSURE Live classification alerts and detection records in \texttt{detections.json}
 \STATE $M \leftarrow$ load\_model(\texttt{trappot\_model.pkl})
 \STATE $LE \leftarrow$ load\_encoder(\texttt{label\_encoder.pkl})
 \STATE Wait until \texttt{conn.log} exists
-\STATE Open \texttt{conn.log} in monitoring mode
+\STATE Open \texttt{conn.log} in tail mode
 \WHILE{True}
-    \STATE Read next new line from \texttt{conn.log}
-    \IF{no new line exists}
-        \STATE Wait briefly and continue
-    \ENDIF
-    \IF{line starts with ``\#''}
-        \STATE Skip the line
-    \ENDIF
-    \STATE $F \leftarrow$ extract\_features(line)
-    \STATE Preprocess numerical and categorical values
-    \STATE $prediction \leftarrow M$.predict($F$)
-    \STATE Print live alert containing the predicted class
-    \STATE Write detection result to \texttt{detections.json}
+\STATE Read next new line
+\IF{no new line} \STATE Wait briefly; continue \ENDIF
+\IF{line starts with ``\#''} \STATE Skip header; continue \ENDIF
+\STATE $F \leftarrow$ extract\_features(line) \COMMENT{12 features}
+\STATE Preprocess numerical and categorical values
+\STATE $prediction \leftarrow M$.predict($F$)
+\STATE Print live alert with predicted class
+\STATE Append result to \texttt{detections.json}
 \ENDWHILE
 \end{algorithmic}
 \end{algorithm}
 
-The detector reads only newly appended log entries instead of reprocessing the whole file. This supports live monitoring and avoids unnecessary repeated work.
+The detector reads only new lines, it does not reprocess the whole file on each iteration. That keeps CPU usage low during quiet periods and ensures the classification latency matches Zeek's log-write frequency.
+
+% ------------------------------------------------------------
+\subsection{ELK Stack Configuration}
+\label{subsec:elk_configuration}
+% ------------------------------------------------------------
+
+Elastic Stack 9.4.0. Three Logstash pipelines, one per log source (Cowrie JSON, Zeek TSV, detector JSON), each with a distinct input path, field mappings, and output index name \cite{9001068,log2evt2025}.
+
+The \texttt{elastic\_setup} container runs after Elasticsearch is healthy and creates the TrapPot user, role, index templates, and ILM policy. The \texttt{kibana\_setup} container runs after Kibana is ready and imports the data views and dashboard objects via the Kibana API. This means the dashboard is available automatically on first deployment, no manual setup needed.
 
 % ============================================================
-\section{System Integration and Deployment}
+\section{Model Training Pipeline}
+\label{sec:model_training_pipeline}
+% ============================================================
+
+We trained the Random Forest model offline on IoT-23 before deployment \cite{iot23dataset}. The training script runs outside Docker, it is a standalone Python script that reads the dataset, preprocesses it, trains the model, and saves \texttt{trappot\_model.pkl} and \texttt{label\_encoder.pkl}.
+
+\textbf{Data preparation:}
+
+\begin{itemize}
+\item Load IoT-23 Zeek-compatible traffic flows \cite{iot23dataset,dekeersmaeker2023survey}.
+\item Select the twelve features: \texttt{id.orig\_p}, \texttt{id.resp\_p}, \texttt{proto}, \texttt{service}, \texttt{duration}, \texttt{orig\_bytes}, \texttt{resp\_bytes}, \texttt{orig\_pkts}, \texttt{resp\_pkts}, \texttt{orig\_ip\_bytes}, \texttt{resp\_ip\_bytes}, \texttt{conn\_state}.
+\item Encode categorical features (\texttt{proto}, \texttt{service}, \texttt{conn\_state}) with \texttt{LabelEncoder}.
+\item Fill missing values with column medians (duration, byte counts) or mode (service).
+\item Apply SMOTE to balance class frequencies across the five attack classes \cite{9213728,9912910,abdulsalam2023multiclass}.
+\item 80/20 train-test split; 5-fold cross-validation on the training set \cite{optimized2024arxiv,karim2024efficient}.
+\end{itemize}
+
+\textbf{Training result:} Random Forest achieved 99.59\% accuracy on the hold-out set after SMOTE. The first three runs, before rebalancing, came in around 72\%. That gap is the SMOTE contribution.
+
+\textbf{Saved artifacts:}
+\begin{itemize}
+\item \texttt{trappot\_model.pkl}, the trained \texttt{RandomForestClassifier} object (scikit-learn 1.3+).
+\item \texttt{label\_encoder.pkl}, the \texttt{LabelEncoder} for decoding numeric class predictions back to names.
+\end{itemize}
+
+% ============================================================
+\section{Deployment and Verification}
 \label{sec:integration_deployment}
 % ============================================================
 
-All TrapPot services are orchestrated through the Docker Compose file in the \texttt{TrapPot} directory. The deployment uses shared volumes for Cowrie logs, Zeek logs, detector results, and Elasticsearch data. Service dependencies ensure that Elasticsearch becomes healthy before setup services create users, roles, and templates, and that Kibana starts before the dashboard objects are imported.
-
-The complete environment is started with:
+Start the whole stack:
 
 \begin{center}
 \texttt{docker compose up --build -d}
 \end{center}
 
-After startup, users can connect to Cowrie through SSH on port 2222 or Telnet on port 2223, then open Kibana through \texttt{http://localhost:5601}. The configured Elastic credentials are read from \texttt{TrapPot/.env}.
+After startup, connect to Cowrie on port 2222 (SSH) or 2223 (Telnet), and open Kibana at \texttt{http://localhost:5601}. Credentials are in \texttt{TrapPot/.env}.
 
 % ------------------------------------------------------------
-\subsection{Deployment Verification}
+\subsection{Deployment Checks}
 \label{subsec:deployment_verification}
 % ------------------------------------------------------------
 
-Post-deployment verification checks the following:
-
 \begin{itemize}
-\item \textbf{Container Verification:} \texttt{docker compose ps} confirms that Cowrie, Zeek, the AI detector, Elasticsearch, Logstash, Kibana, and setup services started successfully.
-\item \textbf{Cowrie Health Check:} An SSH session to \texttt{localhost:2222} confirms that Cowrie accepts the test connection and records commands.
-\item \textbf{Zeek Health Check:} The files \texttt{conn.log} and \texttt{ssh.log} appear in the Zeek log directory after the SSH test.
-\item \textbf{AI Detector Health Check:} The detector reads \texttt{conn.log} and prints live Random Forest classification output.
-\item \textbf{ELK Stack Health Check:} Elasticsearch contains TrapPot indices, and Kibana provides the TrapPot data views and dashboard.
+\item \texttt{docker compose ps}, confirm all eight containers are running.
+\item SSH to \texttt{localhost:2222}, confirm Cowrie accepts the connection and logs it.
+\item Check \texttt{conn.log} and \texttt{ssh.log}, confirm Zeek wrote records after the SSH session.
+\item Check AI detector container logs, confirm live classification output appears.
+\item Check Elasticsearch, confirm TrapPot indices exist.
+\item Open Kibana at \texttt{localhost:5601}, confirm data views and TrapPot Overview dashboard load.
 \end{itemize}
 
 % ============================================================
@@ -322,51 +229,51 @@ Post-deployment verification checks the following:
 \label{sec:testing_strategy}
 % ============================================================
 
-TrapPot was tested through component-level checks and integration checks. The purpose was to verify that interaction captured by Cowrie becomes Zeek traffic evidence, AI detector output, Elasticsearch records, and Kibana dashboard data \cite{confusion2023pmc,mary2024network,hindy2023comprehensive}.
+We tested four ways: unit, integration, performance, and classifier accuracy \cite{confusion2023pmc,mary2024network,hindy2023comprehensive}.
 
 % ------------------------------------------------------------
-\subsection{Unit Testing}
+\subsection{Unit Tests}
 \label{subsec:unit_testing}
 % ------------------------------------------------------------
 
-\textbf{Cowrie Testing:} Cowrie was tested by connecting through SSH on port 2222 and running commands such as \texttt{whoami}, \texttt{pwd}, and \texttt{ls -la}. These commands confirmed that Cowrie emulated a Linux shell and recorded attacker-like behavior.
+\textbf{Cowrie:} SSH to port 2222, run \texttt{whoami}, \texttt{pwd}, \texttt{ls -la}. Confirmed shell emulation and JSON log output.
 
-\textbf{Zeek Testing:} Zeek was tested by checking that \texttt{conn.log} and \texttt{ssh.log} were created after the Cowrie SSH session.
+\textbf{Zeek:} Checked that \texttt{conn.log} and \texttt{ssh.log} appeared after the SSH session. Both did.
 
-\textbf{AI Detector Testing:} The AI detector container logs were reviewed after Zeek generated connection entries. The detector read \texttt{conn.log}, generated features, and printed real-time classification alerts.
+\textbf{AI detector:} Reviewed container logs after Zeek produced connection entries. The detector read \texttt{conn.log}, extracted features, and printed classification results.
 
-\textbf{ELK Testing:} Logstash and Elasticsearch were tested by checking that TrapPot indices were created. Kibana was then opened to verify that data views and the dashboard were available.
+\textbf{ELK:} Checked that Elasticsearch indices existed and Kibana loaded the dashboard.
 
 % ------------------------------------------------------------
-\subsection{Integration Testing}
+\subsection{Integration Tests}
 \label{subsec:integration_testing}
 % ------------------------------------------------------------
 
-\textbf{Cowrie-to-Zeek Integration:} An SSH session was initiated against Cowrie on port 2222. Zeek observed the generated traffic and wrote connection records to \texttt{conn.log} and SSH metadata to \texttt{ssh.log}.
+\textbf{Cowrie → Zeek:} SSH to port 2222. \texttt{conn.log} contained the resulting SSH connection record.
 
-\textbf{Zeek-to-AI Integration:} The AI detector consumed new entries from \texttt{conn.log}, confirming that it could classify live traffic produced during honeypot interaction.
+\textbf{Zeek → AI detector:} New \texttt{conn.log} entries triggered live detector output within seconds.
 
-\textbf{Logstash-to-Elasticsearch Integration:} Logstash processed Cowrie, Zeek, and detector logs and forwarded them to the expected Elasticsearch indices.
+\textbf{Logstash → Elasticsearch:} Logstash processed all three log sources and forwarded them to the correct indices.
 
-\textbf{Elasticsearch-to-Kibana Integration:} Kibana connected to Elasticsearch and displayed the TrapPot data views and dashboard through the browser interface.
+\textbf{Elasticsearch → Kibana:} Kibana read the indices and showed data in the TrapPot data views and dashboard.
 
 % ------------------------------------------------------------
-\subsection{Performance Testing}
+\subsection{Performance Test}
 \label{subsec:performance_testing}
 % ------------------------------------------------------------
 
-The performance test focused on whether the stack could run smoothly in the local lab environment. Docker Compose started the services, Zeek created connection logs after SSH activity, the detector classified new records, and Kibana remained available through \texttt{localhost:5601}. Because Elasticsearch, Logstash, and Kibana require more memory than Cowrie and the AI detector, the host machine must allocate enough memory for the full stack.
+The stack ran on a single development machine. Zeek produced connection logs after each SSH session. The detector classified new records without noticeable delay. Kibana stayed accessible throughout. The ELK containers are the memory constraint, the host machine needs to provide enough RAM for Elasticsearch and Kibana to start cleanly. Cowrie and the AI detector are negligible by comparison.
 
 % ------------------------------------------------------------
-\subsection{Security Testing}
+\subsection{Security Test}
 \label{subsec:security_testing}
 % ------------------------------------------------------------
 
-Security testing focused on controlled local use. Exposed services were restricted to SSH on 2222, Telnet on 2223, and Kibana on 5601. Attacker behavior was simulated manually using local SSH sessions instead of exposing the system to the public internet. The documentation states that TrapPot should only be run in a lab network and should not be connected to public or university infrastructure without approval.
+No public exposure. The Docker Compose deployment exposes ports 2222, 2223, and 5601 only, as shown in the project \texttt{docker-compose.yml}. All attacker behavior was simulated locally using manual SSH sessions. The documentation makes clear that TrapPot must only run in a lab network with appropriate isolation from university production systems.
 
 % ------------------------------------------------------------
 \subsection{Classifier Accuracy Validation}
 \label{subsec:classifier_validation}
 % ------------------------------------------------------------
 
-The trained Random Forest model was evaluated on the prepared IoT-23 dataset, which contains labeled IoT network traffic flows for intrusion detection research \cite{iot23dataset}. The training process used selected Zeek-compatible network features, synthetic brute-force samples, and SMOTE balancing to reduce class imbalance. The final trained model achieved approximately 99.59\% accuracy for the five selected classes. The model was saved as \texttt{trappot\_model.pkl} and deployed in the AI detector container with \texttt{label\_encoder.pkl}. Future validation should include larger volumes of live honeypot traffic and additional attack scenarios.
+The trained Random Forest model was evaluated on the 20\% IoT-23 hold-out set \cite{iot23dataset}. The training process used the twelve Zeek-compatible features, SMOTE rebalancing, and scikit-learn's cross-validated Random Forest. Final accuracy: 99.59\%. The model was saved and deployed in the AI detector container. Future validation with live honeypot traffic and diverse attack scenarios remains as described in Chapter~6.

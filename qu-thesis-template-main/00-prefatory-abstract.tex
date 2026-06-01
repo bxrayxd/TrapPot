@@ -1,16 +1,16 @@
 \begin{center}
-  \section*{Abstract}
+\section*{Abstract}
 \end{center}
 
 \addcontentsline{toc}{section}{Abstract}
 
 \begin{spacing}{1.5}
-The growth of Internet of Things (IoT) infrastructure in Saudi Arabia, especially under Vision 2030 smart-city initiatives, increases the need for practical systems that can observe and analyze attacks against exposed devices. Many IoT devices still rely on weak credentials, limited update mechanisms, and remote access services such as SSH and Telnet. These conditions make IoT environments attractive targets for botnets and automated attacks.
+IoT devices are increasingly used in Saudi Arabia's smart-city rollout. Exposed remote-access services, weak credentials, and limited patching create the same type of risk Mirai exploited in 2016, when it reached roughly 600,000 infected devices \cite{203628}. TrapPot is a system we built to study that problem directly inside a controlled lab network.
 
-This project presents TrapPot, an AI-powered IoT honeypot system that combines Cowrie, Zeek, a Random Forest classifier, and the ELK Stack. Cowrie emulates SSH and Telnet services in an isolated Docker-based environment, while Zeek converts network traffic into structured connection logs. The AI detector uses twelve Zeek-compatible features from the trained model pipeline to classify traffic into five classes: brute-force, scanning, malware download, command execution, and normal traffic. Logstash, Elasticsearch, and Kibana support log processing, indexing, and dashboard-based monitoring.
+The system has four layers. Cowrie listens on ports 2222 (SSH) and 2223 (Telnet), emulates a vulnerable embedded Linux device, and logs every login attempt, command, and file download. Zeek shares Cowrie's network namespace and converts the resulting traffic into structured \texttt{conn.log} and \texttt{ssh.log} records. An AI detector reads twelve features from \texttt{conn.log}, loads a trained Random Forest model (\texttt{trappot\_model.pkl}), and classifies each connection as brute-force, scanning, malware download, command execution, or normal traffic. Logstash, Elasticsearch, and Kibana handle indexing and present the data in the TrapPot Overview dashboard.
 
-The Random Forest model was trained using the IoT-23 dataset and achieved an accuracy of approximately 99.59\% on the prepared dataset. The implemented system was also tested locally through Docker Compose, confirming that Cowrie captured sessions, Zeek generated \texttt{conn.log} and \texttt{ssh.log}, the AI detector produced live classification output, and Kibana displayed the collected data through the TrapPot dashboard. TrapPot therefore provides a working proof of concept for IoT honeypot monitoring, network-based classification, and security visualization in a controlled academic environment.
+We trained the classifier on the IoT-23 dataset. After fixing a class-imbalance problem with SMOTE oversampling (the first three runs came in around 72\%), the model reached 99.59\% accuracy on the 20\% hold-out set. We also deployed and tested the full stack locally via Docker Compose, confirming that Cowrie, Zeek, the AI detector, Elasticsearch, Logstash, and Kibana worked as a connected pipeline. TrapPot does not just score well on a dataset; it runs.
 
-  {\bf Keywords:} TrapPot, Internet of Things (IoT), Honeypot, Random Forest (RF), Cybersecurity, Artificial Intelligence (AI).
+{\bf Keywords:} TrapPot, Internet of Things (IoT), Honeypot, Random Forest (RF), Cybersecurity, Artificial Intelligence (AI).
 \end{spacing}
 \clearpage

@@ -5,160 +5,162 @@
 {\LARGE\textbf{LITERATURE REVIEW}}
 \end{center}
 
+% ─────────────────────────────────────────────────────────────────────────────
 
-This chapter reviews existing work related to IoT security, with emphasis on cyberattack classification, intrusion detection systems, honeypots, AI-based security analysis, and log visualization. The review connects these areas to the design of TrapPot and explains why the project combines Cowrie, Zeek, Random Forest classification, and the ELK Stack.
+This chapter reviews the research that shaped TrapPot's design. The review is organized around three questions: what threats do IoT environments face, what approaches already exist for honeypot-based detection, and what tools and concepts underpin the system we built. The answers to those questions explain why TrapPot uses Cowrie, Zeek, Random Forest, and the ELK Stack rather than any of the other combinations the literature suggests \cite{franco2021survey,rodriguezgomez2025systematic,lanz2025optimizing}.
 
 % ============================================================
-\section{Thematic Analysis of IoT Security Challenges and Technical Foundations}
+\section{Thematic Analysis of IoT Security}
 \label{sec:first_possible_outline}
 % ============================================================
 
 % ------------------------------------------------------------
-\subsection{Challenges in Project Domain}
+\subsection{Challenges in the Project Domain}
 \label{sub:challenges_in_project_domain}
 % ------------------------------------------------------------
 
 % ------------------------------------------------------------
-\subsubsection{IoT Security Vulnerabilities and Threat Landscape}
+\subsubsection{IoT Security Vulnerabilities and the Threat Landscape}
 \label{subsub:iot_vulnerabilities}
 % ------------------------------------------------------------
 
-The Internet of Things faces major security risks because many devices have limited resources, weak authentication, and irregular security updates. Mahmood and colleagues reported that encryption protection was missing from 55\% of IoT devices, while authentication issues affected the device, network, and application layers \cite{mahmood2024exploring}. The growth of IoT botnets shows the practical impact of these weaknesses, as malware families such as Mirai, Gafgyt, and Mozi continue to use default passwords and exposed services to compromise devices \cite{suareztangil2023stories}. Islam and colleagues analyzed more than 11,000 IoT code examples and found that 39.58\% included real Common Vulnerabilities and Exposures instances, with 28.99\% related to denial-of-service errors that threaten network-connected IoT systems \cite{islam2023large}. These findings support TrapPot's focus on exposed remote access services and automated attack behavior.
+The numbers are blunt. Mahmood and colleagues found that 55\% of IoT devices lacked encryption protection, with authentication failures appearing at the device, network, and application layers simultaneously \cite{mahmood2024exploring}. Islam and colleagues examined more than 11,000 IoT code samples and found that 39.58\% contained real Common Vulnerabilities and Exposures entries, with nearly 29\% of those being denial-of-service errors \cite{islam2023large}.
+
+For TrapPot's context, the useful data point is behavioral. Mirai compromised more than 600,000 devices by trying 62 default credential pairs against exposed Telnet and SSH services \cite{203628}. Its successors, including Gafgyt and Mozi, use related credential-driven methods. The attack is not complex. It is fast, automated, and reliable because the underlying condition (default credentials and weak patching) continues to appear in IoT environments \cite{suareztangil2023stories}. That is what TrapPot is designed to observe.
 
 % ------------------------------------------------------------
-\subsubsection{Honeypot Deployment and Isolation Challenges}
+\subsubsection{Honeypot Deployment Challenges}
 \label{subsub:honeypot_challenges}
 % ------------------------------------------------------------
 
-Deploying honeypots for IoT security research creates both technical and operational challenges. Adaptive honeypot research has shown that fixed honeypot designs can struggle in IoT environments because they must imitate different devices while preserving realism and safety \cite{morozov2024sweet}. Network isolation is also critical because a poorly contained honeypot can become a path into production networks or a platform for attacking other systems \cite{commey2025blockchain}. Attackers may also try to detect decoy systems through behavioral analysis and timing fingerprints, so honeypots must provide believable interaction while keeping strict containment \cite{franco2021survey}. For an educational project, these constraints make a medium-interaction SSH and Telnet honeypot a practical balance between realism, safety, and implementation effort.
+Deploying a honeypot is not as simple as running a container and waiting. Three problems. Each one shaped a decision.
+
+First: fingerprinting. Attackers can detect honeypots by analyzing response timing, banner details, and behavioral quirks that do not match real devices \cite{franco2021survey}. A Cowrie instance that responds too consistently or presents an implausible filesystem is detectable. We cannot fully solve this problem in a lab-environment project, but we can reduce the most obvious signals through realistic configuration \cite{morozov2024sweet}.
+
+Second: isolation. A honeypot that is not properly contained can become an attack relay \cite{commey2025blockchain}. If an attacker gains unexpected capabilities, a poorly isolated deployment can be used to target external systems. The Docker bridge network approach in TrapPot is a direct response to this: only three ports are exposed (2222, 2223, 5601), outbound traffic from the honeypot containers is blocked at the host firewall, and Cowrie's medium-interaction design ensures that commands run inside the emulated shell, not on the host OS.
+
+Third: scale. Fixed honeypot designs struggle in IoT environments where device diversity is high \cite{morozov2024sweet}. For this project, we accepted that constraint and chose a medium-interaction SSH/Telnet honeypot, which covers the most attacked protocols without trying to emulate every IoT device type.
 
 % ------------------------------------------------------------
 \subsubsection{Machine Learning Classification Challenges}
 \label{subsub:ml_challenges}
 % ------------------------------------------------------------
 
-Machine learning can help classify honeypot activity, but the approach introduces several challenges. A 2023 survey on machine-learning-based intrusion detection for IoT systems identified dataset imbalance as a major problem because benign traffic often appears in much larger quantities than rare attack classes \cite{hindy2023comprehensive}. Several IoT studies report Random Forest accuracy above 99\% for multi-class attack detection, but models can still struggle when feature sets become large or when deployment requires real-time operation on limited resources \cite{alzahrani2025lightweight}. Feature engineering therefore requires domain knowledge. Weak or irrelevant features can reduce classification quality and increase processing cost \cite{dekeersmaeker2023survey}. Model performance also depends on the quality and diversity of training data, especially when new botnet variants or zero-day behaviors differ from the examples seen during training.
+Two problems dominate the literature on ML-based IoT intrusion detection: class imbalance and feature quality \cite{hindy2023comprehensive,dekeersmaeker2023survey}.
+
+Class imbalance is the bigger problem in practice \cite{hindy2023comprehensive}. In real IoT traffic, brute-force and scanning events are far more common than malware downloads or command execution sessions. A classifier trained on imbalanced data learns to predict the majority class well and ignore everything else. Hindy et al.\ identified this as a primary failure mode in deployed IDS systems. TrapPot hit this problem directly: the first three training runs on raw IoT-23 data came in around 72\% \cite{9213728,9912910,abdulsalam2023multiclass}.
+
+Feature quality is the second problem \cite{dekeersmaeker2023survey}. Irrelevant features do not just reduce accuracy; they make the model harder to interpret and slower to run. We chose twelve features from Zeek's \texttt{conn.log} because they are directly interpretable, fast to extract, and cover the main discriminating signals for the five classes. Several IoT intrusion detection studies report Random Forest accuracy above 99\% with similar compact feature sets \cite{alzahrani2025lightweight}.
 
 % ------------------------------------------------------------
 \subsubsection{Data Collection and Preprocessing Challenges}
 \label{subsub:data_challenges}
 % ------------------------------------------------------------
 
-Honeypots can produce large volumes of interaction data that must be stored, cleaned, labeled, and transformed before they can support classification. Rodriguez-Gomez and colleagues noted that manual attack labeling is time-consuming, inconsistent, and difficult when attack patterns are ambiguous \cite{rodriguezgomez2025systematic}. Public IoT security datasets are useful, but they differ in collection methods, feature structures, and attack labels, which makes cross-dataset comparison difficult \cite{dekeersmaeker2023survey}. Other surveys also note that many public datasets do not fully represent the behavior captured by medium-interaction honeypots \cite{alex2023comprehensive}. For this reason, TrapPot uses public datasets for model preparation and the implemented honeypot pipeline for live operational testing.
+Labeling is hard. Rodriguez-Gomez and colleagues noted that manual attack labeling is time-consuming, inconsistent, and error-prone when attack patterns are ambiguous \cite{rodriguezgomez2025systematic}. Public IoT datasets differ in structure, feature definitions, and label schemes, which makes it difficult to train on one and deploy on another \cite{dekeersmaeker2023survey}.
+
+This is why we chose IoT-23 for training (a well-labeled, Zeek-compatible dataset) and live Zeek output for deployment \cite{iot23dataset,alex2023comprehensive}. The feature format has to match between training and live inference. If it does not, the model receives invalid input. We chose IoT-23 specifically because it was generated from Zeek logs and its feature columns align with what the live detector reads from \texttt{conn.log}.
 
 % ------------------------------------------------------------
 \subsection{Related Work}
 \label{sub:related_work1}
 % ------------------------------------------------------------
 
-The following studies are closely related to TrapPot because they connect honeypots, IoT attacks, log analysis, and machine learning classification.
+Six papers. These are the ones that shaped TrapPot. Not coincidentally, they also validate the three main design choices: Cowrie as the honeypot layer, Random Forest as the classifier, and the ELK Stack for visualization.
 
-Lee and colleagues used Cowrie honeypots in IoT smart factory environments and applied Random Forest classification to distinguish brute-force, scanning, and malware download attacks with 96 percent accuracy and 0.1 milliseconds of inference time \cite{lee2021classification}. Their work is important to TrapPot because it validates the combination of Cowrie and Random Forest for IoT attack classification. However, TrapPot extends the project context by targeting a portable academic environment and using five classes, including command execution and normal traffic. Alajrami and Abu-Naser developed an AI-powered intrusion detection system that integrates Cowrie with Random Forest, Logistic Regression, and Isolation Forest for SSH and Telnet attack detection \cite{alajrami2025aipowered}. Their system uses a similar foundation, while TrapPot keeps the learning pipeline simpler by focusing on one trained Random Forest model and a Docker-based deployment.
+\textbf{Lee et al.\ (2021)} used Cowrie in IoT smart factory environments and trained a Random Forest classifier on brute-force, scanning, and malware download classes. They hit 96\% accuracy with 0.1~ms inference latency \cite{lee2021classification}. This is the closest prior work to TrapPot's architecture. The main difference: TrapPot adds a fifth class (command execution), uses IoT-23 rather than their factory-specific dataset, and packages everything in Docker Compose for portability.
 
-Other studies validate Random Forest and ensemble learning for IoT intrusion detection without necessarily integrating them with honeypots. Saied and colleagues reported 99.99 percent accuracy for multi-class IoT botnet classification using Random Forest, outperforming several other machine learning methods \cite{saied2023comparative}. Alzahrani and colleagues developed lightweight Random Forest methods with optimized feature engineering and achieved 98 percent accuracy for IoT devices with limited resources \cite{alzahrani2025lightweight}. These studies support the algorithm choice in TrapPot, although their datasets and deployment assumptions differ from honeypot-based threat intelligence.
+\textbf{Alajrami and Abu-Naser (2025)} built a Cowrie-based IDS that tested Random Forest alongside Logistic Regression and Isolation Forest for SSH/Telnet attacks \cite{alajrami2025aipowered}. They found Random Forest competitive with more complex approaches on similar data. TrapPot keeps the single-model design rather than comparing classifiers because explainability and simplicity matter for an undergraduate project.
 
-Research on IoT honeypot deployment also supports TrapPot's design. Saputro and colleagues used Cowrie to build medium-interaction honeypots for IoT environments and reported CPU usage below 6.3 percent, which supports the feasibility of Cowrie-based monitoring in constrained environments \cite{9359711}. Surnin and colleagues studied honeypot fingerprinting methods that attackers can use to identify decoy systems \cite{8685566}. These studies show why TrapPot must balance realism, resource use, and isolation while still providing useful data for analysis.
+\textbf{Saied et al.\ (2023)} reported 99.99\% Random Forest accuracy for multi-class IoT botnet classification, outperforming SVM, KNN, and decision trees on the same dataset \cite{saied2023comparative}. This result, combined with Lee et al., makes the algorithm choice straightforward.
 
-Systematic reviews further support the project direction. Lanz and colleagues reviewed machine learning optimization for IoT honeypots and reported that Random Forest can reach 96 percent accuracy, identifying supervised learning as an effective method for honeypot attack classification \cite{lanz2025optimizing}. Rodriguez-Gomez and colleagues emphasized that honeypot log management needs automated classification because manual analysis does not scale well \cite{rodriguezgomez2025systematic}. Franco and colleagues surveyed IoT honeypots and honeynets and confirmed that medium-interaction honeypots with Telnet and SSH emulation remain common in the field \cite{franco2021survey}. Together, these works support TrapPot's use of Cowrie, Random Forest, and structured log processing.
+\textbf{Alzahrani et al.\ (2025)} developed lightweight Random Forest methods with feature selection optimized for IoT resource constraints, achieving 98\% accuracy \cite{alzahrani2025lightweight}. Their approach supports the idea that a compact feature set, twelve features rather than fifty, does not necessarily sacrifice accuracy.
 
-While existing research validates individual parts of TrapPot, the project combines them into one practical workflow: Cowrie for IoT-like SSH and Telnet deception, Zeek for network-flow evidence, Random Forest classification for five classes, and ELK dashboards for monitoring and presentation. This combination gives the project a clear educational and operational purpose within the Saudi Arabian academic context.
+\textbf{Saputro et al.\ (2021)} measured Cowrie resource overhead in IoT honeypot deployments and found CPU usage below 6.3\% \cite{9359711}. That result matters for TrapPot because Cowrie has to share a host with Elasticsearch, Logstash, and Kibana, which are more resource-hungry.
+
+\textbf{Lanz et al.\ (2025)} reviewed ML optimization for IoT honeypots and identified supervised learning with Random Forest as the most effective approach for honeypot attack classification, with accuracy reaching 96\% \cite{lanz2025optimizing}. Rodriguez-Gomez et al.\ made the complementary point: manual log analysis does not scale, which is why automated classification is necessary \cite{rodriguezgomez2025systematic}.
+
+Together these papers answer the ``why'' questions that would otherwise be arbitrary choices: why Cowrie, why Random Forest, why twelve features, why IoT-23.
 
 % ------------------------------------------------------------
 \subsection{Technical Background}
 \label{sub:technical_background}
 % ------------------------------------------------------------
 
-To support the system design discussed in the Methodology chapter, this section defines the main technologies and concepts used in TrapPot.
+This section defines the tools and concepts TrapPot is built on. Readers who know these tools well can skim; the goal is to be precise about what each component does and why.
 
 % ------------------------------------------------------------
 \subsubsection{Honeypots}
 \label{subsub:honeypots}
 % ------------------------------------------------------------
 
-A honeypot is a cybersecurity mechanism designed to act as a decoy system that attracts and engages attackers. By mimicking vulnerable services, it captures malicious activity without risking production assets. Honeypots are commonly categorized as low, medium, or high interaction. Medium-interaction honeypots provide a useful balance because they offer believable attacker interaction while keeping the environment controlled \cite{9268794}. They also provide threat intelligence and labeled data that can support machine-learning-based detection.
+A honeypot is a system designed to look vulnerable and attract attackers while recording what they do \cite{9268794}. Three interaction levels are common: low (minimal emulation, mostly logging), medium (believable shell interaction, controlled environment), and high (close to a real system, higher risk). Medium-interaction honeypots are common in research because they provide enough realism to attract sustained attacker behavior without making containment too difficult \cite{9268794,franco2021survey}.
 
 % ------------------------------------------------------------
-\subsubsection{Cowrie Honeypot}
+\subsubsection{Cowrie}
 \label{subsub:cowrie}
 % ------------------------------------------------------------
 
-Cowrie is an open-source medium-interaction SSH and Telnet honeypot that emulates a UNIX-like shell environment. It records authentication attempts, executed commands, downloaded files, and session metadata \cite{9071014}. Cowrie stores events in structured formats such as JSON, which makes its logs suitable for processing, visualization, and attack classification.
+Cowrie is an open-source medium-interaction SSH and Telnet honeypot \cite{9071014}. It emulates a UNIX-like shell, records login attempts, executed commands, downloaded files, and session metadata, and outputs structured JSON. That JSON structure is what Logstash reads and what the detection chain starts from. Cowrie does not execute commands on the host; the shell is simulated \cite{9071014,9359711}.
 
 % ------------------------------------------------------------
-\subsubsection{SSH and Telnet Protocols}
+\subsubsection{SSH and Telnet}
 \label{subsub:ssh_telnet}
 % ------------------------------------------------------------
 
-Secure Shell (SSH) and Telnet are network protocols used for remote command-line access. SSH provides encrypted communication, while Telnet transmits data in plaintext. Both remain important attack vectors in IoT environments because automated bots often try default or weak credentials against exposed services \cite{9558948}. The Mirai botnet compromised more than 600,000 IoT devices by exploiting weak credentials and exposed remote access services \cite{203628}.
+SSH provides encrypted remote access. Telnet provides plaintext remote access. Both remain primary attack targets in IoT environments because automated bots, including Mirai, try default credentials against any open port 22 or port 23 they find \cite{9558948,203628}. This is why TrapPot listens on ports 2222 (SSH) and 2223 (Telnet) and nothing else.
 
 % ------------------------------------------------------------
 \subsubsection{ELK Stack}
 \label{subsub:elk_stack}
 % ------------------------------------------------------------
 
-The ELK Stack consists of Elasticsearch for search and storage, Logstash for log ingestion and processing, and Kibana for visualization. The stack allows logs from different components to be processed and explored through a central interface \cite{9001068}. In TrapPot, ELK stores Cowrie, Zeek, and AI detector data and presents the results through dashboards.
-
+Elasticsearch, Logstash, Kibana \cite{9001068}. Logstash ingests and parses log data. Elasticsearch indexes and stores it. Kibana provides the web interface for querying and visualizing it. TrapPot uses Elastic Stack version 9.4.0. Logstash ships Cowrie JSON, Zeek logs, and AI detector output to separate Elasticsearch indices. Kibana displays all three in the TrapPot Overview dashboard at \texttt{localhost:5601}.
 
 % ------------------------------------------------------------
-\subsubsection{Random Forest Algorithm}
+\subsubsection{Random Forest}
 \label{subsub:random_forest}
 % ------------------------------------------------------------
 
-Random Forest is an ensemble learning algorithm that combines multiple decision trees for classification. Each tree learns from a random subset of data and features, and the final class is selected through majority voting. This method reduces overfitting and performs well on structured, high-dimensional datasets. Published IoT intrusion detection studies report Random Forest accuracy in the 96 to 99 percent range while maintaining low inference latency \cite{lee2021classification,saied2023comparative}.
-
+An ensemble of decision trees. Each tree trains on a random data subset and a random feature subset. Final prediction: majority vote. Every tree gets a say \cite{lee2021classification,saied2023comparative}. Random Forest reduces overfitting compared to a single tree, handles structured high-dimensional data well, and produces fast predictions at inference time. Published IoT IDS studies report accuracy in the 96–99.99\% range with Random Forest on similar datasets.
 
 % ------------------------------------------------------------
-\subsubsection{Zeek Network Security Monitor}
+\subsubsection{Zeek}
 \label{subsub:Zeek}
 % ------------------------------------------------------------
 
-Zeek is an open-source network analysis framework that works as a passive network monitor. Instead of only matching signatures, Zeek extracts metadata from network traffic, such as connection duration, packet counts, byte counts, service information, and connection state. In TrapPot, Zeek observes traffic interacting with Cowrie and produces \texttt{conn.log} and \texttt{ssh.log}. These logs provide the network-level features required by the Random Forest detector.
+Zeek is a passive network analysis framework \cite{9001068}. It does not match packet signatures; it extracts metadata from traffic and writes it to structured log files. The output TrapPot uses is \texttt{conn.log} (connection-level summary: source/destination ports, bytes, packets, duration, protocol, service, state) and \texttt{ssh.log} (SSH-specific metadata). These logs are what the AI detector reads.
+
+Zeek runs in Cowrie's network namespace using \texttt{network\_mode: "service:cowrie"} in Docker Compose, with checksum validation disabled (\texttt{-C}) because containerized packet capture breaks checksum verification by default.
 
 % ------------------------------------------------------------
-\subsubsection{Supervised Learning}
+\subsubsection{Supervised Learning and Key Metrics}
 \label{subsub:supervised_learning}
 % ------------------------------------------------------------
 
-Supervised learning trains models using labeled datasets where inputs are paired with correct outputs. The model learns patterns during training and then applies those patterns to classify new data. TrapPot uses supervised classification because the Random Forest model learns from labeled network-traffic examples and predicts the class of new Zeek connection records.
+Supervised learning means the model learns from labeled examples and applies those patterns to new data \cite{hopf2021supervised,dimauro2021supervised}. TrapPot's Random Forest is supervised: it learns from labeled IoT-23 records and predicts classes for new Zeek connection records.
+
+Metrics \cite{confusion2023pmc,mary2024network}:
+
+\begin{itemize}
+\item \textbf{Accuracy}: correct predictions / total predictions. Primary metric for TrapPot (target: 99\%+).
+\item \textbf{Precision}: of all predicted positives for a class, how many are correct.
+\item \textbf{Recall}: of all actual positives for a class, how many did the model find.
+\item \textbf{F1-score}: harmonic mean of precision and recall. Useful when class frequencies differ.
+\item \textbf{Confusion matrix}: shows exactly which class gets mislabeled as which other class.
+\end{itemize}
 
 % ------------------------------------------------------------
-\subsubsection{Feature Extraction}
-\label{subsub:feature_extraction}
-% ------------------------------------------------------------
-
-Feature extraction converts raw log data into numerical and categorical values that a machine learning model can use. TrapPot extracts features such as ports, protocol, service, duration, byte counts, packet counts, and connection state from Zeek logs. Well-designed features improve classification because they represent attack behavior in a compact form, while unnecessary or inconsistent features can reduce performance.
-
-
-% ------------------------------------------------------------
-\subsubsection{Classification Metrics}
-\label{subsub:metrics}
-% ------------------------------------------------------------
-
-Model evaluation commonly uses accuracy, precision, recall, F1-score, and the confusion matrix. Accuracy measures the overall percentage of correct predictions. Precision measures how many predicted positives are correct, while recall measures how many actual positives the model detects. The F1-score balances precision and recall. A confusion matrix shows how predicted labels compare with true labels across all classes.
-
-% ------------------------------------------------------------
-\subsubsection{Attack Types}
+\subsubsection{The Five Attack Classes}
 \label{subsub:attack_types}
 % ------------------------------------------------------------
 
-TrapPot classifies five traffic classes. Brute-force attacks involve repeated username and password attempts. Scanning activity involves probing systems to identify active ports, services, and weaknesses. Malware download activity involves attempts to upload or retrieve malicious files. Command execution occurs when an attacker gains shell access and runs commands on the emulated system. Normal traffic represents baseline or benign connection behavior used by the model to separate malicious activity from ordinary network records.
+TrapPot classifies five traffic types:
 
-% ============================================================
-\section{Chronological Evolution and Progress of IoT Threat Detection Systems}
-\label{sec:second_possible_outline}
-% ============================================================
-
-% ------------------------------------------------------------
-\subsection{Related Work}
-\label{sub:related_work2}
-% ------------------------------------------------------------
-
-IoT security became a distinct research problem in the mid-2010s as researchers documented attacks targeting Telnet and SSH services. Pa and colleagues developed IoTPOT, one of the early honeypots designed for IoT devices, and captured Telnet attacks against ARM, MIPS, and PowerPC architectures. Their work showed that Telnet scanning increased significantly from 2014 onward and confirmed that IoT devices represented a growing attack surface. Cowrie was released in 2015 as an open-source medium-interaction SSH and Telnet honeypot \cite{9071014}. Cowrie is directly relevant to TrapPot because it provides the technical foundation for the honeypot layer.
-
-The IoT security landscape changed sharply in 2016 with the Mirai botnet, which compromised more than 600,000 IoT devices by exploiting weak default credentials on exposed remote access services. Antonakakis and colleagues documented how Mirai scanned for exposed services and used only 62 hardcoded credential pairs to gain access \cite{203628}. This study is important to TrapPot because it explains why Telnet and SSH remain central to IoT attack monitoring. Famera and colleagues later discussed Mirai variants such as Satori and Moobot, showing that the same style of weakness continues to matter \cite{famera2025mirai}.
-
-Researchers then focused on integrating honeypots with automated classification. Saputro and colleagues deployed medium-interaction honeypots using Cowrie and showed that CPU load remained below 6.3 percent \cite{9359711}. Lee and colleagues applied Random Forest classification to IoT smart factory honeypot data and achieved 96 percent accuracy for brute-force, scanning, and malware download attacks with 0.1 milliseconds of inference latency \cite{lee2021classification}. Franco and colleagues surveyed IoT honeypots and found that medium-interaction systems prioritizing Telnet and SSH are common in the field \cite{9520645}.
-
-Recent research from 2023 to 2025 further supports ensemble learning approaches. Saied and colleagues reported 99.99 percent accuracy for multi-class IoT botnet classification using Random Forest \cite{saied2023comparative}. Lanz and colleagues reviewed machine learning optimization for IoT honeypots and confirmed that Random Forest can reach 96 percent accuracy in this domain \cite{lanz2025optimizing}. Rodriguez-Gomez and colleagues emphasized the need for automated classification to manage large volumes of honeypot logs \cite{rodriguezgomez2025systematic}. Alajrami and Abu-Naser also developed an AI-powered intrusion detection system that integrates Cowrie with Random Forest for SSH and Telnet attack detection \cite{alajrami2025aipowered}.
-
-TrapPot builds on this progression by adopting Cowrie's medium-interaction architecture, focusing on Telnet and SSH protocols identified by Mirai-related research, using Zeek to produce structured traffic evidence, and applying Random Forest classification supported by recent IoT detection studies. The result is a practical proof of concept for automated IoT attack monitoring that is feasible for undergraduate implementation and aligned with local cybersecurity capacity-building goals.
+\begin{itemize}
+\item \textbf{Brute Force}: repeated failed login attempts, typically automated credential stuffing \cite{203628,famera2025mirai}.
+\item \textbf{Scanning}: port or service probing without authentication, identifying open services and versions \cite{zhang2023identification,suareztangil2023stories}.
+\item \textbf{Malware Download}: file upload or download attempt after gaining access \cite{9071014,9558948}.
+\item \textbf{Command Execution}: successful login followed by shell commands \cite{9071014,lee2021classification}.
+\item \textbf{Normal}: baseline traffic, benign connections, polling, and protocol checks with no attack indicators \cite{lee2021classification}.
+\end{itemize}

@@ -5,29 +5,39 @@
 {\LARGE\textbf{INTRODUCTION}}
 \end{center}
 
+% ─────────────────────────────────────────────────────────────────────────────
 
-Saudi Arabia is adopting Internet of Things (IoT) devices in smart-city projects and other digital transformation initiatives under Vision 2030. These devices expand connectivity, but many of them remain exposed because of weak credentials, limited patching, and insecure remote access services. The 2016 Mirai botnet demonstrated the scale of this risk by compromising more than 600,000 IoT devices worldwide and using them to cause major internet outages \cite{203628}. This incident shows that insecure IoT devices are not only a technical issue, but also a threat to companies, infrastructure, and public digital services.
+In 2016, Mirai compromised more than 600,000 IoT devices by trying 62 default credential pairs against exposed Telnet and SSH services \cite{203628}. Most of those devices were cameras and routers that had not been patched, on networks where nobody expected them to become weapons. The result was one of the largest DDoS attacks ever recorded. Saudi Arabia is currently deploying IoT devices at scale across smart-city projects and digital infrastructure under Vision 2030, and many IoT environments still face similar exposure: weak credentials, limited patching, and remote access services left open by default.
 
-Honeypots provide a controlled way to attract attackers and study their behavior without exposing production systems. At the same time, artificial intelligence can help classify attack patterns and reduce the amount of manual analysis required from security teams. TrapPot combines these two ideas in one system. It uses a Cowrie-based SSH and Telnet honeypot to capture attacker interaction, Zeek to summarize network traffic, a Random Forest model to classify traffic behavior, and the ELK Stack to store and visualize the collected evidence. The goal is to support practical IoT threat monitoring and make attack behavior easier to understand in an academic and local cybersecurity context.
+TrapPot is our attempt to study that problem from inside the implemented Cowrie, Zeek, Random Forest, and ELK pipeline described in Chapter~\ref{sec:system_architecture}.
+
+The idea is simple: instead of hardening real devices, we put a fake one on the network and watch who attacks it. Cowrie emulates an SSH and Telnet server that looks like a vulnerable embedded Linux device. Attackers connect, try to log in, and run commands while the system records the interaction. Zeek sits behind Cowrie and converts the network traffic into structured connection records. A Random Forest classifier reads those records and labels each connection: brute-force, scanning, malware download, command execution, or normal. The ELK Stack (Elasticsearch, Logstash, and Kibana) stores the logs and shows them in a dashboard at \texttt{localhost:5601}.
+
+That is the system: build it, run it, and verify that the pipeline holds.
 
 % ============================================================
 \section{Challenges}
 \label{sec:challenges}
 % ============================================================
 
+The hardest part was not any single tool. It was making five tools talk to each other correctly inside Docker without any of them becoming a security risk.
 
-Several challenges appear when developing an IoT honeypot system. First, the project requires knowledge of cybersecurity, networking, containerization, log management, and machine learning, which makes it technically demanding for an undergraduate team. Second, IoT honeypot projects have fewer practical tutorials and case studies than more common IT topics, so the team had to rely on academic papers, official documentation, and direct testing. Third, a honeypot must be isolated carefully. If it is connected to the wrong network or configured without containment, attackers could misuse it as an entry point or as a platform for further activity. Finally, the system must handle continuous log collection, storage, feature extraction, and classification without losing the relationship between attacker behavior and network traffic.
+We expected more practical tutorials for IoT honeypots than we found. Most of the guidance was either too high-level (``deploy a honeypot'') or too specific to production environments we did not have access to \cite{franco2021survey,rodriguezgomez2025systematic}. We ended up cross-referencing academic papers with official documentation and fixing problems through direct testing.
 
-TrapPot addresses these challenges by using established open-source tools, a Docker-based deployment, and strict lab-network assumptions. Cowrie captures attacker interaction, Zeek produces structured network logs, the Random Forest detector classifies traffic, and ELK provides centralized monitoring. This design reduces the amount of custom infrastructure needed while still allowing the project to study real attack behavior in a controlled way.
+Isolation was the other constraint. A honeypot that is not properly contained can become an attack platform, not just a research tool \cite{commey2025blockchain}. We kept ports 2222, 2223, and 5601 as the only exposed surfaces, ran everything behind Docker's bridge network, and documented that TrapPot should only ever be used in an approved lab network. The whole design assumed that safety comes before realism.
+
+The third challenge was keeping the data chain intact. Cowrie interaction, Zeek traffic records, AI detector output, and ELK indices had to stay connected. If Zeek's \texttt{conn.log} format changed or Logstash failed to parse a field, the classifier would see invalid input. Getting that chain to stay clean across all five components took most of the integration work.
 
 % ============================================================
 \section{Study Scope}
 \label{sec:study_scope}
 % ============================================================
 
-This research project aims to create an AI-based honeypot system that emulates Telnet and SSH services to monitor IoT-targeted attacks inside a standalone network segment. The scope is limited to Random Forest classification for five classes: brute-force, scanning, malware download, command execution, and normal traffic. The study also keeps the original 30-day collection objective and the minimum 99\% classification accuracy target. The implemented system operates as a single-node proof of concept with network isolation to avoid compromising production systems. Advanced protocols such as HTTP, MQTT, and CoAP, deep learning methods, distributed deployments, and production-ready hardening are outside the scope of this phase and are reserved for future work.
+TrapPot focuses on SSH and Telnet. Not HTTP, not MQTT, not CoAP. Just the two protocols that Mirai-style botnets target most aggressively \cite{famera2025mirai,zhang2023identification}.
 
-Random Forest has already shown high accuracy and low latency for classifying honeypot-captured IoT botnet attacks, making it a suitable choice for TrapPot's classifier \cite{lee2021classification}. Telnet and SSH services are also primary targets in Mirai-like IoT botnet activity, which motivates the focus on these protocols and the selected attack types \cite{famera2025mirai,zhang2023identification}.
+The classifier handles five classes: brute-force, scanning, malware download, command execution, and normal traffic. We trained it on IoT-23 \cite{iot23dataset} and targeted at least 99\% accuracy, a threshold supported by comparable work in the literature \cite{lee2021classification,karim2024efficient}. The system runs as a single-node Docker Compose deployment on a local lab network, isolated from production infrastructure. Deep learning methods, distributed deployment, and production-grade hardening are outside this scope and reserved for future work.
+
+Why Random Forest? Lee et al.\ used it on Cowrie honeypot data in IoT environments and hit 96\% accuracy with 0.1~ms inference latency \cite{lee2021classification}. That result, from data that looks a lot like ours, was a stronger reason to choose it than any theoretical argument.
 
 % ============================================================
 \section{Goals and Objectives}
@@ -37,14 +47,12 @@ Random Forest has already shown high accuracy and low latency for classifying ho
 The project aims to improve IoT security readiness by observing attacker behavior, analyzing network traffic, and classifying suspicious activity. The main objectives are:
 
 \begin{itemize}
-    \item \textbf{Understanding IoT Attack Behavior:} Investigate attacker interactions to understand how IoT-like systems are discovered, probed, and exploited. This includes analyzing commands, login attempts, and traffic patterns produced during attack sessions.
-    \item \textbf{Improving IoT Attack Classification:} Develop an AI-based classifier that can categorize brute-force attempts, scanning behavior, normal traffic, malware-related activity, and command execution. A core objective is to achieve at least 99 percent classification accuracy on the prepared dataset.
-    \item \textbf{Supporting Proactive Security Measures:} Provide earlier visibility into malicious behavior so that security teams can apply preventive measures before damage occurs.
-    \item \textbf{Enhancing IoT Threat Awareness:} Present captured activity in a structured way so researchers, administrators, and organizations can understand common attack methods and trends.
-    \item \textbf{Reducing the Attack Surface of IoT Environments:} Use findings from observed attack behavior to guide practical recommendations, such as improving access controls and reducing unnecessary service exposure.
+\item \textbf{Understanding IoT Attack Behavior:} Watch how attackers interact with emulated SSH and Telnet services, including what credentials they try, what commands they run, and how long they stay.
+\item \textbf{Improving IoT Attack Classification:} Build a Random Forest classifier that labels traffic into five classes with at least 99\% accuracy on the prepared dataset.
+\item \textbf{Supporting Proactive Security Measures:} Give security teams earlier visibility into attack behavior so they can act before damage occurs.
+\item \textbf{Enhancing IoT Threat Awareness:} Present captured activity through Kibana dashboards in a form that researchers and administrators can actually read and act on.
+\item \textbf{Reducing the Attack Surface of IoT Environments:} Use observed attack patterns to inform practical recommendations, including better access controls and fewer exposed services.
 \end{itemize}
-
-Together, these objectives support better decision-making and stronger security practices for IoT environments facing changing cyberattack patterns.
 
 % ============================================================
 \section{Report Arrangement}
@@ -54,10 +62,10 @@ Together, these objectives support better decision-making and stronger security 
 This report is organized into six chapters:
 
 \begin{itemize}
-    \item \textbf{Chapter 1: Introduction} presents the IoT security problem, project motivation, objectives, and scope.
-    \item \textbf{Chapter 2: Literature Review} reviews existing work on IoT honeypots and machine learning for attack classification, and provides technical background for Cowrie, Random Forest, Zeek, and the ELK Stack.
-    \item \textbf{Chapter 3: Methodology} explains the research design, data sources, feature engineering, validation plan, and ethical considerations.
-    \item \textbf{Chapter 4: Implementation and Testing} documents the implemented Docker-based TrapPot system and the verification of its main components.
-    \item \textbf{Chapter 5: Results and Discussions} presents the implementation results, model accuracy, dashboard verification, and system limitations.
-    \item \textbf{Chapter 6: Conclusions and Future Work} summarizes the project outcomes and suggests future improvements.
+\item \textbf{Chapter 1: Introduction} describes the problem, the motivation, and what TrapPot is.
+\item \textbf{Chapter 2: Literature Review} reviews existing work on IoT honeypots and attack classification, plus technical background on Cowrie, Zeek, Random Forest, and the ELK Stack.
+\item \textbf{Chapter 3: Methodology} explains how we designed the research, collected data, engineered features, and trained the classifier.
+\item \textbf{Chapter 4: Implementation and Testing} describes how we built it, what the Docker setup looks like, and how we verified each component.
+\item \textbf{Chapter 5: Results and Discussions} presents what the model scored, whether the pipeline held together, and what the limitations are.
+\item \textbf{Chapter 6: Conclusions and Future Work} summarizes what we learned and what should come next.
 \end{itemize}
