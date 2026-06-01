@@ -10,6 +10,8 @@
 \usepackage{graphicx}
 \usepackage{physics}
 \usepackage{float}
+\usepackage{algorithm}
+\usepackage{algorithmic}
 \usepackage[margin=1.in]{geometry}
 \usepackage{tocloft}
 \usepackage{multicol}
@@ -61,9 +63,10 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[LE,RO]{IT Department }
-\fancyhead[RE,LO]{Project Documentation Template}
+\fancyhead[RE,LO]{TrapPot Project Report}
 \fancyfoot[CE,CO]{\leftmark}
 \fancyfoot[CE,CO]{\thepage}
+\setlength{\headheight}{14pt}
 \renewcommand{\footrulewidth}{0.5pt}
 
 \addto{\captionsenglish}{%
@@ -89,7 +92,7 @@
 }
 \DeclareAcronym{ai}{
   short = AI ,
-  long  = Artificial Intelligent ,
+  long  = Artificial Intelligence ,
   tag = abbrev
 }
 \DeclareAcronym{dm}{
@@ -124,18 +127,17 @@
   
   % header
   \begin{center}
-    \includegraphics[width=\textwidth]{figures/essentials/header.pdf}
+    \includegraphics[width=\textwidth]{../figures/essentials/header.pdf}
   \end{center}
   
   % Project title
   \begin{center}
-    \vspace{3cm}
+    \vspace{1.8cm}
     \huge
     \textbf{TrapPot -- AI-Powered IoT Honeypot System}
-    %%%%%%\textbf{Face Recognition}
     
     \Large
-    \vspace{3cm}
+    \vspace{1.8cm}
     \textit{Students:}\\
     \Large
     
@@ -147,7 +149,7 @@
       {\fourthstudentname} & {\fourthstudentid} 
     \end{tabular}
     
-    \vspace{3cm}
+    \vspace{1.8cm}
     \Large
     \textit{Supervisor:}\\
     {\supervisorname}
@@ -160,7 +162,7 @@
     \vspace{5mm}
     
     \textit{Qassim-Saudi Arabia\\
-    1444/1445 (2022/2023)}
+    1446/1447 (2025/2026)}
     
   \end{center}
 \end{titlepage}
@@ -188,7 +190,19 @@
 \clearpage
 
 % include all the acronyms
-\printacronyms[include=abbrev,name=Abbreviations]
+\chapter*{Abbreviations}
+\addcontentsline{toc}{chapter}{Abbreviations}
+\begin{tabular}{ll}
+AI & Artificial Intelligence\\
+ELK & Elasticsearch, Logstash, and Kibana\\
+IDS & Intrusion Detection System\\
+IoT & Internet of Things\\
+ML & Machine Learning\\
+RF & Random Forest\\
+SSH & Secure Shell\\
+TCP & Transmission Control Protocol\\
+\end{tabular}
+\clearpage
 \pagenumbering{gobble}
 
 % start with the actual content
@@ -200,7 +214,7 @@
 \include{04-implementation}
 \include{05-results}       
 \include{06-conclusion}
-\include{07-latex-tutorial}
+% \include{07-latex-tutorial}
 
 
 % add appendix (if any)

@@ -6,10 +6,9 @@
 \end{center}
 
 
-Saudi Arabia is using more Internet of Things (IoT) devices for its smart cities and projects under Vision 2030. However, these devices are often not secure. A major example is the 2016 Mirai botnet attack, which took control of over 600,000 IoT devices worldwide to cause major internet outages. This shows that insecure IoT devices are a real and serious problem that can also affect companies and infrastructure in Saudi Arabia.
+Saudi Arabia is adopting Internet of Things (IoT) devices in smart-city projects and other digital transformation initiatives under Vision 2030. These devices expand connectivity, but many of them remain exposed because of weak credentials, limited patching, and insecure remote access services. The 2016 Mirai botnet demonstrated the scale of this risk by compromising more than 600,000 IoT devices worldwide and using them to cause major internet outages \cite{203628}. This incident shows that insecure IoT devices are not only a technical issue, but also a threat to companies, infrastructure, and public digital services.
 
-Security tools called honeypots can be used to attract and study attackers. Other researchers have worked to apply artificial intelligence (AI) for identifying attacks as my main focus. But these are usually separate solutions. Our project, TrapPot, combines these ideas. It is a smart honeypot system that uses AI technology which serves two purposes by identifying IoT device attacks and performing automated threat detection.
-The team needs to determine the attack method while creating reports that provide useful information. This will help make Saudi Arabia’s growing digital The system needs to establish a secure environment. \cite{203628}.
+Honeypots provide a controlled way to attract attackers and study their behavior without exposing production systems. At the same time, artificial intelligence can help classify attack patterns and reduce the amount of manual analysis required from security teams. TrapPot combines these two ideas in one system. It uses a Cowrie-based SSH and Telnet honeypot to capture attacker interaction, Zeek to summarize network traffic, a Random Forest model to classify traffic behavior, and the ELK Stack to store and visualize the collected evidence. The goal is to support practical IoT threat monitoring and make attack behavior easier to understand in an academic and local cybersecurity context.
 
 % ============================================================
 \section{Challenges}
@@ -17,45 +16,48 @@ The team needs to determine the attack method while creating reports that provid
 % ============================================================
 
 
-Several significant challenges are inherent to developing an IoT honeypot system. First, the technical complexity of the subject is high, requiring expertise in cybersecurity, networking, and artificial intelligence, which can be demanding for undergraduate IT students. Second, The limited availability of specialized resources creates difficulties because the particular field of study does not have enough tutorial materials. and case studies compared to more common IT topics. Third there exists an essential security vulnerability because if the honeypot is not designed and isolated correctly, it could itself become a vulnerability and be used as an entry point into our own systems. The establishment of data management stands as the final essential element which needs to be created. The system faces a challenge because it must handle big data volumes efficiently through its data collection and storage and processing operations. of attack logs to feed the AI module.
+Several challenges appear when developing an IoT honeypot system. First, the project requires knowledge of cybersecurity, networking, containerization, log management, and machine learning, which makes it technically demanding for an undergraduate team. Second, IoT honeypot projects have fewer practical tutorials and case studies than more common IT topics, so the team had to rely on academic papers, official documentation, and direct testing. Third, a honeypot must be isolated carefully. If it is connected to the wrong network or configured without containment, attackers could misuse it as an entry point or as a platform for further activity. Finally, the system must handle continuous log collection, storage, feature extraction, and classification without losing the relationship between attacker behavior and network traffic.
 
-The project addresses technical problems and data management issues through its implementation of particular solutions. planning and the use of established tools. We are mitigating the security risk by designing the system with strict network isolation in mind. The scarcity of resources persists as an outside influence which affects the situation. The research process requires us to solve this problem through particular research methods. 
+TrapPot addresses these challenges by using established open-source tools, a Docker-based deployment, and strict lab-network assumptions. Cowrie captures attacker interaction, Zeek produces structured network logs, the Random Forest detector classifies traffic, and ELK provides centralized monitoring. This design reduces the amount of custom infrastructure needed while still allowing the project to study real attack behavior in a controlled way.
 
 % ============================================================
 \section{Study Scope}
 \label{sec:study_scope}
 % ============================================================
 
-The research project aims to create an AI-based honeypot system which duplicates Telnet and the system depends on SSH services to track IoT attacks which occur in a standalone network segment. The scope is limited to implementing Random Forest classification for five attack types (brute-force, scanning, malware download,normal attack and command execution), while it gathered information during a 30-day time span. achieving minimum 99\% classification accuracy.The system operates as a single-node proof-of-concept with complete network isolation to prevent production system compromise. Advanced protocols (HTTP, MQTT, CoAP), deep learning methods, distributed deployments, and production-ready features are excluded from this phase and reserved for future work.
-Random Forest has already shown high accuracy and low latency for classifying honeypot-captured IoT botnet attacks, making it a suitable choice for TrapPot’s classifier \cite{lee2021classification}. Telnet and SSH services are also the primary targets in Mirai-like IoT botnet the research investigates SSH and TLS protocols through their use in honeypot studies and campaign activities, which motivates our focus on these protocols and the selected attack types \cite{herwig2021analyzing,zhang2023identification}.
+This research project aims to create an AI-based honeypot system that emulates Telnet and SSH services to monitor IoT-targeted attacks inside a standalone network segment. The scope is limited to Random Forest classification for five classes: brute-force, scanning, malware download, command execution, and normal traffic. The study also keeps the original 30-day collection objective and the minimum 99\% classification accuracy target. The implemented system operates as a single-node proof of concept with network isolation to avoid compromising production systems. Advanced protocols such as HTTP, MQTT, and CoAP, deep learning methods, distributed deployments, and production-ready hardening are outside the scope of this phase and are reserved for future work.
+
+Random Forest has already shown high accuracy and low latency for classifying honeypot-captured IoT botnet attacks, making it a suitable choice for TrapPot's classifier \cite{lee2021classification}. Telnet and SSH services are also primary targets in Mirai-like IoT botnet activity, which motivates the focus on these protocols and the selected attack types \cite{famera2025mirai,zhang2023identification}.
 
 % ============================================================
 \section{Goals and Objectives}
 \label{sec:goals_and_objectives}
 % ============================================================
 
-The research project works to boost IoT device security through its creation of the system needs to detect real cyberattacks which regularly attack systems through observation and analysis and classification processes. IoT-enabled infrastructure networks. understanding how these devices are attacked, improve their security readiness. The following objectives will state the key outcomes this project seeks to achieve:
+The project aims to improve IoT security readiness by observing attacker behavior, analyzing network traffic, and classifying suspicious activity. The main objectives are:
 
-    • Understanding IoT Attack Behavior: Investigate real attacker interactions to gain a clear picture of how IoT devices are discovered, probed, and exploited. This includes analyzing the sequence of actions taken by attackers, the types of weaknesses they target, and learn the patterns produced across different attack attempts. By developing a deeper understanding of attacker behavior, we can highlight the most vulnerable points within IoT ecosystems.
+\begin{itemize}
+    \item \textbf{Understanding IoT Attack Behavior:} Investigate attacker interactions to understand how IoT-like systems are discovered, probed, and exploited. This includes analyzing commands, login attempts, and traffic patterns produced during attack sessions.
+    \item \textbf{Improving IoT Attack Classification:} Develop an AI-based classifier that can categorize brute-force attempts, scanning behavior, normal traffic, malware-related activity, and command execution. A core objective is to achieve at least 99 percent classification accuracy on the prepared dataset.
+    \item \textbf{Supporting Proactive Security Measures:} Provide earlier visibility into malicious behavior so that security teams can apply preventive measures before damage occurs.
+    \item \textbf{Enhancing IoT Threat Awareness:} Present captured activity in a structured way so researchers, administrators, and organizations can understand common attack methods and trends.
+    \item \textbf{Reducing the Attack Surface of IoT Environments:} Use findings from observed attack behavior to guide practical recommendations, such as improving access controls and reducing unnecessary service exposure.
+\end{itemize}
 
-    • Improving IoT Attack Classification: Develop an AI-based classification capable of categorizing the malicious activity, such as Brute force attempts, scanning behaviors, normal attacks, malware related actions, and command execution. A core objective is to achieve 99 percent classification accuracy, ensuring that the system consistently identifies harmful activity with a high level of confidence. This contributes to clearer detection, faster analysis, and better understanding of threats.
+Together, these objectives support better decision-making and stronger security practices for IoT environments facing changing cyberattack patterns.
 
-    • Supporting Proactive Security Measures: Enable earlier detection and understanding of malicious behavior, allowing defenses to be applied proactively rather than after damage has occurred. Proactive security measures encourages preventive strategies, and helps organizations stay ahead of attackers. This proactive approach contributes directly to creating safer and more stable IoT environments.
-
-    • Enhancing IoT Threat Awareness: Highlight how often attacks occur, which techniques are most commonly used, and how attackers adapt their methods over time. By presenting these patterns in a structured and meaningful way, the project aims to support better situational awareness for researchers, system administrators, and organizations. Increased awareness helps stakeholders anticipate threats rather than reacting only after incidents occur.
-
-    • Reducing the Attack Surface of IoT Environments: Using the findings gathered from real world attack interactions for practical security recommendations. These findings can help identify common weaknesses, strengthen access controls, and guide decisions that reduce unnecessary exposure of IoT devices.
-
-These objectives aim to improve the understanding of IoT-related threats, supports better decision-making, and encourages stronger security practices results in  helping to protect IoT devices from Cyberattacks that continue to change over time, and contributes to creating safer and more dependable IoT environments for future use.
 % ============================================================
 \section{Report Arrangement}
 \label{sec:report_arrangement}
 % ============================================================
 
-This report is organized into three main chapters:
+This report is organized into six chapters:
 
-Chapter 1: Introduction – Presents the IoT security problem, the project's motivation, objectives, and scope.
-
-Chapter 2: Literature Review – Reviews established work on IoT honeypots and machine learning for attack classification, and provides the technical background for key technologies used in our solution, such as the Cowrie honeypot, Random Forest algorithm, and the ELK Stack.
-
-Chapter 3: Methodology – Details the proposed system architecture and design, explaining how the honeypot simulation will be integrated with the AI classification module.
+\begin{itemize}
+    \item \textbf{Chapter 1: Introduction} presents the IoT security problem, project motivation, objectives, and scope.
+    \item \textbf{Chapter 2: Literature Review} reviews existing work on IoT honeypots and machine learning for attack classification, and provides technical background for Cowrie, Random Forest, Zeek, and the ELK Stack.
+    \item \textbf{Chapter 3: Methodology} explains the research design, data sources, feature engineering, validation plan, and ethical considerations.
+    \item \textbf{Chapter 4: Implementation and Testing} documents the implemented Docker-based TrapPot system and the verification of its main components.
+    \item \textbf{Chapter 5: Results and Discussions} presents the implementation results, model accuracy, dashboard verification, and system limitations.
+    \item \textbf{Chapter 6: Conclusions and Future Work} summarizes the project outcomes and suggests future improvements.
+\end{itemize}

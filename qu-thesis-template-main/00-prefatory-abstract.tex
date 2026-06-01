@@ -5,23 +5,11 @@
 \addcontentsline{toc}{section}{Abstract}
 
 \begin{spacing}{1.5}
-The expansion of Internet of Things (IoT) infrastructure in Saudi Arabia under Vision 2030 will lead to the development of smart cities.
-The increasing number of unsecured devices throughout systems has created an environment which makes botnet attacks more dangerous. This
-The TrapPot system operates as a unified platform which performs observation tasks through its Artificial Intelligence (AI) system.
-analyze, and automatically classify malicious activities targeting IoT environments to enhance
-proactive security readiness The research uses quantitative case study methodology to analyze the data.
-lizing a medium-interaction Cowrie honeypot to emulate Telnet and Secure Shell (SSH) services
-within a strictly isolated network . The ELK Stack analyzes data from actual attack logs which serve as its input.
-(Elasticsearch, Logstash, and Kibana) for real-time monitoring, while a data pipeline extracts
-behavioral features, such as login attempts and session duration, to train a Random Forest (RF)
-classification model The design phase has produced a comprehensive system architecture and
-feature engineering strategy focused on identifying four distinct attack types: brute-force, scan-
-ning, malware download, and command execution . The research design uses a particular method which serves to achieve its research objectives.
-target classification accuracy of 96TrapPot distinguishes itself by combining automated machine
-The system enables students to learn through real-time visualization tools which fulfill specific cybersecurity workforce needs that exist in various geographic locations.
-development needs in Saudi Arabia . The project reached its goal which allowed us to accomplish all our practice objectives.
-tical framework for transitioning from reactive to proactive defense strategies within the rapidly
-evolving IoT threat landscape.\\
+The growth of Internet of Things (IoT) infrastructure in Saudi Arabia, especially under Vision 2030 smart-city initiatives, increases the need for practical systems that can observe and analyze attacks against exposed devices. Many IoT devices still rely on weak credentials, limited update mechanisms, and remote access services such as SSH and Telnet. These conditions make IoT environments attractive targets for botnets and automated attacks.
+
+This project presents TrapPot, an AI-powered IoT honeypot system that combines Cowrie, Zeek, a Random Forest classifier, and the ELK Stack. Cowrie emulates SSH and Telnet services in an isolated Docker-based environment, while Zeek converts network traffic into structured connection logs. The AI detector uses twelve Zeek-compatible features from the trained model pipeline to classify traffic into five classes: brute-force, scanning, malware download, command execution, and normal traffic. Logstash, Elasticsearch, and Kibana support log processing, indexing, and dashboard-based monitoring.
+
+The Random Forest model was trained using the IoT-23 dataset and achieved an accuracy of approximately 99.59\% on the prepared dataset. The implemented system was also tested locally through Docker Compose, confirming that Cowrie captured sessions, Zeek generated \texttt{conn.log} and \texttt{ssh.log}, the AI detector produced live classification output, and Kibana displayed the collected data through the TrapPot dashboard. TrapPot therefore provides a working proof of concept for IoT honeypot monitoring, network-based classification, and security visualization in a controlled academic environment.
 
   {\bf Keywords:} TrapPot, Internet of Things (IoT), Honeypot, Random Forest (RF), Cybersecurity, Artificial Intelligence (AI).
 \end{spacing}

@@ -6,50 +6,49 @@
 {\LARGE\textbf{METHODOLOGY}}
 \end{center}
 
-This chapter describes the systematic approach used to design, implement, and evaluate the TrapPot system \cite{franco2021survey,rodriguezgomez2025systematic,lanz2025optimizing}. The methodology encompasses the research design, data collection procedures, preprocessing and feature engineering pipeline, Random Forest classifier training and optimization, validation plan, and ethical considerations \cite{lee2021classification,hindy2023comprehensive,karim2024efficient}. The chapter is organized to guide the reader from the research design framework through each operational phase, culminating in the evaluation criteria that will assess whether TrapPot achieves its stated objective of capturing and automatically classifying IoT-targeted attacks with at least 99\% accuracy \cite{lee2021classification,karim2024efficient,kalaria2024iotpredictor}.
+This chapter describes the approach used to design, implement, and evaluate the TrapPot system \cite{franco2021survey,rodriguezgomez2025systematic,lanz2025optimizing}. The methodology covers the research design, data collection procedures, preprocessing and feature engineering pipeline, Random Forest classifier training, validation plan, and ethical considerations \cite{lee2021classification,hindy2023comprehensive,karim2024efficient}. The chapter explains how TrapPot captures IoT-targeted activity, converts it into useful features, and evaluates classification performance against the project target of at least 99\% accuracy \cite{lee2021classification,karim2024efficient,kalaria2024iotpredictor}.
 
 % ============================================================
 \section{Research Design}
 \label{sec:research_design}
 % ============================================================
 
-The TrapPot study was conducted using a Case Study research design supported by experimental elements through its controlled deployment and testing, and it follows a Quantitative approach \cite{franco2021survey,rodriguezgomez2025systematic}. This framework aligns with the project's goal of developing an AI-powered IoT honeypot system, providing a structured examination of how the system captures, processes, and classifies real attacker behavior \cite{lee2021classification,lanz2025optimizing}. This framework ensures that the system's performance both as a honeypot and as a machine-learning classifier is evaluated under realistic IoT attack conditions \cite{albaseer2024fedpot,fan2019honeydoc}. To ground this framework, the study is defined through its research design type and its analytical approach.
+The TrapPot study follows a case study research design with experimental elements, supported by a quantitative approach \cite{franco2021survey,rodriguezgomez2025systematic}. This design fits the project because TrapPot is a built system rather than a survey-only study. The research examines how a specific implementation captures attacker behavior, processes logs, and classifies network traffic under controlled conditions \cite{lee2021classification,lanz2025optimizing}. The quantitative approach is used because system logs, feature vectors, and model metrics can be measured and compared statistically \cite{hindy2023comprehensive,mary2024network}.
 
 % ------------------------------------------------------------
 \subsection{Research Design Type: Case Study}
 \label{subsec:case_study}
 % ------------------------------------------------------------
 
-The primary research design is a Case Study, incorporating experimental elements through the controlled deployment and testing of the TrapPot system \cite{franco2021survey,morozov2024sweet}. The project adopts an in-depth Case Study design that focuses on a single instance: the TrapPot system deployed in a dedicated, isolated network environment \cite{albaseer2024fedpot,commey2025blockchain}. This design is suitable because the project aims to closely examine how a practical combination of medium-interaction honeypot technology and machine learning behaves when exposed to real-world IoT-targeted attacks \cite{lee2021classification,9359711}.
+The primary research design is a case study of one concrete deployment: the TrapPot system running in a dedicated and isolated environment \cite{albaseer2024fedpot,commey2025blockchain}. This design allows detailed observation of how medium-interaction honeypot technology and machine learning behave when combined in one practical IoT security workflow \cite{lee2021classification,9359711}.
 
-By concentrating on one concrete deployment, the Case Study design allows detailed observation of \cite{rodriguezgomez2025systematic,lanz2025optimizing}:
+By focusing on one deployment, the case study makes it possible to observe \cite{rodriguezgomez2025systematic,lanz2025optimizing}:
 
 \begin{itemize}
-    \item How attackers interact with the emulated Telnet and SSH services \cite{9071014,9558948,herwig2021analyzing},
-    \item How logs flow through the ELK-based data pipeline \cite{9001068,log2evt2025}, and
-    \item How the Random Forest classifier responds to different attack patterns (brute force, scanning, malware download,normal attack, and command execution) \cite{lee2021classification,karim2024efficient,saied2023comparative}.
+    \item how attackers interact with emulated Telnet and SSH services \cite{9071014,9558948,famera2025mirai},
+    \item how logs move through the ELK-based data pipeline \cite{9001068,log2evt2025}, and
+    \item how the Random Forest classifier responds to brute-force, scanning, malware download, command execution, and normal traffic patterns \cite{lee2021classification,karim2024efficient,saied2023comparative}.
 \end{itemize}
 
-This depth of analysis helps reveal the practical challenges, limitations, and successes of integrating honeypots with AI for threat intelligence, which is more informative for this type of system-development project than a broad survey or purely theoretical analysis \cite{franco2021survey,lanz2025optimizing}.
+This depth of analysis is more suitable for a system-development project than a broad theoretical survey because it evaluates the practical integration of honeypots, network monitoring, and AI-based classification.
 
 % ------------------------------------------------------------
 \subsection{Research Approach: Quantitative}
 \label{subsec:quantitative}
 % ------------------------------------------------------------
 
+The research uses quantitative methods because the collected evidence is machine-generated and structured. Cowrie records authentication attempts, commands, sessions, and file activity, while Zeek records ports, protocols, services, packet counts, byte counts, connection duration, and connection state \cite{9071014,log2evt2025}. These records are converted into feature vectors that can be used for statistical analysis and model evaluation \cite{dimauro2021supervised,ahsan2024effects}.
 
-The research uses Quantitative methods for validation purposes as described in \cite{hindy2023comprehensive,mary2024network}. The quantitative method works because all recorded data exists as numbers which follow a structured pattern which enables researchers to perform statistical assessments of model performance \cite{karim2024efficient,confusion2023pmc}. The research data consists of machine-generated structured information which includes honeypot logs that record authentication attempts and session lengths and command activities and file transfer data and network protocol details \cite{9071014,log2evt2025}. The system converts log data into numerical feature vectors which scientists use for statistical analysis according to \cite{dimauro2021supervised,ahsan2024effects}.
-
-The methodology follows a system development and experimental validation pattern \cite{lee2021classification,rodriguezgomez2025systematic}:
+The methodology follows a system-development and experimental-validation pattern \cite{lee2021classification,rodriguezgomez2025systematic}:
 
 \begin{itemize}
-	\item Development and deployment of TrapPot (Cowrie honeypot + ELK Stack + Zeek + Random Forest classifier) in an isolated network \cite{9359711,commey2025blockchain}.
-	\item The collection of real-time attack traffic data needs to occur during a specific time span \cite{lee2021classification,suareztangil2023stories}.
-	\item Training and testing of the Random Forest model using the collected dataset \cite{saied2023comparative,karim2024efficient}.
-	\item Evaluation process employs standard machine learning assessment methods which include accuracy measurements together with precision and recall values and F1-score calculations and confusion matrix evaluation \cite{confusion2023pmc,mary2024network}.
+	\item Develop and deploy TrapPot using Cowrie, Zeek, the ELK Stack, and a Random Forest classifier in an isolated network \cite{9359711,commey2025blockchain}.
+	\item Collect attack traffic data over the specified operational period \cite{lee2021classification,suareztangil2023stories}.
+	\item Train and test the Random Forest model using the prepared dataset \cite{saied2023comparative,karim2024efficient}.
+	\item Evaluate the model using accuracy, precision, recall, F1-score, and confusion matrix results \cite{confusion2023pmc,mary2024network}.
 \end{itemize}
 
-The quantitative research approach allows scientists to assess TrapPot classification accuracy and system performance during actual cyber attacks as described in \cite{hindy2023comprehensive,kalaria2024iotpredictor}.
+This approach allows the team to measure both the classification performance of the model and the operational behavior of the complete TrapPot pipeline.
 
 
 % ============================================================
@@ -57,45 +56,40 @@ The quantitative research approach allows scientists to assess TrapPot classific
 \label{sec:data_collection}
 % ============================================================
 
-As an AI-powered IoT honeypot system, TrapPot's core function is to lure attackers and collect actionable threat intelligence \cite{rodriguezgomez2025systematic,lanz2025optimizing}. Data collection in this project occurs in two distinct phases, each serving a specific purpose in the development lifecycle:
-
-\begin{itemize}
-    \item 3.2.1 – The data needed before and during system development, gathered from existing research and public datasets.
-    \item 3.2.2 – The data that will be collected after deployment from the operational honeypot, used for real-time classification and validation.
-\end{itemize}
+TrapPot collects and uses data in two phases. The first phase uses existing research and public datasets to prepare and validate the AI module. The second phase uses logs generated by the deployed honeypot and monitoring system for live classification and operational evaluation \cite{rodriguezgomez2025systematic,lanz2025optimizing}.
 
 % ------------------------------------------------------------
 \subsection{Pre-Implementation Data Collection}
 \label{subsec:pre_implementation_data}
 % ------------------------------------------------------------
 
-To design, train, and validate TrapPot's AI module before live deployment, secondary data from reputable public and academic sources is used \cite{hindy2023comprehensive,dekeersmaeker2023survey,alex2023comprehensive}. This approach is aligned with established research methodologies in IoT security and ensures the system is grounded in real-world attack patterns \cite{rodriguezgomez2025systematic,lanz2025optimizing}.
+Before live deployment, secondary data from public and academic sources was used to design, train, and validate the AI module \cite{hindy2023comprehensive,dekeersmaeker2023survey,alex2023comprehensive}. This makes the model development stage grounded in real IoT security patterns and established research.
 
 \textbf{Sources of Secondary Data:}
 
 \textbf{Academic Publications \& Research Datasets}
 
 \begin{itemize}
-    \item Lee et al. (2021) – Provided labeled attack logs from Cowrie honeypots in IoT smart factory environments, classifying brute-force, scanning, and malware download attacks with 96\% accuracy using Random Forest \cite{lee2021classification}.
-    \item Saputro et al. (2021) – Supplied performance benchmarks and attack traces from medium-interaction IoT honeypots, confirming Cowrie's low resource overhead (<6.3\% CPU) \cite{9359711}.
-    \item Saied et al. (2023) – Offered comparative datasets for IoT botnet classification, demonstrating Random Forest's superiority (99.99\% accuracy) for multi-class attack detection \cite{saied2023comparative}.
-    \item Alajrami \& Abu-Naser (2025) – Shared SSH/Telnet attack datasets integrated with honeypot logs, used for testing multi-algorithm IDS performance \cite{alajrami2025aipowered}.
+    \item Lee et al. (2021) provided labeled attack logs from Cowrie honeypots in IoT smart factory environments, classifying brute-force, scanning, and malware download attacks with 96\% accuracy using Random Forest \cite{lee2021classification}.
+    \item Saputro et al. (2021) supplied performance benchmarks and attack traces from medium-interaction IoT honeypots, confirming Cowrie's low resource overhead below 6.3\% CPU \cite{9359711}.
+    \item Saied et al. (2023) offered comparative evidence for IoT botnet classification, demonstrating Random Forest's 99.99\% accuracy for multi-class attack detection \cite{saied2023comparative}.
+    \item Alajrami \& Abu-Naser (2025) shared an SSH/Telnet honeypot-based intrusion detection approach that supports testing multi-algorithm IDS performance \cite{alajrami2025aipowered}.
 \end{itemize}
 
 \textbf{Public IoT Security Datasets}
 
 \begin{itemize}
-    \item Mirai Botnet Traces – Historical attack data from Mirai and variants (e.g., Gafgyt, Mozi), focusing on Telnet/SSH credential-based attacks \cite{203628,herwig2021analyzing}.
-    \item Cowrie Public Logs – Open-source honeypot logs capturing SSH/Telnet sessions, used for feature extraction and model pre-training \cite{9071014,9558948}.
-    \item IoT-23 \& CIC-IoT-2023 Datasets – Labeled network traffic datasets containing IoT-specific attacks, useful for validating feature relevance and model generalization \cite{dekeersmaeker2023survey,alex2023comprehensive,christy2024iot}.
+    \item Mirai botnet traces provide historical attack data from Mirai and variants such as Gafgyt and Mozi, focusing on credential-based attacks against Telnet and SSH \cite{203628,famera2025mirai}.
+    \item Cowrie public logs provide examples of SSH and Telnet honeypot sessions that can support feature extraction and model preparation \cite{9071014,9558948}.
+    \item IoT-23 and CIC-IoT-2023 provide labeled IoT network traffic datasets that help validate feature relevance and model generalization \cite{iot23dataset,dekeersmaeker2023survey,alex2023comprehensive,christy2024iot}.
 \end{itemize}
 
 \textbf{Technical Documentation \& Cybersecurity Reports}
 
 \begin{itemize}
-    \item Cowrie Documentation – Detailed JSON log structures, command emulation lists, and session metadata formats \cite{9071014,log2evt2025}.
-    \item ELK Stack Guides – Logstash pipelines and Elasticsearch mappings for parsing and storing honeypot data \cite{9001068}.
-    \item Threat Intelligence Reports – Analyses of IoT attack trends (e.g., scanning patterns, malware delivery methods) from CrowdStrike, Palo Alto, and academic surveys \cite{mahmood2024exploring,islam2023large}.
+    \item Cowrie documentation provides JSON log structures, command emulation behavior, and session metadata formats \cite{9071014,log2evt2025}.
+    \item ELK Stack guidance supports Logstash pipelines and Elasticsearch mappings for parsing and storing honeypot data \cite{9001068}.
+    \item Threat intelligence reports and academic surveys provide context on scanning patterns, malware delivery, and IoT attack trends \cite{mahmood2024exploring,islam2023large}.
 \end{itemize}
 
 % ------------------------------------------------------------
@@ -103,16 +97,15 @@ To design, train, and validate TrapPot's AI module before live deployment, secon
 \label{subsec:post_implementation_data}
 % ------------------------------------------------------------
 
-
-Once TrapPot is deployed in an isolated network environment, it will begin collecting primary attack data in real time \cite{lee2021classification,suareztangil2023stories}. This data will:
+After deployment in an isolated network environment, TrapPot collects primary operational data in real time \cite{lee2021classification,suareztangil2023stories}. This data is used to:
 
 \begin{itemize}
-	\item Feed the live classification module.
-	\item The AI system requires continuous model training and enhancement to function properly.
-	\item The team needs to obtain current threat intelligence data right away because they will use it for their analysis and reporting work.
+	\item feed the live classification module,
+	\item support future model refinement and validation, and
+	\item provide current threat intelligence for analysis and reporting.
 \end{itemize}
 
-(The complete details regarding this will be presented in Chapter 4: Implementation \& Testing and Chapter 5: Results \& Discussions.)
+The implementation and testing details of this phase are presented in Chapter 4, while the observed results are discussed in Chapter 5.
 
 % ============================================================
 \section{Data Analysis}
@@ -124,18 +117,18 @@ Once TrapPot is deployed in an isolated network environment, it will begin colle
 \label{subsec:preprocessing_pipeline}
 % ------------------------------------------------------------
 
-Data the data acquisition pipeline relies on Zeek transport-layer outputs. Cowrie acts as the high-interaction deception trap, while Zeek monitors network connections, generating the tabular data stream fed into the AI. \cite{9071014,log2evt2025}. The ELK Stack (Elasticsearch, Logstash, Kibana) functions as the main data processing system which handles both data processing and storage operations \cite{9001068}. The configuration of Logstash enables it to process raw JSON records which results in proper extraction of essential fields that include session identifiers and timestamps and src\_ip addresses and input data which includes command and credential attempt information \cite{9001068,log2evt2025}.
+The data acquisition pipeline relies on Zeek transport-layer outputs. Cowrie acts as the deception layer, while Zeek monitors network connections and generates the tabular stream used by the AI detector \cite{9071014,log2evt2025}. The ELK Stack, consisting of Elasticsearch, Logstash, and Kibana, handles processing, storage, and visualization \cite{9001068}. Logstash processes raw JSON records and extracts fields such as session identifiers, timestamps, source IP addresses, commands, and credential-attempt information \cite{9001068,log2evt2025}.
 
-\textbf{Data Cleaning and Organization:} To maintain data integrity, records are indexed by their unique session ID and event timestamp to identify unique records which prevents duplicate entries while keeping the data accurate as described in \cite{rodriguezgomez2025systematic}. The system uses categorical imputation to handle missing data which appears in command or input fields because users experience sudden session interruptions during feature calculation \cite{ahsan2024effects,mary2024network}.
+\textbf{Data Cleaning and Organization:} To maintain data integrity, records are organized by session ID and event timestamp. This helps identify repeated records and preserve the relationship between attacker actions and network events \cite{rodriguezgomez2025systematic}. Missing command or input fields are handled during feature calculation so incomplete sessions do not produce invalid model input \cite{ahsan2024effects,mary2024network}.
 
-\textbf{Ground Truth Labeling Strategy:} As a supervised learning project, accurate labeling is paramount \cite{hopf2021supervised,dimauro2021supervised}. A hierarchical strategy is applied to assign one of the five target attack types (Brute Force, Scanning, Malware Download, Command Execution, Normal attack) to each session \cite{lee2021classification,karim2024efficient}:
+\textbf{Ground Truth Labeling Strategy:} As a supervised learning project, accurate labeling is essential \cite{hopf2021supervised,dimauro2021supervised}. A hierarchical strategy assigns one of five target classes to each session or connection record: Brute Force, Scanning, Malware Download, Command Execution, or Normal traffic \cite{lee2021classification,karim2024efficient}.
 
 \begin{itemize}
-    \item Malware Download is identified by the presence of data in the urls field \cite{9071014}.
-    \item Command Execution requires evidence of a successful login (is\_success: true) followed by the execution of subsequent commands \cite{9071014,9558948}.
-    \item Brute Force is labeled when there is a high frequency of failed login attempts (is\_success: false) \cite{203628,herwig2021analyzing}.
-    \item Scanning is categorized by low-interaction sessions exhibiting a pattern of port or service probing across a broad IP range \cite{zhang2023identification,suareztangil2023stories}.
-    \item Normal attack Defined as benign baseline operational events. These interactions represent expected network overhead sequences, minor automated polling, or protocol checks characterized by minimal packet counts and predictable transport signatures mapping strictly to trusted internal application protocols \cite{lee2021classification}.
+    \item Malware Download is identified by the presence of data in the URLs field \cite{9071014}.
+    \item Command Execution requires evidence of a successful login followed by executed commands \cite{9071014,9558948}.
+    \item Brute Force is labeled when there is a high frequency of failed login attempts \cite{203628,famera2025mirai}.
+    \item Scanning is categorized by low-interaction sessions that show port or service probing behavior \cite{zhang2023identification,suareztangil2023stories}.
+    \item Normal traffic represents baseline operational events, minor polling, or protocol checks with minimal packet counts and predictable transport signatures \cite{lee2021classification}.
 \end{itemize}
 
 % ------------------------------------------------------------
@@ -143,120 +136,114 @@ Data the data acquisition pipeline relies on Zeek transport-layer outputs. Cowri
 \label{subsec:feature_engineering}
 % ------------------------------------------------------------
 
-Feature engineering transforms the categorical and sequential log data into a small, powerful set of numerical features that effectively discriminate between the five attack classes \cite{dimauro2021supervised,christy2024iot}. The creation of these features is essential for feeding meaningful data to the Random Forest model and is critical for distinguishing subtle differences between malicious activities \cite{hopf2021supervised,ahsan2024effects}. The feature set is designed to be interpretable, avoiding complex dimensionality reduction techniques to maintain clarity in the prototype \cite{lee2021classification,dimauro2021supervised}.
+Feature engineering transforms categorical and sequential log data into a compact set of numerical and categorical features that can separate the five classes \cite{dimauro2021supervised,christy2024iot}. These features must be meaningful to the Random Forest model and understandable to the project team, so the prototype avoids complex dimensionality reduction techniques \cite{lee2021classification,dimauro2021supervised}.
 
-The primary features engineered from the raw session logs include metrics related to authentication, session activity, command usage, and malware transfer \cite{christy2024iot,karim2024efficient}:
+The primary features are based on authentication behavior, session activity, command usage, file transfer indicators, and network connection properties \cite{christy2024iot,karim2024efficient}:
 
-\textbf{Authentication Metrics} include the Unique Login Attempts Count per session. A high value for this metric is a direct indicator of automated brute-force activity trying many credential pairs \cite{203628,herwig2021analyzing,9558948}.
+\textbf{Authentication Metrics} include the number of unique login attempts per session. A high value indicates automated brute-force activity that tests many credential pairs \cite{203628,famera2025mirai,9558948}.
 
-\textbf{Session Metrics} are recorded by the Session Duration in seconds. I look at the Session Duration in seconds. The analyst uses the Session Duration in seconds to separate automated scanning attempts, which have duration from longer interactive command execution attacks, which have extended duration \cite{lee2021classification,karim2024efficient}.
+\textbf{Session Metrics} include session duration in seconds. Short durations can indicate automated scanning, while longer sessions may indicate interactive command execution \cite{lee2021classification,karim2024efficient}.
 
-\textbf{Command Metrics} focus on the attacker's post-login behavior, specifically the Executable Command Ratio. This is the percentage of executed commands that are recognized as valid operating system commands versus invalid or empty inputs, providing strong evidence of successful Command Execution \cite{9071014,dimauro2021supervised}.
+\textbf{Command Metrics} focus on post-login behavior, especially the ratio of recognized operating system commands to invalid or empty inputs. This provides evidence of command execution after access is obtained \cite{9071014,dimauro2021supervised}.
 
-\textbf{Malware Metrics} are distilled into the File Transfer Flag (Binary), a simple Boolean indicator that flags the presence of any file download or upload activity, serving as the primary numerical identifier for the Malware Download attack class \cite{9071014,9558948}.
+\textbf{Malware Metrics} use a binary file-transfer flag to indicate whether an upload or download attempt occurred. This feature supports identification of malware download behavior \cite{9071014,9558948}.
 
-\textbf{Activity Metrics} such, as Input Entropy measure the randomness and the diversity of input strings. Activity Metrics and Input Entropy help the detection process human interaction, from the rigid pre‑programmed inputs that automated botnet scripts use \cite{dimauro2021supervised,christy2024iot}.
+\textbf{Network Metrics} are derived from Zeek \texttt{conn.log}, including source and destination ports, duration, byte counts, packet counts, protocol, service, and connection state. These features match the trained detector pipeline and allow live classification from Zeek records.
 
-The feature set is high value. The team will use the feature set directly for model training. The feature set fits the project goal of operation and high performance \cite{lee2021classification,saied2023comparative,karim2024efficient}.
+This feature set supports the project goal of interpretable and efficient classification while remaining compatible with the implemented detector \cite{lee2021classification,saied2023comparative,karim2024efficient}.
 
 % ------------------------------------------------------------
 \subsection{Machine Learning Model Training and Optimization}
 \label{subsec:model_training}
 % ------------------------------------------------------------
 
-The analysis relies exclusively on the Random Forest Classifier, a choice validated by the literature for its proven high accuracy (96–99\%) and low inference latency in IoT intrusion detection \cite{lee2021classification,saied2023comparative,karim2024efficient,christy2024iot}. The curated dataset will be partitioned into an 80\% training set and a 20\% hold-out testing set \cite{optimized2024arxiv,karim2024efficient}. Model robustness during training will be confirmed using 5-Fold Cross-Validation to iteratively evaluate and refine performance metrics across the entire training data \cite{pan2024xgboost,optimized2024arxiv}. To mitigate the severe dataset imbalance (where benign traffic typically outweighs attack samples), the primary mitigation strategy will be the use of Class Weighting within the Random Forest model \cite{9213728,9912910,abdulsalam2023multiclass}. This technique assigns a higher penalty to misclassification errors involving the less frequent attack classes (e.g., Malware Download), ensuring the model is not biased toward the majority classes \cite{9213728,abdulsalam2023multiclass,wardana2024federated}. Hyperparameters, specifically the number of decision trees (n\_estimators) and maximum tree depth (max\_depth), will be optimized using a Grid Search to achieve the project's minimum 99\% classification accuracy goal \cite{pan2024xgboost,optimized2024arxiv}.
+The analysis relies on the Random Forest Classifier, a choice supported by literature reporting high accuracy in IoT intrusion detection and low inference latency \cite{lee2021classification,saied2023comparative,karim2024efficient,christy2024iot}. The prepared dataset is partitioned into an 80\% training set and a 20\% hold-out testing set \cite{optimized2024arxiv,karim2024efficient}. Five-fold cross-validation is used during training to evaluate model robustness across the training data \cite{pan2024xgboost,optimized2024arxiv}. To reduce the effect of class imbalance, the model uses class weighting and balancing strategies so that less frequent classes such as Malware Download are not ignored \cite{9213728,9912910,abdulsalam2023multiclass}. Hyperparameters, including the number of decision trees and maximum tree depth, are tuned to support the project's minimum 99\% classification accuracy goal \cite{pan2024xgboost,optimized2024arxiv}.
 
 % ============================================================
 \section{Validation Plan}
 \label{sec:validation_plan}
 % ============================================================
 
-The validation plan for the TrapPot system is designed to objectively measure both the analytical accuracy of the machine learning classifier and the operational feasibility of the system as a real-time threat intelligence solution \cite{confusion2023pmc,mary2024network}. The overall measure of success is achieving the project objective of a classification accuracy exceeding 99\% \cite{lee2021classification,karim2024efficient,kalaria2024iotpredictor}.
+The validation plan measures both the analytical accuracy of the Random Forest classifier and the operational feasibility of TrapPot as a real-time threat intelligence system \cite{confusion2023pmc,mary2024network}. The main success target is classification accuracy above 99\% \cite{lee2021classification,karim2024efficient,kalaria2024iotpredictor}.
 
 % ------------------------------------------------------------
 \subsection{Classification Performance Metrics}
 \label{subsec:performance_metrics}
 % ------------------------------------------------------------
 
-While overall accuracy serves as a primary goal indicator, the security applications require additional evaluation methods because dataset imbalance affects security systems according to \cite{confusion2023pmc,mary2024network}.
+Accuracy is the primary metric because it directly measures the percentage of correct predictions across the five classes \cite{karim2024efficient,mary2024network}. However, security datasets often contain imbalanced classes, so additional metrics are also needed \cite{confusion2023pmc,mary2024network}.
 
-\textbf{Primary Metric:} The main performance metric for this project depends on Accuracy to check if the 99\% goal is achieved through the evaluation of correct prediction outcomes for all five attack categories \cite{karim2024efficient,mary2024network}.
+\textbf{Primary Metric:} Accuracy is used to determine whether the model achieves the 99\% classification target across the five attack categories \cite{karim2024efficient,mary2024network}.
 
-\textbf{Secondary Critical Metric:} The F1-Score will be tracked and reported alongside accuracy \cite{confusion2023pmc,karim2024efficient}. The F1-Score uses the harmonic mean of Precision and Recall to achieve a balanced assessment which minimizes the effect of models that struggle to identify minority classes \cite{confusion2023pmc,9213728}.  For TrapPot, a high F1-Score is essential to ensure that less frequent but high-impact attacks (like Malware Download or Command Execution) are not overlooked in favor of the more numerous Brute Force attempts \cite{lee2021classification,9213728}.
+\textbf{Secondary Critical Metric:} F1-score is reported alongside accuracy because it balances precision and recall \cite{confusion2023pmc,karim2024efficient}. For TrapPot, a high F1-score helps confirm that less frequent but important classes, such as Malware Download and Command Execution, are not hidden by more frequent brute-force or normal traffic records \cite{lee2021classification,9213728}.
 
 % ------------------------------------------------------------
 \subsection{Validation Dataset and Testing Method}
 \label{subsec:validation_dataset}
 % ------------------------------------------------------------
 
-The final validation test will be performed after the model training and tuning process is complete \cite{optimized2024arxiv,confusion2023pmc}.
+Final model validation uses the 20\% hold-out dataset that was separated during data preparation \cite{optimized2024arxiv,karim2024efficient}. This data is not used during training, which gives a fairer measure of model generalization \cite{lee2021classification,saied2023comparative,kalaria2024iotpredictor}.
 
-\textbf{Validation Data:} The system will use the 20\% hold-out dataset that was strictly separated during the data preparation phase \cite{optimized2024arxiv,karim2024efficient}. This data represents real-world attack attempts captured by the Cowrie honeypot over the specified collection period but has never been seen by the Random Forest model during training, ensuring an unbiased measure of generalization \cite{lee2021classification,saied2023comparative,kalaria2024iotpredictor}.
+\textbf{Data Collection Duration:} The study design keeps the 30-day operational data collection period for the Cowrie honeypot in an isolated network environment \cite{lee2021classification,suareztangil2023stories}. This duration is intended to provide a stronger sample of attack traffic targeting Telnet and SSH \cite{famera2025mirai,9558948}.
 
-\textbf{Data Collection Duration:} The model's training and final testing data will be derived from logs collected over a 30-day period of continuous operation of the Cowrie honeypot in the isolated network environment \cite{lee2021classification,suareztangil2023stories}. This duration provides a robust and diverse sample of global attack traffic targeting Telnet and SSH \cite{herwig2021analyzing,9558948}.
-
-\textbf{Methodology:} The trained Random Forest model will be applied to the 20\% hold-out set, and the resulting predictions will be compared against the ground truth labels established in the preprocessing pipeline (Section 3.3.1) \cite{confusion2023pmc,mary2024network}.
+\textbf{Methodology:} The trained Random Forest model is applied to the hold-out set, and the resulting predictions are compared against the ground truth labels established during preprocessing \cite{confusion2023pmc,mary2024network}.
 
 % ------------------------------------------------------------
 \subsection{Operational Success Criteria}
 \label{subsec:operational_criteria}
 % ------------------------------------------------------------
 
-Beyond analytical metrics, The system needs to show its ability to operate as a real-time threat intelligence system through operational readiness according to \cite{rodriguezgomez2025systematic,lanz2025optimizing}. Two key system-level criteria must be met:
+Beyond analytical metrics, TrapPot must demonstrate that it can operate as a real-time monitoring and classification system \cite{rodriguezgomez2025systematic,lanz2025optimizing}. Two system-level criteria are used:
 
-\textbf{Real-Time Inference Latency:} The system must demonstrate low latency in classifying new attack data as it arrives \cite{lee2021classification,karim2024efficient}. The time taken for the trained Random Forest model to process a new session's features and output a classification prediction must be minimal, supporting the project's goal of real-time monitoring via the ELK Stack \cite{9001068,karim2024efficient}.
+\textbf{Real-Time Inference Latency:} The trained Random Forest model must classify new connection records with low latency so that Kibana can support near-real-time monitoring through the ELK Stack \cite{9001068,karim2024efficient}.
 
-\textbf{Resource Efficiency:} The overall system, including the Cowrie honeypot, the Logstash processing, and the Random Forest classification module, must operate with low computational overhead (CPU and memory usage) \cite{9359711,alzahrani2025lightweight}. This validates the system's suitability for feasible deployment within educational or non-enterprise IT environments \cite{franco2021survey,morozov2024sweet}.
+\textbf{Resource Efficiency:} Cowrie, Zeek, Logstash, Elasticsearch, Kibana, and the Random Forest detector must run with acceptable CPU and memory use for a local academic deployment \cite{9359711,alzahrani2025lightweight}. This validates the system's suitability for educational and non-enterprise lab environments \cite{franco2021survey,morozov2024sweet}.
 
 % ------------------------------------------------------------
 \subsection{Results Presentation}
 \label{subsec:results_presentation}
 % ------------------------------------------------------------
 
-The system performance results will be shown through both visual and quantitative methods \cite{confusion2023pmc,mary2024network}.
-
-A Confusion Matrix will be used to visually represent the classification results, showing the number of True Positives, True Negatives, False Positives, and False Negatives for each of the five attack classes \cite{confusion2023pmc,karim2024efficient,mary2024network}.
-
-Kibana Dashboards (part of the ELK Stack) will be presented as evidence of the system's operational success, showcasing real-time visualizations of attack classifications, geographic origins (src\_ip), and attack type trends \cite{9001068}.
+The system results are presented through both quantitative tables and visual monitoring outputs \cite{confusion2023pmc,mary2024network}. A confusion matrix is used to show how predicted labels compare with actual labels across the five classes \cite{confusion2023pmc,karim2024efficient,mary2024network}. Kibana dashboards are used to show operational evidence, including attack activity over time, source IP addresses, protocol distribution, commands captured, and AI detector output \cite{9001068}.
 
 % ============================================================
 \section{Research Ethics}
 \label{sec:research_ethics}
 % ============================================================
 
-The TrapPot project operates under an ethical framework which bases its operations on Do No Harm principles while focusing on two main objectives to protect network security and maintain data integrity and handle adversary data properly \cite{commey2025blockchain,franco2021survey}. The project requires passive monitoring of actual cyber threats in real networks since it does not involve testing with human participants thus network separation and data protection become the main ethical concerns \cite{franco2021survey,alawadi2022_iot_honeypots}.
+TrapPot follows a do-no-harm ethical approach. The project observes malicious behavior for research and learning, but it must not endanger university systems, external networks, or identifiable individuals \cite{commey2025blockchain,franco2021survey}. Because the project does not involve human-subject experiments, the main ethical concerns are network containment, responsible log handling, and careful reporting \cite{franco2021survey,alawadi2022_iot_honeypots}.
 
 % ------------------------------------------------------------
 \subsection{Network Isolation and Containment}
 \label{subsec:network_isolation}
 % ------------------------------------------------------------
 
-Network safety is the paramount ethical and technical consideration \cite{commey2025blockchain,albaseer2024fedpot}. The Cowrie honeypot, while designed to capture attack data, must never pose a risk to the university's production network or serve as a launchpad for attacks against third parties \cite{commey2025blockchain,fan2019honeydoc}.
+Network safety is the main ethical and technical requirement \cite{commey2025blockchain,albaseer2024fedpot}. Cowrie is designed to capture attack data, but the deployment must not become a risk to the university network or a launchpad for third-party attacks \cite{commey2025blockchain,fan2019honeydoc}.
 
-\textbf{Strict Segregation:} The TrapPot system is deployed within a dedicated, highly isolated network segment or Virtual Local Area Network (VLAN), ensuring complete separation from all internal production infrastructure \cite{albaseer2024fedpot,fan2019honeydoc}.
+\textbf{Strict Segregation:} TrapPot is deployed inside a dedicated and isolated lab network or virtual network segment, separated from production infrastructure \cite{albaseer2024fedpot,fan2019honeydoc}.
 
-\textbf{Preventing Egress:} The main containment method depends on firewall egress rules which operate with absolute strictness according to Commey and his team \cite{commey2025blockchain}. The rules prevent all outgoing traffic which starts from the honeypot host because they block adversaries from using the compromised simulated environment to attack external targets or move to different targets.
+\textbf{Preventing Egress:} Firewall and network controls must restrict outgoing traffic from the honeypot environment so that attackers cannot use the simulated system to attack external targets \cite{commey2025blockchain}.
 
-\textbf{Sandbox Security:} The medium-interaction nature of the Cowrie platform provides an ethical sandbox \cite{9071014,9359711}. The attacker's commands run inside a secured environment which prevents them from executing any host operating system code thus preventing any possible exploitation attempts.
+\textbf{Sandbox Security:} Cowrie's medium-interaction design provides a controlled shell environment. Attacker commands are recorded inside the honeypot and do not execute on the host operating system \cite{9071014,9359711}.
 
 % ------------------------------------------------------------
 \subsection{Data Handling and Anonymization}
 \label{subsec:data_handling}
 % ------------------------------------------------------------
 
-The ethical handling of captured data, which includes potentially identifiable information, is mandatory \cite{rodriguezgomez2025systematic}.
+Captured logs may include source IP addresses, timestamps, credentials attempted by attackers, and commands entered during sessions \cite{rodriguezgomez2025systematic,lee2021classification}. The project therefore keeps only the data needed for threat intelligence, classification, and academic reporting.
 
-\textbf{Data Minimization:} The project maintains only the essential data needed for threat intelligence and classification which includes Source IP addresses (src\_ip) and timestamps and credentials tried and executed commands \cite{rodriguezgomez2025systematic,lee2021classification}. The research team can analyze human activities through data processing of their gathered information to achieve their project goals \cite{9071014}.
+\textbf{Data Minimization:} TrapPot stores the fields required for analysis, such as source IP address, timestamp, credential attempt, command input, and session metadata \cite{rodriguezgomez2025systematic,lee2021classification}.
 
-\textbf{Storage and Access:} All log data stored within the ELK Stack and research servers is securely restricted, accessible exclusively to the project team for research purposes \cite{9001068}.
+\textbf{Storage and Access:} Log data stored in ELK and project machines is restricted to the project team and used only for research and evaluation \cite{9001068}.
 
-\textbf{Anonymity in Reporting:} Any public presentation or reporting of the results, including The final project documentation together with all public presentations of results will present statistics and geographic data through aggregated and anonymized forms \cite{rodriguezgomez2025systematic}. The survey by Franco 2021 indicates that researchers will never disclose individual source IP addresses as raw identifiable data to public domains \cite{franco2021survey}.
+\textbf{Anonymity in Reporting:} Public reporting uses aggregated statistics and anonymized summaries. Individual raw source IP addresses are not disclosed in the thesis, presentation, or public materials \cite{franco2021survey,rodriguezgomez2025systematic}.
 
 % ------------------------------------------------------------
 \subsection{Regulatory Compliance and Log Management}
 \label{subsec:regulatory_compliance}
 % ------------------------------------------------------------
 
-\textbf{Institutional Approval:} The institutional IT Department needs to approve the 30-day data collection period to confirm that the deployment and network isolation plan complies with all security and network policies of the university \cite{franco2021survey,alawadi2022_iot_honeypots}.
+\textbf{Institutional Approval:} Any 30-day data collection period or external exposure must be approved by the relevant university or lab authority to confirm that the deployment and isolation plan comply with security policies \cite{franco2021survey,alawadi2022_iot_honeypots}.
 
-\textbf{Data Disposal:} Upon the successful completion and submission of the project, all raw, identifiable logs captured by the Cowrie honeypot will be securely purged from the ELK Stack and associated storage infrastructure \cite{rodriguezgomez2025systematic}. Only final, anonymized, and aggregated statistical summaries will be retained for future comparative research \cite{franco2021survey,rodriguezgomez2025systematic}.
+\textbf{Data Disposal:} After project completion, raw identifiable logs should be purged from ELK and associated storage. Only anonymized and aggregated summaries should be retained for future comparison or academic reference \cite{rodriguezgomez2025systematic,franco2021survey}.
