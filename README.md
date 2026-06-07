@@ -72,7 +72,7 @@ Clone the repo:
 
 ```sh
 git clone https://github.com/bxrayxd/graduation-project.git
-cd graduation-project/TrapPot
+cd graduation-project/Trap-Pot
 ```
 
 Create the local password file:
@@ -92,7 +92,7 @@ Cowrie password: admin
 
 You can change the Elastic passwords in `.env` before the first run. Keep `KIBANA_ENCRYPTION_KEY` at least 32 characters long.
 
-Do not commit `TrapPot/.env`. The repo ignores it on purpose.
+Do not commit `Trap-Pot/.env`. The repo ignores it on purpose.
 
 Start the system:
 
@@ -256,22 +256,22 @@ docker compose exec elasticsearch curl -s -u "elastic:$ELASTIC_PASSWORD" http://
 Main runtime files:
 
 ```text
-TrapPot/docker-compose.yml
-TrapPot/.env.example
-TrapPot/cowrie/etc/cowrie.cfg
-TrapPot/cowrie/etc/userdb.txt
-TrapPot/ai_detector/detector.py
-TrapPot/logstash/pipeline/trappot.conf
-TrapPot/elasticsearch/templates/
-TrapPot/kibana/
+Trap-Pot/docker-compose.yml
+Trap-Pot/.env.example
+Trap-Pot/cowrie/etc/cowrie.cfg
+Trap-Pot/cowrie/etc/userdb.txt
+Trap-Pot/ai_detector/detector.py
+Trap-Pot/logstash/pipeline/trappot.conf
+Trap-Pot/elasticsearch/templates/
+Trap-Pot/kibana/
 ```
 
 Generated logs:
 
 ```text
-TrapPot/zeek/logs/conn.log
-TrapPot/zeek/logs/ssh.log
-TrapPot/zeek/logs/detections.json
+Trap-Pot/zeek/logs/conn.log
+Trap-Pot/zeek/logs/ssh.log
+Trap-Pot/zeek/logs/detections.json
 ```
 
 ## Stop Or Reset
@@ -307,7 +307,7 @@ If you change `.env` after Elasticsearch already started, run the clean reset co
 
 ## Common Problems
 
-If port `2222` is busy, stop the other service or change the Cowrie port in `TrapPot/docker-compose.yml`.
+If port `2222` is busy, stop the other service or change the Cowrie port in `Trap-Pot/docker-compose.yml`.
 
 If Elasticsearch does not start, run:
 
