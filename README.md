@@ -75,7 +75,7 @@ git clone https://github.com/bxrayxd/graduation-project.git
 cd graduation-project/Trap-Pot
 ```
 
-Create the local password file:
+Optional: create a local password file if you want to change the default lab passwords:
 
 ```sh
 cp .env.example .env
@@ -90,7 +90,7 @@ Cowrie username: root
 Cowrie password: admin
 ```
 
-You can change the Elastic passwords in `.env` before the first run. Keep `KIBANA_ENCRYPTION_KEY` at least 32 characters long.
+TrapPot can start without `.env`; Docker Compose uses the same local defaults shown above. If you create `.env`, you can change the Elastic passwords before the first run. Keep `KIBANA_ENCRYPTION_KEY` at least 32 characters long.
 
 Do not commit `Trap-Pot/.env`. The repo ignores it on purpose.
 
