@@ -148,6 +148,8 @@ exit
 
 Wait about 30 seconds. Cowrie, Zeek, the AI detector, Logstash, Elasticsearch, and Kibana need a short moment to process the session.
 
+For SSH brute-force, command execution, and Telnet test steps, see `Trap-Pot/ATTACK_TESTS.md`.
+
 ## Check The Output
 
 Cowrie logs:

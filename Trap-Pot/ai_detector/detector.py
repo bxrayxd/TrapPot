@@ -87,10 +87,22 @@ print("TrapPot AI is watching the network...")
 while not os.path.exists(LOG_FILE) or os.path.getsize(LOG_FILE) == 0:
     time.sleep(1)
 
-with open(LOG_FILE, "r", encoding="utf-8") as f:
+f = open(LOG_FILE, "r", encoding="utf-8")
+current_inode = os.stat(LOG_FILE).st_ino
+
+try:
     while True:
         line = f.readline()
         if not line:
+            try:
+                log_stat = os.stat(LOG_FILE)
+                if log_stat.st_ino != current_inode or log_stat.st_size < f.tell():
+                    f.close()
+                    f = open(LOG_FILE, "r", encoding="utf-8")
+                    current_inode = os.stat(LOG_FILE).st_ino
+                    print("Detector reopened Zeek conn.log")
+            except FileNotFoundError:
+                pass
             time.sleep(1)
             continue
         if line.startswith("#"):
@@ -118,3 +130,5 @@ with open(LOG_FILE, "r", encoding="utf-8") as f:
             except Exception as exc:
                 print(f"Detector skipped malformed Zeek row ({exc.__class__.__name__}): {exc}", file=sys.stderr)
                 continue
+finally:
+    f.close()
