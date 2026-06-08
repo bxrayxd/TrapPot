@@ -25,6 +25,7 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no pi@localhost -p 
 Expected result:
 
 - Cowrie records `cowrie.login.failed`.
+- Kibana shows **Brute force attempt** under observed attack types.
 - Kibana increases login attempt and Cowrie event counts.
 - Zeek records SSH network connections in `conn.log` and `ssh.log`.
 
@@ -53,6 +54,7 @@ Expected result:
 
 - Cowrie records `cowrie.login.success`.
 - Cowrie records each command as `cowrie.command.input`.
+- Kibana shows **Command execution** under observed attack types.
 - Kibana shows the commands in **Top commands** and **Commands captured**.
 - Zeek records the SSH connection in `conn.log` and `ssh.log`.
 - The AI detector reads Zeek `conn.log` and writes decisions to `detections.json`.
@@ -93,6 +95,7 @@ Expected result:
 
 - Cowrie records Telnet sessions with `protocol: telnet`.
 - Cowrie records Telnet commands as `cowrie.command.input`.
+- Kibana shows Telnet command activity as **Command execution** under observed attack types.
 - Kibana shows Telnet in the protocol split after refresh.
 - Zeek records Telnet traffic in `conn.log`.
 - Zeek does not write Telnet sessions to `ssh.log`; `ssh.log` is only for SSH.
@@ -108,3 +111,5 @@ docker compose logs logstash
 ```
 
 If Kibana looks empty, wait 30 seconds and press **Refresh**.
+
+The **RF network decisions** panel is separate from Cowrie attack labels. It scores Zeek connection rows with the trained Random Forest model, so local test traffic can still appear as `Normal` there while Cowrie correctly reports brute-force attempts and command execution.

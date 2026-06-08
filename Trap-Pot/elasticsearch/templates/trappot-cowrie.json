@@ -8,6 +8,12 @@
     "mappings": {
       "properties": {
         "@timestamp": { "type": "date" },
+        "attack_type": {
+          "type": "text",
+          "fields": {
+            "keyword": { "type": "keyword", "ignore_above": 256 }
+          }
+        },
         "eventid": { "type": "keyword" },
         "protocol": { "type": "keyword" },
         "session": { "type": "keyword" },

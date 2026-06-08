@@ -26,7 +26,7 @@
       "type": "markdown",
       "config": {
         "title": "TrapPot monitoring flow",
-        "content": "Cowrie captures SSH/Telnet activity, Zeek summarizes the network connection, the Random Forest detector scores Zeek connection rows, and Logstash sends everything to Elasticsearch for this dashboard.",
+        "content": "Cowrie labels observed honeypot behavior such as brute-force attempts and command execution. Zeek summarizes the network connection, the Random Forest detector scores Zeek connection rows, and Logstash sends everything to Elasticsearch for this dashboard.",
         "settings": {
           "open_links_in_new_tab": true
         }
@@ -67,21 +67,21 @@
       "type": "vis",
       "config": {
         "type": "metric",
-        "title": "Login attempts",
+        "title": "Brute force attempts",
         "data_source": {
           "type": "data_view_spec",
           "index_pattern": "trappot-cowrie",
           "time_field": "@timestamp"
         },
         "query": {
-          "expression": "eventid : \"cowrie.login.success\" or eventid : \"cowrie.login.failed\"",
+          "expression": "eventid : \"cowrie.login.failed\"",
           "language": "kql"
         },
         "metrics": [
           {
             "type": "primary",
             "operation": "count",
-            "label": "Attempts"
+            "label": "Failed logins"
           }
         ]
       }
@@ -96,7 +96,7 @@
       "type": "vis",
       "config": {
         "type": "metric",
-        "title": "Commands captured",
+        "title": "Command execution",
         "data_source": {
           "type": "data_view_spec",
           "index_pattern": "trappot-cowrie",
@@ -125,7 +125,7 @@
       "type": "vis",
       "config": {
         "type": "metric",
-        "title": "AI detections",
+        "title": "RF network decisions",
         "data_source": {
           "type": "data_view_spec",
           "index_pattern": "trappot-detector",
@@ -135,7 +135,7 @@
           {
             "type": "primary",
             "operation": "count",
-            "label": "Predictions"
+            "label": "Decisions"
           }
         ]
       }
@@ -287,11 +287,15 @@
       "type": "vis",
       "config": {
         "type": "pie",
-        "title": "AI prediction split",
+        "title": "Observed attack types",
         "data_source": {
           "type": "data_view_spec",
-          "index_pattern": "trappot-detector",
+          "index_pattern": "trappot-cowrie",
           "time_field": "@timestamp"
+        },
+        "query": {
+          "expression": "attack_type : *",
+          "language": "kql"
         },
         "metrics": [
           {
@@ -301,7 +305,7 @@
         "group_by": [
           {
             "operation": "terms",
-            "fields": ["prediction"],
+            "fields": ["attack_type.keyword"],
             "limit": 10
           }
         ]
@@ -452,7 +456,7 @@
       "type": "vis",
       "config": {
         "type": "data_table",
-        "title": "AI detector decisions",
+        "title": "RF network decisions",
         "data_source": {
           "type": "esql",
           "query": "FROM trappot-detector | EVAL resp_port = `id.resp_p` | STATS detections = COUNT(*) BY prediction, proto, service, conn_state, resp_port | SORT detections DESC | LIMIT 20"

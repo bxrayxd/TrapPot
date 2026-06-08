@@ -213,10 +213,11 @@ TrapPot Overview
 The dashboard shows:
 
 - Cowrie events
-- login attempts
+- brute-force attempts
 - captured commands
 - Zeek connections
-- AI detector decisions
+- observed attack types
+- Random Forest network decisions
 - top source IPs, usernames, credentials, and commands
 
 GeoIP fields can stay empty during a local Docker test because the source IP is private. GeoIP becomes useful when traffic comes from public IP addresses.
