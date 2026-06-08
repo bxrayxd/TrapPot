@@ -74,6 +74,7 @@ services:
       - ELASTIC_USER=trappot_writer
       - ELASTIC_PASSWORD=${LOGSTASH_PASSWORD:-trappotlogstash}
     volumes:
+      - logstash-data:/usr/share/logstash/data
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
       - cowrie-logs:/logs/cowrie:ro
       - ./zeek/logs:/logs/zeek:ro
@@ -162,3 +163,4 @@ networks:
 volumes:
   cowrie-logs:
   elasticsearch-data:
+  logstash-data:

@@ -215,6 +215,7 @@ The dashboard shows:
 - Cowrie events
 - brute-force attempts
 - captured commands
+- file uploads
 - Zeek connections
 - observed attack types
 - Random Forest network decisions

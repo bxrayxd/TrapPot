@@ -100,6 +100,29 @@ Expected result:
 - Zeek records Telnet traffic in `conn.log`.
 - Zeek does not write Telnet sessions to `ssh.log`; `ssh.log` is only for SSH.
 
+## 4. SFTP File Upload
+
+Create a small test file:
+
+```sh
+printf '#!/bin/sh\necho test\n' > uploaded_dropper.sh
+```
+
+Upload it through Cowrie SFTP:
+
+```sh
+sftp -P 2222 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@localhost
+# password: admin
+sftp> put uploaded_dropper.sh /tmp/uploaded_dropper.sh
+sftp> exit
+```
+
+Expected result:
+
+- Cowrie records `cowrie.session.file_upload`.
+- Kibana shows **File upload** under observed attack types.
+- Elasticsearch stores the uploaded filename, saved file path, and SHA hash.
+
 ## Quick Log Checks
 
 ```sh
